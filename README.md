@@ -4,11 +4,11 @@ This repository was created by Facundo L. Pfeffer to support studying topics fro
 
 Quick start:
 - Navigate to the class folder you need.
-- Read that folder’s README (if any) for context and usage.
-- Follow that folder’s requirements.txr for environment/dependency setup.
+- Read that folder’s ```README.md``` (if any) for context and usage.
+- Follow that folder’s ```requirements.txt``` for environment/dependency setup.
 
 Notes:
-- Each class folder is self-contained. Prefer the README and requirements.txr in that folder for the most accurate instructions.
+- Each class folder is self-contained. Prefer the ```README.md``` and ```requirements.txt``` in that folder for the most accurate instructions. The usage of virtual enviroments is recommended.
 - This top-level file is only an overview; details live with each class.
 
 ## Acknowledgments
