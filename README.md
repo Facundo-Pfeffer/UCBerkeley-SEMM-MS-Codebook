@@ -1,6 +1,6 @@
 # UC Berkeley SEMM's Fall 2025 Codebook
 
-This repository was created by Facundo L. Pfeffer to support studying topics from the first semester. Each folder corresponds to a different class.
+This repository was created by Facundo L. Pfeffer to support studying topics from the first semester of his MS graduate degree at UC Berkeley. Each folder corresponds to a different class.
 
 Quick start:
 - Navigate to the class folder you need.
