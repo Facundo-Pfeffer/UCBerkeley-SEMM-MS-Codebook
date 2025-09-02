@@ -4,7 +4,7 @@ This repository was created by Facundo L. Pfeffer to support studying topics fro
 
 Quick start:
 - Navigate to the class folder you need.
-- Read that folder’s README for context and usage.
+- Read that folder’s README (if any) for context and usage.
 - Follow that folder’s requirements.txr for environment/dependency setup.
 
 Notes:
@@ -12,7 +12,7 @@ Notes:
 - This top-level file is only an overview; details live with each class.
 
 ## Acknowledgments
-Thanks to instructors, TAs, and peers whose guidance informed these materials.
+Thanks to instructors, GSIs, and peers whose guidance informed these materials.
 
 ## Contact
 For questions or suggestions, please open an issue or reach out directly to the repository owner.
