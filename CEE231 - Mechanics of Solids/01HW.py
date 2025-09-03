@@ -20,7 +20,7 @@ def run_assignment_2():
     print(f"\ts₁ = v · w = {s1}")
     print(f"\ts₂ = v · z = {s2}")
 
-S = np.array([  # Defining into as a variable in the global scope bc is used in #3 and #4
+S = np.array([  # Defining S as a variable in the global scope bc is used in #3 and #5
     [1, 3, 2],
     [3, 0, 1],
     [2, 1, 0]
