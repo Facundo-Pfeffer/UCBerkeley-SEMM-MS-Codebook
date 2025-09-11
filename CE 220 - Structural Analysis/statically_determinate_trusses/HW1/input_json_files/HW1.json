@@ -1,0 +1,19 @@
+{
+  "nodes": [
+    {"id": 1, "x": 0, "y": 0, "x_restrained": true, "y_restrained": true},
+    {"id": 2, "x": 8, "y": 0},
+    {"id": 3, "x": 16, "y": 0, "y_restrained": true},
+    {"id": 4, "x": 0, "y": 4},
+    {"id": 5, "x": 16, "y": 4},
+    {"id": 6, "x": 4, "y": 12},
+    {"id": 7, "x": 12, "y": 12}
+  ],
+  "elements": [
+    [1, 2], [2, 3], [1, 4], [3, 5], [4, 6], [5, 7],
+    [6, 7], [4, 2], [2, 5], [3, 6], [1, 7]
+  ],
+  "loads": [
+    {"node": 6, "direction": 2, "value": -10},
+    {"node": 7, "direction": 2, "value": -15}
+  ]
+}
