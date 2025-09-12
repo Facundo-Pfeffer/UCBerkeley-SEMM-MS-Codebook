@@ -23,18 +23,25 @@ class Node:
             return self.id
 
 free_dof_counter = 0
-class FreeDOF:
-    def __init__(self, node, direction: int, dof_id=None):
+restrained_dof_counter = 0
+class DOF:
+    def __init__(self, node, direction: int, dof_id=None, is_free_dof=True):
         self.node = node
         self.direction = direction
+        self.is_free_dof = is_free_dof
         self.f_dof_id =self.get_dof_id(dof_id)
 
     def get_dof_id(self, dof_id):
         if dof_id is not None:
             return dof_id
-        global free_dof_counter
-        free_dof_counter += 1
-        return free_dof_counter
+        if self.is_free_dof:
+            global free_dof_counter
+            free_dof_counter += 1
+            return free_dof_counter
+        else:
+            global restrained_dof_counter
+            restrained_dof_counter += 1
+            return restrained_dof_counter
 
 
 class Element:

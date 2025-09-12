@@ -3,13 +3,18 @@ import numpy as np
 import sys
 import argparse
 
-from truss_elements import Node, Element, FreeDOF
+from truss_elements import Node, Element, DOF
 from plot_truss import plot_elements_plotly
 
 
 # --- Parse command-line argument ---
 parser = argparse.ArgumentParser(description="Solve a statically determinate truss from JSON input.")
-parser.add_argument("input_file", help="Path to the input JSON file")
+parser.add_argument(
+    "input_file",
+    nargs="?",  # makes it optional
+    default="input_json_files/HW1.json", # Debugging
+    help="Path to the input JSON file (default: input.json)"
+)
 args = parser.parse_args()
 
 
@@ -26,13 +31,13 @@ free_dof_list = []
 restrained_dof_list = []
 for node in nodes_list:
     if node.x_restrained is False:
-        free_dof_list.append(FreeDOF(node, 1))
+        free_dof_list.append(DOF(node, 1))
     else:
-        restrained_dof_list.append(FreeDOF(node, 1))
+        restrained_dof_list.append(DOF(node, 1, is_free_dof=False))
     if node.y_restrained is False:
-        free_dof_list.append(FreeDOF(node, 2))
+        free_dof_list.append(DOF(node, 2))
     else:
-        restrained_dof_list.append(FreeDOF(node, 2))
+        restrained_dof_list.append(DOF(node, 2, is_free_dof=False))
 
 
 
@@ -53,13 +58,11 @@ n_d = len(restrained_dof_list)
 # Define P from JSON
 P = np.zeros((n_f, 1))
 for load in data.get("loads", []):
-    node = nodes_list[load["node"] - 1]
-    dof = FreeDOF(node, load["direction"])
-    if dof in free_dof_list:
-        idx = free_dof_list.index(dof)
-        P[idx] = load["value"]
+    node_id = load["node"]
+    for free_node in free_dof_list:
+        if free_node.node.id == node_id and free_node.direction == load["direction"]:
+                P[free_node.f_dof_id-1] = load["value"]
 
-# Intiialize R
 R = np.zeros((n_d, 1))
 
 def get_B_matrix():
