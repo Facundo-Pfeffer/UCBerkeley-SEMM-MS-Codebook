@@ -15,4 +15,4 @@ Notes:
 Thanks to instructors, GSIs, and peers whose guidance informed these materials.
 
 ## Contact
-For questions or suggestions, please open an issue or reach out directly to the repository owner.
+For questions or suggestions, please reach out directly to: facundo.pfeffer@berkeley.edu.
