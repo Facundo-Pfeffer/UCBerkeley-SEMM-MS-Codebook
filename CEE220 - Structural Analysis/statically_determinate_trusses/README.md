@@ -1,4 +1,4 @@
-# Statically Determinate Trusse
+# Statically Determinate Trusses
 
 This project implements a solver for statically determinate planar trusses in Python.  
 The program builds equilibrium matrices, solves for internal forces, and computes support reactions based on truss data defined in a JSON file.
