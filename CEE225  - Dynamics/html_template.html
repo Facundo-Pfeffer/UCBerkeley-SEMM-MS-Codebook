@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Normalized Response Plot</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: white;
+      font-family: "Segoe UI", Roboto, sans-serif;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .plot-wrapper {
+      flex-grow: 1;
+      width: 100%;
+    }
+
+    .plotly-graph-div {
+      height: 100% !important;
+      width: 100% !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Normalized Response: \( \frac{u(t)}{(u_{st})_0} \) vs. \( \frac{t}{T} \)</h1>
+    <div id="plot" class="plot-wrapper"></div>
+  </div>
+
+  <script>
+    // INSERT_PLOT_HERE
+  </script>
+</body>
+</html>
