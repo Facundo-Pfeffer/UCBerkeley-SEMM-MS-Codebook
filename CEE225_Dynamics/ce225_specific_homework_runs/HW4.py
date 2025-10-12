@@ -2,8 +2,6 @@ import numpy as np
 import plotly.graph_objects as go
 
 
-
-
 def run_assignment_1(cycles_number):
 
     # Define the function u(t) / (u_st)_0

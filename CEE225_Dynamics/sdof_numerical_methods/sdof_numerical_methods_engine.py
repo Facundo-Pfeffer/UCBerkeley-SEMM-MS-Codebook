@@ -1,7 +1,6 @@
 import numpy as np
 import math
 from functools import lru_cache
-from plotly_generator import plot_displacement_vs_time
 
 wn = math.pi*2 # Natural frequency [rad/s]
 zeta = 0.05 # Damping ratio
@@ -22,32 +21,21 @@ def forcing_function(t: float):
 
 class SolutionPoint:
     """Single solution point to be plotted."""
-    def __init__(self, t, displacement, velocity=None, acceleration=None, metadata:dict = None):
+    def __init__(self, time, displacement, velocity=None, acceleration=None, metadata:dict = None):
         metadata = metadata or {}
-        self.t = t
+        self.t = time
         self.u = displacement
         self.v = velocity
         self.a = acceleration
         self.metadata = metadata
 
-class SDOFHarmonicVibration:
-    """Harmonic vibration of a single degree of freedom until t_change, then free vibration."""
-    def __init__(self,
-                 elastic_constant, damping_ration, natural_frequency,
-                 initial_displacement=None, initial_velocity=None, initial_acceleration=None,
-                 forcing_function=forcing_function, **kwargs):
 
+class SDOFSystem:
+    """System of SDOFs."""
+    def __init__(self, elastic_constant, damping_ratio, natural_frequency, **kwargs):
 
-
-        self.k, self.zeta, self.wn, self.m, self.c  = self.populate_sdof_constants(
-            elastic_constant, damping_ration, natural_frequency)
-
-        self.p = forcing_function
-
-        self.u0, self.u1, self.u2 = self.populate_initial_conditions(initial_displacement, initial_displacement,
-                                                                 initial_displacement)
-
-        self.eom = self.get_eom()
+        self.k, self.zeta, self.wn, self.m, self.c, self.Tn  = self.populate_sdof_constants(
+            elastic_constant, damping_ratio, natural_frequency)
 
     @staticmethod
     def populate_sdof_constants(elastic_constant, damping_ratio, natural_frequency):
@@ -56,7 +44,21 @@ class SDOFHarmonicVibration:
         wn = natural_frequency
         m = k / (wn ** 2)
         c = 2 * math.sqrt(k * m) * zeta
-        return k, zeta, wn, m, c
+        Tn = 2 * math.pi / wn
+        return k, zeta, wn, m, c, Tn
+
+
+class SDOFHarmonicVibration(SDOFSystem):
+    """Harmonic vibration of a single degree of freedom until t_change, then free vibration."""
+
+    def __init__(self, forcing_function,
+                 initial_displacement=None, initial_velocity=None, initial_acceleration=None, **kwargs):
+
+        super().__init__(**kwargs)
+        self.p = forcing_function
+        self.u0, self.u1, self.u2 = self.populate_initial_conditions(initial_displacement, initial_velocity,
+                                                                 initial_acceleration)
+        self.eom = self.get_eom()
 
     def populate_initial_conditions(self, initial_displacement, initial_velocity, initial_acceleration):
         if len([x for x in (initial_displacement, initial_velocity, initial_acceleration) if x is None]) > 1:
@@ -68,6 +70,7 @@ class SDOFHarmonicVibration:
         else:
             initial_displacement = (self.p(0)-self.c*initial_velocity-self.m*initial_acceleration)/self.k
         return initial_displacement, initial_velocity, initial_acceleration
+
 
     def get_eom(self):
 
@@ -94,7 +97,7 @@ class SDOFHarmonicVibration:
         times_range = np.arange(0, dt * int(time_stop / dt) + dt, dt)
         solution_set = []
         for t in times_range:
-            solution_set.append(SolutionPoint(t=t, displacement=self.eom(t), metadata={
+            solution_set.append(SolutionPoint(time=t, displacement=self.eom(t), metadata={
                 "Method": "Analytical Solution",
             }))
         return solution_set
@@ -104,7 +107,7 @@ class SDOFHarmonicVibration:
         times_range = np.arange(0, dt * int(time_stop / dt) + dt, dt)
         solution_set = []
         for t in times_range:
-            solution_set.append(SolutionPoint(t=t, displacement=forcing_function(t)/self.k, metadata={
+            solution_set.append(SolutionPoint(time=t, displacement=self.p(t) / self.k, metadata={
                 "Method": "Static Solution",
             }))
         return solution_set
@@ -113,7 +116,7 @@ class SDOFHarmonicVibration:
 
 class AbsSDOFNumericMethod:
     def __init__(self, time_step, time_stop,
-                 elastic_constant, damping_ration, natural_frequency,
+                 elastic_constant, damping_ratio, natural_frequency,
                  initial_displacement=None, initial_velocity=None, initial_acceleration=None,
                  forcing_function=forcing_function,
                  exact_solution=None):
@@ -123,7 +126,7 @@ class AbsSDOFNumericMethod:
         self.exact_solution = exact_solution
 
         self.k, self.zeta, self.wn, self.m, self.c = self.populate_sdof_constants(
-            elastic_constant, damping_ration, natural_frequency)
+            elastic_constant, damping_ratio, natural_frequency)
 
         self.u0, self.u1, self.u2 = self.populate_initial_conditions(initial_displacement, initial_displacement, initial_displacement)
         self.point_metadata = {}
@@ -189,7 +192,7 @@ class CentralDifferenceMethod(AbsSDOFNumericMethod):
 
     def generate_point_cloud(self):
         times_range = np.arange(0, self.dt * int(self.time_stop / self.dt) + self.dt, self.dt)
-        solution_set = [SolutionPoint(t=0, displacement=self.u0, metadata=self.point_metadata)]
+        solution_set = [SolutionPoint(time=0, displacement=self.u0, metadata=self.point_metadata)]
         u_1_first_step = self.u0 - self.u1 * self.dt + self.u2 * self.dt ** 2 / 2
         for i, t in enumerate(times_range):
             if i == 0:
@@ -203,7 +206,7 @@ class CentralDifferenceMethod(AbsSDOFNumericMethod):
 
             disp = p_hat/self.k_hat
             solution_set.append(SolutionPoint(
-                t=t+self.dt,
+                time=t + self.dt,
                 displacement=disp,
                 metadata=self.populate_point_metadata(t, disp))
             )
@@ -256,7 +259,7 @@ class AverageAccelerationMethod(AbsSDOFNumericMethod):
 
     def generate_point_cloud(self):
         times_range = np.arange(0, self.dt * int(self.time_stop / self.dt) + self.dt, self.dt)
-        solution_set = [SolutionPoint(t=0, displacement=self.u0, velocity=self.u1, acceleration=self.u2, metadata=self.point_metadata)]
+        solution_set = [SolutionPoint(time=0, displacement=self.u0, velocity=self.u1, acceleration=self.u2, metadata=self.point_metadata)]
         for i, t in enumerate(times_range):
             if i == 0:
                 ui = self.u0
@@ -276,7 +279,7 @@ class AverageAccelerationMethod(AbsSDOFNumericMethod):
             u1i_next_step = (2/self.dt)*(ui_next_step-ui)-u1i
             u2i_next_step = (4/self.dt**2)*(ui_next_step-ui)-4*u1i/self.dt-u2i
             solution_set.append(SolutionPoint(
-                t=t+self.dt,
+                time=t + self.dt,
                 displacement=ui_next_step,
                 velocity=u1i_next_step,
                 acceleration=u2i_next_step,
@@ -284,79 +287,6 @@ class AverageAccelerationMethod(AbsSDOFNumericMethod):
             )
         return solution_set
 
-
-
-if __name__ == "__main__":
-    problem_a_params = dict(
-        time_step=0.1,
-        time_stop=4,
-        elastic_constant=k,
-        damping_ration=zeta,
-        natural_frequency=wn,
-        initial_displacement=0,
-        initial_velocity=0,
-    )
-    exact_solution = SDOFHarmonicVibration(**problem_a_params)
-    central_difference_method = CentralDifferenceMethod(**problem_a_params, exact_solution=exact_solution.eom)
-    average_acceleration_method = AverageAccelerationMethod(**problem_a_params, exact_solution=exact_solution.eom)
-
-    plot_displacement_vs_time(
-        title="Dynamic Response for ζ=0.05: Displacement vs Time",
-        solutions={f"Central Difference (E:{central_difference_method.accum_abs_error:.2f}in)": central_difference_method.solution_set,
-                   f"Average Acceleration Method (E:{average_acceleration_method.accum_abs_error:.2f}in)": average_acceleration_method.solution_set,
-                   "Exact Solution": exact_solution.get_cloud_points(central_difference_method.dt, central_difference_method.time_stop),
-                   "Static Solution": exact_solution.get_static_solution_cloud_points(central_difference_method.dt, central_difference_method.time_stop)})
-    print(central_difference_method.solution_set)
-
-    problem_b_params = problem_a_params.copy()
-    for z in [0.01, 0.1, 0.25]:
-        params = problem_b_params.copy()
-        params["damping_ration"] = z
-        exact_solution = SDOFHarmonicVibration(**params)
-        central_difference_method = CentralDifferenceMethod(**params, exact_solution=exact_solution.eom)
-        average_acceleration_method = AverageAccelerationMethod(**params, exact_solution=exact_solution.eom)
-        plot_displacement_vs_time(
-            title=f"Dynamic Response for ζ={z}: Displacement vs Time",
-            solutions={
-                f"Central Difference (E:{central_difference_method.accum_abs_error:.2f}in)": central_difference_method.solution_set,
-                f"Average Acceleration Method (E:{average_acceleration_method.accum_abs_error:.2f}in)": average_acceleration_method.solution_set,
-                "Exact Solution": exact_solution.get_cloud_points(central_difference_method.dt,
-                                                                  central_difference_method.time_stop)},
-            filename=f'Dynamic_Response_zeta_{z}.html')
-
-    problem_c_params = problem_a_params.copy()
-    problem_c_central_solutions = {}
-    problem_c_average_acceleration_solutions = {}
-    for delta_t in [0.35, 0.20, 0.05]:
-        params = problem_c_params.copy()
-        params["time_step"] = delta_t
-        exact_solution = SDOFHarmonicVibration(**params)
-
-        central_difference_method = CentralDifferenceMethod(**params, exact_solution=exact_solution.eom)
-        problem_c_central_solutions[f"Δt={delta_t}"] = central_difference_method.solution_set
-        average_acceleration_method = AverageAccelerationMethod(**params, exact_solution=exact_solution.eom)
-        problem_c_average_acceleration_solutions[f"Δt={delta_t})"] = average_acceleration_method.solution_set
-        exact_solution = SDOFHarmonicVibration(**params)
-
-    problem_c_central_solutions["Exact Solution"] = exact_solution.get_cloud_points(0.05, 4)
-    problem_c_average_acceleration_solutions["Exact Solution"] = exact_solution.get_cloud_points(0.05, 4)
-
-    plot_displacement_vs_time(
-        title=f"UNSTABLE Comparison of Central Difference Method for different Δt values at ζ={0.05}",
-        solutions=problem_c_central_solutions,
-        filename='Unstable_Central_Difference_Comparison_Delta_t.html'
-    )
-    first_key, first_value = next(iter(problem_c_central_solutions.items()))
-    problem_c_central_solutions.pop(first_key)
-
-    plot_displacement_vs_time(
-        title=f"STABLE Comparison of Central Difference Method for different Δt values at ζ={0.05}",
-        solutions=problem_c_central_solutions,
-        filename='Stable_Central_Difference_Comparison_Delta_t.html'
-    )
-
-    plot_displacement_vs_time(
-        title=f"Comparison of Average Acceleration Method for different Δt values at ζ={0.05}",
-        solutions=problem_c_average_acceleration_solutions,
-        filename='Average_Acceleration_Comparison_Delta_t.html'
-    )
+    def get_maximum_displacement(self)->float:
+        """Gets the maximum displacement of the system among the cloud points in inches."""
+        return max([abs(point.u) for point in self.solution_set])
