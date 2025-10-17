@@ -41,6 +41,43 @@ html5up-phantom/
 └── README.md                 # This file
 ```
 
+## Sections and Content
+
+### CE231 – Solid Mechanics
+- Landing page: `cee231-mechanics.html`
+- Interactive results (Directional Young's Modulus) are published from the repository folder `CEE231_SolidMechanics/highlighted_htmls/` and are accessible on the live site at:
+  - `/CEE231_SolidMechanics/highlighted_htmls/Directional_Youngs_Modulus_A.html`
+  - `/CEE231_SolidMechanics/highlighted_htmls/Directional_Youngs_Modulus_B.html`
+  - `/CEE231_SolidMechanics/highlighted_htmls/Directional_Youngs_Modulus_C.html`
+
+### CE225 – Structural Dynamics
+- Landing page: `cee225-dynamics.html`
+- Homework viewer embeds the PDF published from `CEE225_Dynamics/highlighted_pdfs/` and is accessible at:
+  - `/CEE225_Dynamics/highlighted_pdfs/CE%20225%20HW2%20-%20Facundo%20L.%20Pfeffer.pdf`
+
+## How deployment works (important)
+
+This repository uses GitHub Actions to build and deploy the website to GitHub Pages.
+
+- The website source lives under `webpage/`.
+- During deployment, the workflow also scans the repository for folders named `highlighted_htmls` and `highlighted_pdfs` anywhere in the repo and mirrors them into the published site at the same relative paths.
+- This lets you keep artifacts (HTML exports, PDFs) close to the course code while still serving them on the live site.
+
+Add new artifacts:
+1. Create a folder named `highlighted_htmls` or `highlighted_pdfs` under any course directory.
+2. Drop your HTML/PDF files there.
+3. Push to the default branch (or manually run the Pages workflow).
+4. Link to them from pages in `webpage/` using the repo-relative path, e.g. `/MyCourse/highlighted_pdfs/file.pdf`.
+
+## Local preview
+
+You can open `webpage/index.html` directly in a browser for a quick preview. For a closer production match, use any static server:
+
+```bash
+python -m http.server --directory webpage 5500
+# then open http://localhost:5500/
+```
+
 ## Key Projects Showcased
 
 ### 1. SDOF Numerical Methods
