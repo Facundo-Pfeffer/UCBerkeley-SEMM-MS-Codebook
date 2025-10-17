@@ -29,16 +29,20 @@ jobs:
           set -e
           mkdir -p dist
           rsync -a --delete webpage/ dist/
-          # Expose CE231 highlighted HTMLs under /CEE231_SolidMechanics/highlighted_htmls
-          if [ -d "CEE231_SolidMechanics/highlighted_htmls" ]; then
-            mkdir -p dist/CEE231_SolidMechanics/highlighted_htmls
-            rsync -a CEE231_SolidMechanics/highlighted_htmls/ dist/CEE231_SolidMechanics/highlighted_htmls/
-          fi
-          # Expose CE225 highlighted PDFs under /CEE225_Dynamics/highlighted_pdfs
-          if [ -d "CEE225_Dynamics/highlighted_pdfs" ]; then
-            mkdir -p dist/CEE225_Dynamics/highlighted_pdfs
-            rsync -a "CEE225_Dynamics/highlighted_pdfs/" dist/CEE225_Dynamics/highlighted_pdfs/
-          fi
+          # Expose ALL highlighted_htmls folders preserving their relative paths
+          while IFS= read -r -d '' dir; do
+            # strip leading ./ if present
+            rel="${dir#./}"
+            mkdir -p "dist/${rel}"
+            rsync -a "${dir}/" "dist/${rel}/"
+          done < <(find . -type d -name highlighted_htmls -print0)
+
+          # Expose ALL highlighted_pdfs folders preserving their relative paths
+          while IFS= read -r -d '' dir; do
+            rel="${dir#./}"
+            mkdir -p "dist/${rel}"
+            rsync -a "${dir}/" "dist/${rel}/"
+          done < <(find . -type d -name highlighted_pdfs -print0)
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
