@@ -1,0 +1,94 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Curriculum Vitae | Facundo L. Pfeffer</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+		<div id="wrapper">
+			<header id="header">
+				<div class="inner">
+					<a href="index.html" class="logo">
+						<span class="symbol"><img src="images/logo.png" alt="" /></span><span class="title">Facundo L. Pfeffer</span>
+					</a>
+					<nav>
+						<ul>
+							<li><a href="#menu">Menu</a></li>
+						</ul>
+					</nav>
+				</div>
+			</header>
+			<nav id="menu">
+				<h2>Menu</h2>
+				<ul>
+					<li><a href="index.html">Home</a></li>
+					<li><a href="cv.html">Curriculum Vitae</a></li>
+					<li><a href="about.html">About</a></li>
+					<li><a href="contact.html">Contact</a></li>
+				</ul>
+			</nav>
+			<div id="main">
+				<div class="inner">
+					<h1>Curriculum Vitae</h1>
+					<p>Download or print my CV. For the best quality, use the print button below.</p>
+                    <div style="margin:1rem 0; display:flex; gap:.75rem; flex-wrap:wrap;">
+                        <a href="assets/cv/Facundo_L_Pfeffer_CV.pdf" class="button primary" target="_blank">Download PDF</a>
+                        <button class="button" onclick="printCV()">Print</button>
+                    </div>
+					<div style="border:1px solid #ddd; height: calc(100vh - 300px);">
+						<iframe id="cvFrame" src="assets/cv/Facundo_L_Pfeffer_CV.pdf" title="Facundo L. Pfeffer CV" style="width:100%; height:100%; border:0;" loading="lazy"></iframe>
+					</div>
+				</div>
+			</div>
+			<footer id="footer">
+				<div class="inner">
+					<section>
+						<h2>Get in touch</h2>
+						<ul class="icons">
+							<li><a href="mailto:facundo.pfeffer@berkeley.edu" class="icon solid style2 fa-envelope"><span class="label">Email</span></a></li>
+							<li><a href="https://github.com/Facundo-Pfeffer" class="icon brands style2 fa-github"><span class="label">GitHub</span></a></li>
+							<li><a href="https://www.linkedin.com/in/facundopfeffer/" class="icon brands style2 fa-linkedin"><span class="label">LinkedIn</span></a></li>
+						</ul>
+					</section>
+					<section>
+						<h2>Academic Information</h2>
+						<p><strong>Facundo L. Pfeffer</strong><br>
+						MS Student, Structural Engineering, Mechanics and Materials<br>
+						University of California, Berkeley</p>
+					</section>
+					<ul class="copyright">
+						<li>&copy; 2025 Facundo L. Pfeffer. All rights reserved</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+					</ul>
+				</div>
+			</footer>
+		</div>
+		<script src="assets/js/jquery.min.js"></script>
+		<script src="assets/js/browser.min.js"></script>
+		<script src="assets/js/breakpoints.min.js"></script>
+		<script src="assets/js/util.js"></script>
+        <script src="assets/js/main.js"></script>
+        <script>
+        function printCV() {
+            try {
+                var frame = document.getElementById('cvFrame');
+                if (frame && frame.contentWindow && typeof frame.contentWindow.print === 'function') {
+                    frame.contentWindow.focus();
+                    frame.contentWindow.print();
+                    return;
+                }
+            } catch (e) { /* fall through to new window */ }
+            var url = 'assets/cv/Facundo_L_Pfeffer_CV.pdf';
+            var w = window.open(url, '_blank');
+            if (w) {
+                w.addEventListener('load', function () { try { w.print(); } catch (e) {} });
+            } else {
+                window.location.href = url; // popup blocked; navigate instead
+            }
+        }
+        </script>
+	</body>
+</html>
+
