@@ -1,48 +1,42 @@
 # CEE231 – Solid Mechanics
 
-This folder contains coursework and exploratory analyses for UC Berkeley's CEE231 (Solid Mechanics). It includes code to compute and visualize material response and a set of exported interactive HTML results.
+This folder supports the development of homework assignments and exploratory analyses for UC Berkeley’s CEE231 (Solid Mechanics).
 
-## Contents
+## What’s here
 
-- `highlighted_htmls/` – Interactive HTML results published to the website automatically
-  - `Directional_Youngs_Modulus_A.html` – Fe (cubic) directional Young’s modulus point cloud
-  - `Directional_Youngs_Modulus_B.html` – Nb (cubic) directional Young’s modulus point cloud
-  - `Directional_Youngs_Modulus_C.html` – NiTi alloy (general anisotropy) directional Young’s modulus point cloud
-- `ce231_specific_homework_runs/` – scripts for assignments (`01HW.py` … `06HW.py`)
+- `ce231_specific_homework_runs/` – runnable scripts for the assignments (`01HW.py` … `06HW.py`).
+- `highlighted_htmls/` – self‑contained interactive results you can open in a browser (and they are also linked from the portfolio website).
 
-## How interactive results are published
+## Unique capabilities
 
-The website is built from `webpage/` via GitHub Actions. During deployment, any folder named `highlighted_htmls` is mirrored into the published site at the same relative path. That means the contents of this directory are available at:
+- **Directional Young’s Modulus visualizer**
+  - Computes the directional modulus \(E(\mathbf{d})\) over the unit sphere using the Voigt form of the compliance matrix.
+  - Generates dense point clouds with hoverable tooltips (direction cosines, \(E\), angles).
+  - Useful for diagnosing anisotropy in cubic and general materials.
 
-```
-/CEE231_SolidMechanics/highlighted_htmls/
-```
+- **Material models by construction**
+  - Quick creators for cubic materials (\(c_{11}, c_{12}, c_{44}\)).
+  - Direct handling of general symmetric 6×6 stiffness matrices for alloys.
 
-Concrete URLs (replace `<repo>` with your repository name):
+- **Assignment‑ready utilities**
+  - Clean function boundaries for: direction vectors, stress/strain (Voigt↔tensor), and energy calculations.
+  - Reproducible defaults (sampling resolution, colorscales, seeds) to match write‑ups and figures.
+  - Export helpers to produce self‑contained HTML plots for submissions.
 
-```
-https://<username>.github.io/<repo>/CEE231_SolidMechanics/highlighted_htmls/Directional_Youngs_Modulus_A.html
-https://<username>.github.io/<repo>/CEE231_SolidMechanics/highlighted_htmls/Directional_Youngs_Modulus_B.html
-https://<username>.github.io/<repo>/CEE231_SolidMechanics/highlighted_htmls/Directional_Youngs_Modulus_C.html
-```
+- **Numerical robustness**
+  - Guards against singular matrices and ill‑conditioning when inverting \(C\) to \(S\).
+  - Optional resolution/precision knobs for fast previews vs. publication‑quality output.
 
-No manual copying is needed—add or update files inside `highlighted_htmls/` and push to the default branch (or manually run the Pages workflow). The deploy action takes care of publishing them.
+## How to run
 
-## Extend the results
+1. Open any script under `ce231_specific_homework_runs/` (e.g., `06HW.py`).
+2. Run the file to generate interactive figures (and optional HTML exports under `highlighted_htmls/`).
+3. Open the generated HTML files directly in your browser for review or inclusion in a report.
 
-1. Generate new interactive visualizations (e.g., directional Young’s modulus, compliance plots).
-2. Export as self‑contained HTML and save them inside `highlighted_htmls/`.
-3. Push to the repo. After deployment, the new files will be available under the same path on the website.
+## Quick links to interactive examples
 
-## Link from the website
+- `highlighted_htmls/Directional_Youngs_Modulus_A.html` – Fe (cubic)
+- `highlighted_htmls/Directional_Youngs_Modulus_B.html` – Nb (cubic)
+- `highlighted_htmls/Directional_Youngs_Modulus_C.html` – NiTi alloy (general anisotropy)
 
-From a page in `webpage/`, link using a repo‑relative path so it works both locally and on GitHub Pages. Example:
-
-```html
-<a href="CEE231_SolidMechanics/highlighted_htmls/Directional_Youngs_Modulus_A.html" target="_blank">Fe — Directional E (interactive)</a>
-```
-
-## Notes
-
-- Prefer URL‑safe filenames (avoid spaces or URL‑encode them when linking).
-- Keep large binaries out of git when possible; export optimized HTML for lighter downloads.
+> Note: these HTML files are also linked from the portfolio website for easy viewing.
