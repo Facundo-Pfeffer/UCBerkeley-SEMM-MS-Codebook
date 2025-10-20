@@ -12,6 +12,17 @@
 		<meta name="description" content="Structural Analysis projects focusing on Euler-Bernoulli beam theory, truss analysis, and thermal effects" />
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+		
+		<!-- MathJax for LaTeX rendering -->
+		<script>
+		MathJax = {
+			tex: {
+				inlineMath: [['$', '$'], ['\\(', '\\)']],
+				displayMath: [['$$', '$$'], ['\\[', '\\]']]
+			}
+		};
+		</script>
+		<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
 	</head>
 	<body class="is-preload">
 		<!-- Wrapper -->
@@ -81,15 +92,15 @@
 										<p style="margin:0; color:#6b7280; font-size:0.95em;"><i class="fa fa-eye"></i> Homework Preview (scroll to view all pages)</p>
 									</div>
 									<div style="height:800px; position:relative;">
-										<object data="CEE220_StructuralAnalysis/highlighted_pdfs/CEE220_HW5_Facundo_Pfeffer.pdf" type="application/pdf" style="width:100%; height:100%;">
-											<embed src="CEE220_StructuralAnalysis/highlighted_pdfs/CEE220_HW5_Facundo_Pfeffer.pdf" type="application/pdf" style="width:100%; height:100%;" />
+										<object data="../CEE220_StructuralAnalysis/highlighted_pdfs/CEE220_HW5_Facundo_Pfeffer.pdf" type="application/pdf" style="width:100%; height:100%;">
+											<embed src="../CEE220_StructuralAnalysis/highlighted_pdfs/CEE220_HW5_Facundo_Pfeffer.pdf" type="application/pdf" style="width:100%; height:100%;" />
 										</object>
 									</div>
 									<div style="background:#f9fafb; padding:1rem; border-top:1px solid #e5e7eb; text-align:center;">
-										<a href="CEE220_StructuralAnalysis/highlighted_pdfs/CEE220_HW5_Facundo_Pfeffer.pdf" class="button" target="_blank" style="border-color:#003262; color:#003262; margin-right:0.5rem;">
+										<a href="../CEE220_StructuralAnalysis/highlighted_pdfs/CEE220_HW5_Facundo_Pfeffer.pdf" class="button" target="_blank" style="border-color:#003262; color:#003262; margin-right:0.5rem;">
 											<i class="fa fa-external-link-alt"></i> Open in New Tab
 										</a>
-										<a href="CEE220_StructuralAnalysis/highlighted_pdfs/CEE220_HW5_Facundo_Pfeffer.pdf" class="button primary" download style="background-color:#003262; color:#fff;">
+										<a href="../CEE220_StructuralAnalysis/highlighted_pdfs/CEE220_HW5_Facundo_Pfeffer.pdf" class="button primary" download style="background-color:#003262; color:#fff;">
 											<i class="fa fa-download"></i> Download PDF
 										</a>
 									</div>
@@ -101,10 +112,10 @@
 										<i class="fa fa-mobile-alt" style="font-size:3em; color:#003262; margin-bottom:1rem; display:block;"></i>
 										<h3 style="margin:0.5rem 0; color:#1f2937;">Mobile View</h3>
 										<p style="color:#6b7280; margin-bottom:2rem;">For the best viewing experience on mobile, please download or open the PDF in a new tab using the buttons below.</p>
-										<a href="CEE220_StructuralAnalysis/highlighted_pdfs/CEE220_HW5_Facundo_Pfeffer.pdf" class="button primary" target="_blank" style="background-color:#003262; color:#fff; margin-right:0.5rem;">
+										<a href="../CEE220_StructuralAnalysis/highlighted_pdfs/CEE220_HW5_Facundo_Pfeffer.pdf" class="button primary" target="_blank" style="background-color:#003262; color:#fff; margin-right:0.5rem;">
 											<i class="fa fa-external-link-alt"></i> Open PDF
 										</a>
-										<a href="CEE220_StructuralAnalysis/highlighted_pdfs/CEE220_HW5_Facundo_Pfeffer.pdf" class="button" download style="border-color:#003262; color:#003262;">
+										<a href="../CEE220_StructuralAnalysis/highlighted_pdfs/CEE220_HW5_Facundo_Pfeffer.pdf" class="button" download style="border-color:#003262; color:#003262;">
 											<i class="fa fa-download"></i> Download
 										</a>
 									</div>
@@ -117,7 +128,7 @@
 								<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:1rem;">
 									<div>
 										<strong>Problem 1</strong><br>
-										<span style="color:#6b7280;">Truss thermal analysis with kinematic matrix \(A_f\) and thermal expansion effects</span>
+										<span style="color:#6b7280;">Truss thermal analysis with kinematic matrix $A_f$ and thermal expansion effects</span>
 									</div>
 									<div>
 										<strong>Problem 2</strong><br>
