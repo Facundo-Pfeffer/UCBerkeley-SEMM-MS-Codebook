@@ -41,9 +41,11 @@
 						<h2>Menu</h2>
 						<ul>
 							<li><a href="index.html">Home</a></li>
+							<li><a href="cv.html">Curriculum Vitae</a></li>
 							<li><a href="cee225-dynamics.html">CEE225 - Structural Dynamics</a></li>
 							<li><a href="cee220-analysis.html">CEE220 - Structural Analysis</a></li>
 							<li><a href="cee231-mechanics.html">CEE231 - Solid Mechanics</a></li>
+							<li><a href="https://facundo-pfeffer.github.io/ACSAHE.github.io/">ACSAHE</a></li>
 							<li><a href="about.html">About</a></li>
 							<li><a href="contact.html">Contact</a></li>
 						</ul>
@@ -85,15 +87,16 @@
                             <a href="https://github.com/Facundo-Pfeffer/UCBerkeley-SEMM-MS-Codebook" class="button primary" style="background-color: #003262; color: white; padding: 1rem 2rem; text-decoration: none; border-radius: 5px;">View Code on GitHub</a>
 							</div>
 
-					<h2>Homework Example (PDF Viewer)</h2>
-					<p>Preview a sample homework solution.</p>
-					<div style="border:1px solid #e5e7eb; border-radius:8px; overflow:hidden; width:850px; max-width:95vw; margin: 1.5rem auto;">
-						<div style="display:flex; gap:.75rem; padding:.75rem; justify-content:flex-end; background:#f9fafb; border-bottom:1px solid #e5e7eb;">
-                        <a href="CEE225_Dynamics/highlighted_pdfs/CE%20225%20HW2%20-%20Facundo%20L.%20Pfeffer.pdf" class="button" target="_blank" style="border-color:#003262; color:#003262;">Open in new tab</a>
-							<button class="button cta-email" onclick="printCE225PDF()" style="letter-spacing:.08em;">Print</button>
+					<h2>Homework Example (PDF)</h2>
+					<p>View a complete sample homework solution demonstrating analytical and computational approaches.</p>
+					<div style="border:1px solid #e5e7eb; border-radius:8px; overflow:hidden; width:850px; max-width:95vw; margin: 1.5rem auto; background:#fff;">
+						<div style="padding:2rem; text-align:center;">
+							<a href="CEE225_Dynamics/highlighted_pdfs/CE%20225%20HW2%20-%20Facundo%20L.%20Pfeffer.pdf" class="button primary" target="_blank" style="background-color:#003262; color:#fff; padding:1rem 2rem; font-size:1.1em;">
+								<i class="fa fa-file-pdf"></i> View HW2 Solution (PDF)
+							</a>
 						</div>
-                        <div style="height: min(1200px, 85vh);">
-                            <iframe id="ce225PDF" src="CEE225_Dynamics/highlighted_pdfs/CE%20225%20HW2%20-%20Facundo%20L.%20Pfeffer.pdf" title="CE225 Homework Example" style="width:100%; height:100%; border:0;" loading="lazy"></iframe>
+						<div style="background:#f9fafb; padding:1rem; border-top:1px solid #e5e7eb; text-align:center;">
+							<p style="margin:0; color:#6b7280; font-size:0.9em;"><i class="fa fa-info-circle"></i> PDF opens in a new tab for optimal viewing on all devices</p>
 						</div>
 					</div>
 
@@ -145,21 +148,6 @@
 			<script src="assets/js/breakpoints.min.js"></script>
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
-			<script>
-			function printCE225PDF(){
-			  try{
-			    var f=document.getElementById('ce225PDF');
-			    if(f&&f.contentWindow&&typeof f.contentWindow.print==='function'){
-			      f.contentWindow.focus();
-			      f.contentWindow.print();
-			      return;
-			    }
-			  }catch(e){}
-			  var u='CEE225_Dynamics/docs/CE225 HW2 - Facundo L. Pfeffer.pdf';
-			  var w=window.open(u,'_blank');
-			  if(w){w.addEventListener('load',function(){try{w.print();}catch(e){}});} else {window.location.href=u;}
-			}
-			</script>
 
 	</body>
 </html>

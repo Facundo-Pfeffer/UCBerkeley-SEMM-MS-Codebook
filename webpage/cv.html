@@ -26,6 +26,10 @@
 				<ul>
 					<li><a href="index.html">Home</a></li>
 					<li><a href="cv.html">Curriculum Vitae</a></li>
+					<li><a href="cee225-dynamics.html">CEE225 - Structural Dynamics</a></li>
+					<li><a href="cee220-analysis.html">CEE220 - Structural Analysis</a></li>
+					<li><a href="cee231-mechanics.html">CEE231 - Solid Mechanics</a></li>
+					<li><a href="https://facundo-pfeffer.github.io/ACSAHE.github.io/">ACSAHE</a></li>
 					<li><a href="about.html">About</a></li>
 					<li><a href="contact.html">Contact</a></li>
 				</ul>
@@ -33,13 +37,60 @@
 			<div id="main">
 				<div class="inner">
 					<h1>Curriculum Vitae</h1>
-					<p>Download or print my CV. For the best quality, use the print button below.</p>
-                    <div style="margin:1rem 0; display:flex; gap:.75rem; flex-wrap:wrap;">
-                        <a href="assets/cv/Facundo_L_Pfeffer_CV.pdf" class="button primary" target="_blank">Download PDF</a>
-                        <button class="button" onclick="printCV()">Print</button>
+					<p>View my complete academic and professional CV. Preview below or download the PDF.</p>
+                    
+					<div style="margin:2rem 0; text-align:center;">
+                        <a href="assets/cv/Facundo_L_Pfeffer_CV.pdf" class="button primary" target="_blank" download style="background-color:#003262; color:#fff; padding:1rem 2rem; font-size:1.1em; margin-right:0.5rem;">
+							<i class="fa fa-download"></i> Download CV
+						</a>
+						<a href="assets/cv/Facundo_L_Pfeffer_CV.pdf" class="button" target="_blank" style="border-color:#003262; color:#003262; padding:1rem 2rem; font-size:1.1em;">
+							<i class="fa fa-external-link-alt"></i> Open in New Tab
+						</a>
                     </div>
-					<div style="border:1px solid #ddd; height: calc(100vh - 300px);">
-						<iframe id="cvFrame" src="assets/cv/Facundo_L_Pfeffer_CV.pdf" title="Facundo L. Pfeffer CV" style="width:100%; height:100%; border:0;" loading="lazy"></iframe>
+
+					<!-- PDF Preview Container -->
+					<div style="border:1px solid #e5e7eb; border-radius:8px; overflow:hidden; margin:2rem 0; background:#fff;">
+						<!-- Desktop Preview -->
+						<div id="pdfPreviewDesktop" style="display:none;">
+							<div style="background:#f9fafb; padding:1rem; border-bottom:1px solid #e5e7eb; text-align:center;">
+								<p style="margin:0; color:#6b7280; font-size:0.95em;"><i class="fa fa-eye"></i> CV Preview (scroll to view all pages)</p>
+							</div>
+							<div style="height:800px; position:relative;">
+								<object data="assets/cv/Facundo_L_Pfeffer_CV.pdf" type="application/pdf" style="width:100%; height:100%;">
+									<embed src="assets/cv/Facundo_L_Pfeffer_CV.pdf" type="application/pdf" style="width:100%; height:100%;" />
+								</object>
+							</div>
+						</div>
+						
+						<!-- Mobile Fallback -->
+						<div id="pdfPreviewMobile" style="display:none;">
+							<div style="padding:3rem 2rem; text-align:center; background:#f9fafb;">
+								<i class="fa fa-mobile-alt" style="font-size:3em; color:#003262; margin-bottom:1rem; display:block;"></i>
+								<h3 style="margin:0.5rem 0; color:#1f2937;">Mobile View</h3>
+								<p style="color:#6b7280; margin-bottom:2rem;">For the best viewing experience on mobile, please download or open the PDF in a new tab using the buttons above.</p>
+							</div>
+						</div>
+					</div>
+					
+					<h2>Quick Overview</h2>
+					<div style="line-height:1.8;">
+						<h3>Education</h3>
+						<p><strong>University of California, Berkeley</strong><br>
+						MS in Structural Engineering, Mechanics and Materials (SEMM)<br>
+						Expected: 2026</p>
+						
+						<h3>Research Interests</h3>
+						<ul>
+							<li>Structural Dynamics & Earthquake Engineering</li>
+							<li>Computational Mechanics & Finite Element Analysis</li>
+							<li>Nonlinear Analysis & Material Behavior</li>
+							<li>Open-Source Scientific Software Development</li>
+						</ul>
+						
+						<h3>Skills</h3>
+						<p><strong>Programming:</strong> Python, MATLAB, C++<br>
+						<strong>Software:</strong> OpenSees, SAP2000, ETABS, Abaqus<br>
+						<strong>Libraries:</strong> NumPy, SciPy, Plotly, Matplotlib</p>
 					</div>
 				</div>
 			</div>
@@ -70,25 +121,27 @@
 		<script src="assets/js/breakpoints.min.js"></script>
 		<script src="assets/js/util.js"></script>
         <script src="assets/js/main.js"></script>
-        <script>
-        function printCV() {
-            try {
-                var frame = document.getElementById('cvFrame');
-                if (frame && frame.contentWindow && typeof frame.contentWindow.print === 'function') {
-                    frame.contentWindow.focus();
-                    frame.contentWindow.print();
-                    return;
-                }
-            } catch (e) { /* fall through to new window */ }
-            var url = 'assets/cv/Facundo_L_Pfeffer_CV.pdf';
-            var w = window.open(url, '_blank');
-            if (w) {
-                w.addEventListener('load', function () { try { w.print(); } catch (e) {} });
-            } else {
-                window.location.href = url; // popup blocked; navigate instead
-            }
-        }
-        </script>
+		
+		<script>
+		// Show/hide PDF preview based on screen size
+		function updatePDFDisplay() {
+			var desktop = document.getElementById('pdfPreviewDesktop');
+			var mobile = document.getElementById('pdfPreviewMobile');
+			
+			// Show preview on screens wider than 768px (tablet/desktop)
+			if (window.innerWidth > 768) {
+				desktop.style.display = 'block';
+				mobile.style.display = 'none';
+			} else {
+				desktop.style.display = 'none';
+				mobile.style.display = 'block';
+			}
+		}
+		
+		// Run on load and resize
+		window.addEventListener('load', updatePDFDisplay);
+		window.addEventListener('resize', updatePDFDisplay);
+		</script>
 	</body>
 </html>
 
