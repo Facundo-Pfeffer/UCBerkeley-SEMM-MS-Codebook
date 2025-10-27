@@ -1,42 +1,26 @@
 # CEE231 – Solid Mechanics
 
-This folder supports the development of homework assignments and exploratory analyses for UC Berkeley’s CEE231 (Solid Mechanics).
+This is the repository portfolio folder for CE231 Solid Mechanics at UC Berkeley under the instruction of Sanjay Govindjee.
 
-## What’s here
+## Contents
 
-- `ce231_specific_homework_runs/` – runnable scripts for the assignments (`01HW.py` … `06HW.py`).
-- `highlighted_htmls/` – self‑contained interactive results you can open in a browser (and they are also linked from the portfolio website).
+- `ce231_specific_homework_runs/` – Python scripts for homework assignments (`01HW.py` through `07HW.py`).
+- `highlighted_htmls/` – Interactive visualizations that can be opened directly in a browser.
 
-## Unique capabilities
+## Key features
 
-- **Directional Young’s Modulus visualizer**
-  - Computes the directional modulus \(E(\mathbf{d})\) over the unit sphere using the Voigt form of the compliance matrix.
-  - Generates dense point clouds with hoverable tooltips (direction cosines, \(E\), angles).
-  - Useful for diagnosing anisotropy in cubic and general materials.
+- **Directional Young's Modulus visualizer** – Computes and plots \(E(\mathbf{d})\) over the unit sphere from the compliance matrix, showing material anisotropy for cubic and general materials (Fe, Nb, NiTi alloy).
 
-- **Material models by construction**
-  - Quick creators for cubic materials (\(c_{11}, c_{12}, c_{44}\)).
-  - Direct handling of general symmetric 6×6 stiffness matrices for alloys.
+- **Material property tools** – Functions to construct stiffness/compliance matrices for cubic materials and general anisotropic materials, compute stress/strain in Voigt notation, and calculate strain energy.
 
-- **Assignment‑ready utilities**
-  - Clean function boundaries for: direction vectors, stress/strain (Voigt↔tensor), and energy calculations.
-  - Reproducible defaults (sampling resolution, colorscales, seeds) to match write‑ups and figures.
-  - Export helpers to produce self‑contained HTML plots for submissions.
+## Usage
 
-- **Numerical robustness**
-  - Guards against singular matrices and ill‑conditioning when inverting \(C\) to \(S\).
-  - Optional resolution/precision knobs for fast previews vs. publication‑quality output.
+1. Run any script in `ce231_specific_homework_runs/` (e.g., `python 06HW.py`).
+2. Interactive Plotly figures are generated and can be exported as HTML.
+3. View the HTML files in `highlighted_htmls/` or directly linked from the portfolio website.
 
-## How to run
+## Example outputs
 
-1. Open any script under `ce231_specific_homework_runs/` (e.g., `06HW.py`).
-2. Run the file to generate interactive figures (and optional HTML exports under `highlighted_htmls/`).
-3. Open the generated HTML files directly in your browser for review or inclusion in a report.
-
-## Quick links to interactive examples
-
-- `highlighted_htmls/Directional_Youngs_Modulus_A.html` – Fe (cubic)
-- `highlighted_htmls/Directional_Youngs_Modulus_B.html` – Nb (cubic)
+- `highlighted_htmls/Directional_Youngs_Modulus_A.html` – Iron (Fe, cubic)
+- `highlighted_htmls/Directional_Youngs_Modulus_B.html` – Niobium (Nb, cubic)
 - `highlighted_htmls/Directional_Youngs_Modulus_C.html` – NiTi alloy (general anisotropy)
-
-> Note: these HTML files are also linked from the portfolio website for easy viewing.
