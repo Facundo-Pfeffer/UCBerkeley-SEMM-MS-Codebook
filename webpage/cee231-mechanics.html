@@ -76,8 +76,49 @@
 						</article>
 					</section>
 
-					<h2>Notes</h2>
-					<p>The tiles above open interactive Plotly visualizations generated from the stiffness matrices used in CEE231 assignments.</p>
+					<p>These visualizations represent the directional Young's modulus as 3D point clouds for anisotropic materials. Each point's radial distance from the origin corresponds to the material stiffness in that direction, revealing crystallographic symmetries. The interactive plots allow rotation and inspection of cubic (Fe, Nb) and general anisotropic (NiTi) stiffness tensors, providing intuitive insight into how elastic properties vary with orientation.</p>
+
+					<h2 style="margin-top: 3rem;">Viscoelastic Response Dashboards</h2>
+					<section class="tiles">
+						<article class="style1">
+							<span class="image">
+								<img src="images/projects/cee-231-step-response.png" alt="Viscoelastic Step Response" />
+							</span>
+							<a href="CEE231_SolidMechanics/highlighted_htmls/step_response_clean.html" target="_blank">
+								<h2>Step Response</h2>
+								<div class="content">
+									<p>Interactive relaxation modulus and stress response to step strain input.</p>
+								</div>
+							</a>
+						</article>
+						<article class="style2">
+							<span class="image">
+								<img src="images/projects/cee-231-sinusoidal-response.png" alt="SLS Sinusoidal Response" />
+							</span>
+							<a href="CEE231_SolidMechanics/highlighted_htmls/sls_sinusoidal_clean.html" target="_blank">
+								<h2>Sinusoidal Response</h2>
+								<div class="content">
+									<p>Standard Linear Solid subjected to harmonic strain; hysteresis loop visualization.</p>
+								</div>
+							</a>
+						</article>
+						<article class="style3">
+							<span class="image">
+								<img src="images/projects/cee-231-square-wave.png" alt="SLS Square Wave Response" />
+							</span>
+							<a href="CEE231_SolidMechanics/highlighted_htmls/sls_square_wave_clean.html" target="_blank">
+								<h2>Square Wave Response</h2>
+								<div class="content">
+									<p>SLS with square wave strain; Backward Euler time integration and viscous strain evolution.</p>
+								</div>
+							</a>
+						</article>
+					</section>
+
+					<p>These dashboards explore time-dependent material behavior in viscoelastic solids. The <strong>Step Response</strong> shows relaxation of stress following an instantaneous strain. The <strong>Sinusoidal Response</strong> demonstrates energy dissipation through hysteresis loops under cyclic loading. The <strong>Square Wave Response</strong> implements Backward Euler time integration to capture transient viscous strain evolution. Each dashboard features interactive sliders to vary input parameters and observe real-time changes in stress-strain relationships.</p>
+
+					<h2>Interactive Features</h2>
+					<p>The viscoelastic dashboards feature synchronized sliders to explore material response under different input parameters. Each dashboard includes stress-strain paths, characteristic values, and mathematical formulations.</p>
 				</div>
 			</div>
 

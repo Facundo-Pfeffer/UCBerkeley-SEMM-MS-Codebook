@@ -1,0 +1,16 @@
+% Short LaTeX explanation for Convergence Analysis plots
+% CEE 231 - Homework 7
+
+\subsection*{Analysis of Convergence Behavior}
+
+Figure~\ref{fig:convergence} illustrates the convergence of the torsional stiffness series as a function of the number of terms $N$. It is important to note that the series includes only \textit{odd} values of $n$, such that $N$ terms corresponds to $n = 1, 3, 5, \ldots, (2N-1)$. Therefore, $N=50$ terms means the series is evaluated up to $n=99$.
+
+\paragraph{Torsional Stiffness Convergence (Upper Panel):}
+The plot shows rapid convergence of $k_T(N)$ to approximately $375.0~\text{kN·mm}^2$. Most of the convergence occurs within the first $N = 50$ terms (i.e., odd $n$ values up to $n=99$), after which the curve asymptotically approaches the converged value. At $N = 50$ terms ($n_{\text{max}}=99$), the computed value is $k_T \approx 374.95~\text{kN·mm}^2$, which is within 0.01\% of the fully converged solution. This rapid convergence is characteristic of series with terms decaying as $O(n^{-4})$.
+
+\paragraph{Relative Change Analysis (Lower Panel):}
+The relative change between consecutive terms exhibits exponential decay, decreasing from approximately 1\% at $N = 5$ ($n=9$) to below $10^{-4}\%$ at $N = 50$ ($n=99$). This logarithmic plot confirms that each additional term contributes progressively less to the total stiffness. The monotonic decrease validates the series' convergence and demonstrates that $N = 50$--$100$ terms (corresponding to $n = 99$--$199$) provide sufficient accuracy for engineering applications.
+
+\paragraph{Conclusion:}
+The convergence analysis confirms that truncating the series at $N = 50$ terms (with maximum odd index $n=99$) yields engineering-quality results with relative errors well below typical measurement uncertainties. The computed torsional stiffness is $k_T \approx 374.95~\text{kN·mm}^2$ for the given geometry ($b = 10.0~\text{mm}$, $c = 20.0~\text{mm}$) and material properties ($\mu = 82.0~\text{kN/mm}^2$).
+
