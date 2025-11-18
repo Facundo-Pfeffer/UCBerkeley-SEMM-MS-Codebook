@@ -4729,25 +4729,65 @@ input, select, textarea {
     .plotly-graph-div {
         position: relative !important;
         width: 100% !important;
+        max-width: 100% !important;
         overflow: visible !important;
         display: block !important;
+        margin: 0 auto !important;
     }
     
     .plotly-graph-div .plot-container {
         position: relative !important;
         width: 100% !important;
+        max-width: 100% !important;
         overflow: visible !important;
+        height: auto !important;
     }
     
     .plotly-graph-div .svg-container {
         position: relative !important;
         width: 100% !important;
+        max-width: 100% !important;
         overflow: visible !important;
+        height: auto !important;
     }
     
     .plotly-graph-div svg.main-svg {
         display: block !important;
         overflow: visible !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        height: auto !important;
+    }
+    
+    /* Ensure SVG scales properly within container */
+    .plotly-graph-div .svg-container {
+        max-width: 100% !important;
+    }
+    
+    /* Make plot containers responsive and maintain aspect ratio */
+    .plotly-graph-div[style*="height"] {
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Ensure SVG maintains aspect ratio when scaling (896:945 ratio) */
+    .plotly-graph-div svg.main-svg {
+        aspect-ratio: 896 / 945;
+    }
+    
+    /* Ensure plot containers don't get clipped by parent overflow */
+    .plotly-graph-div,
+    .plotly-graph-div .plot-container,
+    .plotly-graph-div .svg-container {
+        overflow: visible !important;
+    }
+    
+    /* Fix parent containers that might clip plots */
+    section .plotly-graph-div,
+    article .plotly-graph-div,
+    .inner .plotly-graph-div {
+        position: relative !important;
+        z-index: 10 !important;
     }
 
     /* Adjust text sizes and colors for better print readability */
