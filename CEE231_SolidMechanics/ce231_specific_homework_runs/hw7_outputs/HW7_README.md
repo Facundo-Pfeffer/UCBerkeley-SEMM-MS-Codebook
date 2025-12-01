@@ -20,7 +20,7 @@ This assignment analyzes the convergence behavior of the torsional stiffness ser
 ## Files
 
 ### Python Script
-- **`07HW.py`** - Main convergence analysis script
+- **`hw07.py`** - Main convergence analysis script
   - Uses clear variable names: `num_terms`, `n_odd`, `term_numbers`
   - Hover tooltips show both term number and corresponding n value
   - Console output clearly states maximum n value reached
@@ -56,7 +56,7 @@ This assignment analyzes the convergence behavior of the torsional stiffness ser
 pip install numpy plotly
 
 # Run the analysis
-python 07HW.py
+python hw07.py
 ```
 
 ## Plot Features

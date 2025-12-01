@@ -5,7 +5,7 @@ This is the repository portfolio folder for CEE231 Solid Mechanics at UC Berkele
 ## Contents
 
 - `ce231_specific_homework_runs/` – Python scripts for homework assignments and dashboard generators
-  - `homework_scripts/` – Individual homework Python scripts (`01HW.py` through `09HW.py`)
+  - `homework_scripts/` – Individual homework Python scripts (`hw01.py` through `hw11.py`)
   - `dashboard_generators/` – Scripts that generate interactive dashboards
   - `plotly_templates.py` – Shared UC Berkeley styling and templates
 - `highlighted_htmls/` – Web-ready interactive visualizations (deployed by GitHub Actions)
@@ -32,7 +32,7 @@ This is the repository portfolio folder for CEE231 Solid Mechanics at UC Berkele
 ### Running Homework Scripts
 ```bash
 cd ce231_specific_homework_runs/homework_scripts
-python 09HW.py  # Generates both step and sinusoidal response dashboards
+python hw09.py  # Generates both step and sinusoidal response dashboards
 ```
 
 ### Regenerating Dashboards

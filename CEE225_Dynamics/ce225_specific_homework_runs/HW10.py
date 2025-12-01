@@ -427,8 +427,7 @@ fig.write_html(
 
 print(f"\n[SUCCESS] HTML file saved to: {output_path}")
 print(f"\n📊 The plot will be available at:")
-print(f"   https://[your-username].github.io/[repo-name]/CEE225_Dynamics/highlighted_htmls/HW10_FrequencyResponse.html")
-print(f"\n   Example: https://facundopfeffer.github.io/SEMM-Fall-2025-Homework-Facundo-Pfeffer/CEE225_Dynamics/highlighted_htmls/HW10_FrequencyResponse.html")
+print(f"   https://facundo-pfeffer.github.io/UCBerkeley-SEMM-MS-Codebook/CEE225_Dynamics/highlighted_htmls/HW10_FrequencyResponse.html")
 print(f"\n   After pushing to GitHub, the file will be automatically deployed via GitHub Actions.")
 print("\n" + "="*70)
 
