@@ -9,6 +9,12 @@ This document contains important conventions and guidelines for maintaining this
 The website is deployed via GitHub Actions (`.github/workflows/deploy-pages.yml`). The deployment process:
 1. Copies all content from `webpage/` folder to `dist/` (the deployment root)
 2. Copies all `highlighted_pdfs` folders from course directories **preserving their relative paths** into `dist/`
+3. Copies all `highlighted_htmls` folders from course directories **preserving their relative paths** into `dist/`
+
+**CRITICAL:** The `webpage/` folder contents are copied directly to `dist/` root, meaning:
+- `webpage/assets/` → `dist/assets/`
+- `webpage/images/` → `dist/images/`
+- `webpage/*.html` → `dist/*.html`
 
 **Result:** HTML files and PDF folders end up at the same level in `dist/`, so paths should **NOT** use `../` prefix.
 
@@ -35,6 +41,42 @@ When linking to PDFs from HTML files in the `webpage/` folder:
 - **From `webpage/cee231-mechanics.html` to Mechanics PDFs:**  
   `CEE231_SolidMechanics/highlighted_pdfs/filename.pdf`
 
+### Path Conventions for `highlighted_htmls` Files
+
+**CRITICAL:** HTML files in `highlighted_htmls` folders (e.g., `CEE225_Dynamics/highlighted_htmls/`) must use paths that account for the deployment structure.
+
+**Deployment Structure:**
+- `CEE225_Dynamics/highlighted_htmls/final_project_menu.html` → `dist/CEE225_Dynamics/highlighted_htmls/final_project_menu.html`
+- `webpage/assets/css/main.css` → `dist/assets/css/main.css`
+- `webpage/images/logo.png` → `dist/images/logo.png`
+
+**Correct Paths from `highlighted_htmls` files:**
+
+```html
+<!-- ✅ CORRECT - CSS and JS paths -->
+<link rel="stylesheet" href="../../assets/css/main.css" />
+<script src="../../assets/js/jquery.min.js"></script>
+
+<!-- ✅ CORRECT - Image paths -->
+<img src="../../images/logo.png" alt="" />
+
+<!-- ✅ CORRECT - Navigation links to main pages -->
+<a href="../../cee225-dynamics.html">CEE225</a>
+<a href="../../index.html">Home</a>
+
+<!-- ❌ INCORRECT - DO NOT include 'webpage/' in paths -->
+<link rel="stylesheet" href="../../webpage/assets/css/main.css" />
+<img src="../../webpage/images/logo.png" alt="" />
+<a href="../../webpage/cee225-dynamics.html">CEE225</a>
+```
+
+**Why:** The deployment copies `webpage/` contents to `dist/` root, so `webpage/assets` becomes `dist/assets`. From `dist/CEE225_Dynamics/highlighted_htmls/`, you go up two levels (`../../`) to reach `dist/`, then access `assets/` or `images/` directly.
+
+**Files Affected:**
+- All HTML files in `CEE225_Dynamics/highlighted_htmls/`
+- All HTML files in `CEE231_SolidMechanics/highlighted_htmls/`
+- Any other `highlighted_htmls` folders
+
 ### Best Practice
 
 When creating new PDF links or previews:
@@ -42,6 +84,12 @@ When creating new PDF links or previews:
 2. Copy the path format from working examples (CE220, CE225, CV)
 3. **DO NOT use `../` prefix** - paths are relative to the deployed site root, not the repository structure
 4. Test on the actual deployed GitHub Pages site, not just locally
+
+When creating HTML files in `highlighted_htmls` folders:
+1. **Use `../../assets/` and `../../images/`** (NOT `../../webpage/assets/`)
+2. **Use `../../*.html`** for links to main pages (NOT `../../webpage/*.html`)
+3. **Verify paths match the deployment structure** where `webpage/` contents are copied to `dist/` root
+4. **Check existing working files** (e.g., `final_project_menu.html`, `step1_mode_shapes.html`) for reference
 
 ## Code Style and Consistency
 
@@ -88,6 +136,16 @@ This collaborative approach helps maintain code quality and prevents breaking ex
 **Problem:** PDF links return 404 errors  
 **Solution:** Check that paths use `../` prefix from `webpage/` folder
 
+### CSS/JS Not Loading in `highlighted_htmls` Files
+**Problem:** HTML files in `highlighted_htmls` folders don't load CSS/JS, showing unstyled content  
+**Root Cause:** Using incorrect paths like `../../webpage/assets/css/main.css` instead of `../../assets/css/main.css`  
+**Solution:** 
+- Remove `webpage/` from all asset paths in `highlighted_htmls` files
+- Use `../../assets/` instead of `../../webpage/assets/`
+- Use `../../images/` instead of `../../webpage/images/`
+- Use `../../*.html` instead of `../../webpage/*.html` for navigation links
+- **Remember:** `webpage/` contents are copied to `dist/` root during deployment
+
 ### Inconsistent Styling
 **Problem:** New sections look different from existing ones  
 **Solution:** Copy styling from similar sections on other course pages
@@ -118,6 +176,26 @@ From any HTML file in `webpage/`, use `../` to access folders at root level.
 
 ---
 
-*Last Updated: November 2025*
+---
+
+## Recent Fixes and Lessons Learned
+
+### December 2025: Path Issues in `highlighted_htmls` Files
+
+**Issue:** HTML files in `CEE225_Dynamics/highlighted_htmls/` (final_project_menu.html, step1_mode_shapes.html, step2_damping.html, step3_combined.html) were not loading CSS/JS correctly, resulting in unstyled pages.
+
+**Root Cause:** Files were using paths like `../../webpage/assets/css/main.css`, but after deployment, `webpage/` contents are copied to `dist/` root, so `webpage/assets` becomes `dist/assets`. From `dist/CEE225_Dynamics/highlighted_htmls/`, the correct path is `../../assets/css/main.css` (without `webpage/`).
+
+**Files Fixed:**
+- `final_project_menu.html`
+- `step1_mode_shapes.html`
+- `step2_damping.html`
+- `step3_combined.html`
+
+**Prevention:** Always verify paths in `highlighted_htmls` files match the deployment structure. Use `../../assets/` not `../../webpage/assets/`.
+
+---
+
+*Last Updated: December 2025*
 *Maintained by: Facundo L. Pfeffer*
 
