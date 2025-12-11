@@ -214,7 +214,7 @@ def main():
         else [0.0113, 0.0157, 0.0093][i]
         for i in range(len(mode_numbers))
     ])
-    floor_heights = np.array([3.5, 7.0, 10.5])  # [m]
+    # floor_heights already defined on line 47: [2.0828, 4.1656, 6.2484] meters
 
     # Step 3: Modal Response Analysis
     print("\n" + "=" * 70)

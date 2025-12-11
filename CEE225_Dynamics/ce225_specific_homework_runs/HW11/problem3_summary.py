@@ -511,9 +511,18 @@ def generate_problem_part_d(V_base, time, analyzer):
 
 def generate_problem_part_e(M_base, time, analyzer):
     """Generate section for Problem Part (e): Base overturning moment M_b(t) in kip-ft."""
+    # Verify M_base is in kip-ft (should be reasonable values, not thousands)
+    # Typical values for a 3-story building should be in hundreds of kip-ft, not hundreds of thousands
     max_M = np.max(np.abs(M_base))
     min_M = np.min(M_base)
     max_M_idx = np.argmax(np.abs(M_base))
+    
+    # Sanity check: if values are unreasonably large (>10000 kip-ft), there's likely a unit error
+    if max_M > 10000:
+        import warnings
+        warnings.warn(f"WARNING: Maximum base moment ({max_M:.2f} kip-ft) seems unreasonably large. "
+                     f"Expected values for a 3-story building should be <1000 kip-ft. "
+                     f"Check unit conversion factor.")
     
     return f"""
 \t\t\t<section class="section">
@@ -561,6 +570,13 @@ def generate_summary_statistics_section(u, u_ddot, V_base, M_base, time):
     max_u_ddot = np.max(np.abs(u_ddot), axis=1)
     max_V = np.max(np.abs(V_base))
     max_M = np.max(np.abs(M_base))
+    
+    # Sanity check: if values are unreasonably large (>10000 kip-ft), there's likely a unit error
+    if max_M > 10000:
+        import warnings
+        warnings.warn(f"WARNING: Maximum base moment ({max_M:.2f} kip-ft) seems unreasonably large. "
+                     f"Expected values for a 3-story building should be <1000 kip-ft. "
+                     f"Check unit conversion factor.")
     
     # Find times of maximum responses
     idx_max_u = [np.argmax(np.abs(u[j, :])) for j in range(n_floors)]

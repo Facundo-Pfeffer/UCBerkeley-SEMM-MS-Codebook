@@ -204,6 +204,10 @@ def run_problem3_analysis(mass_matrix, mode_shapes, natural_freqs, damping_ratio
     V_base = analyzer.compute_base_shear(D)
     M_base = analyzer.compute_base_moment(D)
     
+    # Debug: Print modal static base moments
+    print(f"  Modal static base moments Mb_static: {analyzer.Mb_static} N·m")
+    print(f"  Max base moment (before conversion): {np.max(np.abs(M_base)):.2f} N·m")
+    
     # Convert units for output
     # Displacements: m to inches
     u_inch = u * 39.3701  # m to inches
@@ -226,7 +230,10 @@ def run_problem3_analysis(mass_matrix, mode_shapes, natural_freqs, damping_ratio
     V_base_kips = V_base / 4448.22  # N to kips
     
     # Base moment: N·m to kip-ft
-    M_base_kipft = M_base * 0.737562  # N·m to kip-ft
+    # 1 kip-ft = 4448.22 N × 0.3048 m = 1355.82 N·m
+    # Therefore: 1 N·m = 1/1355.82 = 0.000737562 kip-ft
+    M_base_kipft = M_base * 0.000737562  # N·m to kip-ft
+    print(f"  Max base moment (after conversion): {np.max(np.abs(M_base_kipft)):.2f} kip-ft")
     
     # Create plots
     print("\nGenerating plots...")

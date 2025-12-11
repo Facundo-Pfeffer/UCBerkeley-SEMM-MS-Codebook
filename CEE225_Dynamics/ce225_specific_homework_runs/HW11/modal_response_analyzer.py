@@ -94,10 +94,16 @@ class ModalResponseAnalyzer:
                 self.V_static[r, n] = np.sum(s_n[r:])
         
         # Modal static base moment
+        # For each mode n: Mb_static[n] = Σ_j (s_n[j] * h_j)
+        # where s_n = Γ_n * m * φ_n is the modal force pattern [kg]
+        # and h_j is the floor height [m]
+        # When multiplied by pseudo-acceleration A_n [m/s²], gives:
+        # M_b(t) = Σ_n (Mb_static[n] * A_n(t)) [N·m]
         self.Mb_static = np.zeros(self.n_modes)
         for n in range(self.n_modes):
             s_n = self.Gamma[n] * self.m @ self.Phi[:, n]
-            # Base moment = sum of (force * height)
+            # Base moment = sum of (force_pattern * height)
+            # Units: (kg) × (m) = kg·m, which when multiplied by A_n [m/s²] gives N·m
             self.Mb_static[n] = sum(s_n[j] * self.floor_heights[j] for j in range(self.n_floors))
     
     def solve_modal_equations(self, ug_ddot, time, dt=None):
