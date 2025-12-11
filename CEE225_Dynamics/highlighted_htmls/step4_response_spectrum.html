@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Step 4: Response Spectrum Analysis</title>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+body { font-family: Arial, sans-serif; line-height: 1.5; max-width: 1100px; margin: 0 auto; padding: 2rem; color: #2c3e50; }
+h1, h2, h3 { color: #003262; }
+section { margin-bottom: 2rem; }
+table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+th, td { border: 1px solid #e5e7eb; padding: 0.6rem; text-align: left; }
+th { background: #003262; color: white; }
+tr:nth-child(even) { background: #f7f7f7; }
+.plot-container { border: 1px solid #e5e7eb; border-radius: 6px; overflow: hidden; margin-top: 1rem; }
+</style>
+</head>
+<body>
+<h1>Step 4: Peak Response via Response Spectrum Analysis</h1>
+<p>This summary presents the RSA of the 3-DOF frame under the 100% Loma Prieta (Palo Alto) motion. It shows (1) the design spectrum and modal ordinates obtained by period and damping interpolation; (2) the resulting spectral displacements per mode; (3) SRSS peak floor displacements; and (4) SRSS base shear. Compare these SRSS results to the direct time-history results from Step 3.</p>
+
+<p><strong>Computation steps (RSA):</strong></p>
+<ul>
+  <li><em>Period interpolation:</em> For each damping curve, A<sub>n,0</sub> at the modal period T<sub>n</sub> is obtained by linear interpolation in T.</li>
+  <li><em>Damping interpolation:</em> A<sub>n,0</sub> is then interpolated between the bounding damping curves (0, 1, 2, 3, 5%) toward the mode damping.</li>
+  <li><em>Spectral displacement:</em> D<sub>n,0</sub> = A<sub>n,0</sub> / ω<sub>n</sub><sup>2</sup> (reported in inches).</li>
+  <li><em>SRSS floor displacement:</em> modal contributions Gamma<sub>n</sub> · φ<sub>jn</sub> · D<sub>n,0</sub> are combined as u<sub>j,SRSS</sub> = √( Σ (Gamma<sub>n</sub> · φ<sub>jn</sub> · D<sub>n,0</sub>)² ) (assumes statistical independence).</li>
+  <li><em>SRSS base shear:</em> modal pseudo-accelerations multiply modal static base shears V<sub>b,n</sub><sup>st</sup>; combined as V<sub>b,SRSS</sub> = √( Σ ( V<sub>b,n</sub><sup>st</sup> · A<sub>n,0</sub> )² ), then converted to kips.</li>
+</ul>
+
+<section>
+  <h2>Design Spectrum and Modal Ordinates</h2>
+  <p>The provided design spectrum (Item vi) includes 0, 1, 2, 3, and 5% damping curves. Each modal point is obtained by interpolating in period along the appropriate damping curves and then interpolating between damping curves to match the mode’s damping.</p>
+  <div class="plot-container">
+    <iframe src="problem4_spectrum.html" width="100%" height="520px" style="border:none;"></iframe>
+  </div>
+  <h3>Modal Spectral Ordinates</h3>
+  
+    <table>
+      <thead><tr><th>Mode</th><th>T [s]</th><th>ζ (interp)</th><th>A<sub>n,0</sub> [g]</th><th>A<sub>n,0</sub> [in/s²]</th><th>D<sub>n,0</sub> [in]</th></tr></thead>
+      <tbody><tr><td>Mode 1</td><td>0.500</td><td>1.13% (bracket 1%→2%, w=0.13)</td><td>1.904</td><td>735.3</td><td>4.656</td></tr><tr><td>Mode 2</td><td>0.139</td><td>1.57% (bracket 1%→2%, w=0.57)</td><td>1.897</td><td>732.8</td><td>0.358</td></tr><tr><td>Mode 3</td><td>0.073</td><td>0.93% (bracket 0%→1%, w=0.93)</td><td>1.577</td><td>609.1</td><td>0.082</td></tr></tbody>
+    </table>
+    
+</section>
+
+<section>
+  <h2>SRSS Peak Floor Displacements (in)</h2>
+  <p>Peak floor displacements are combined by SRSS from modal spectral displacements (Gamma_n * phi_jn * D_n0). Values are given in inches.</p>
+  
+    <table>
+      <thead><tr><th>Floor</th><th>u<sub>SRSS</sub> [in]</th></tr></thead>
+      <tbody><tr><td>Floor 1</td><td>1.890</td></tr><tr><td>Floor 2</td><td>4.292</td></tr><tr><td>Floor 3</td><td>6.102</td></tr></tbody>
+    </table>
+    
+</section>
+
+<section>
+  <h2>SRSS Base Shear</h2>
+  <p>The SRSS base shear combines modal pseudo-accelerations with modal static base shears V_{b,n}^{st}; the result is reported in kips.</p>
+  <p><strong>V_b,SRSS = 11.71 kips</strong></p>
+</section>
+
+</body>
+</html>

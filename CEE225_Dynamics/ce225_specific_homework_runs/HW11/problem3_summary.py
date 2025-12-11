@@ -1,8 +1,8 @@
 """
-Problem 3 Summary Page Generator
-=================================
+Step 3 Summary Page Generator
+=============================
 
-Creates a comprehensive summary page for Problem 3 with equations,
+Creates a comprehensive summary page for Step 3 with equations,
 displacement plots, and mode shapes, organized according to the problem statement.
 """
 
@@ -17,7 +17,7 @@ def create_problem3_summary(mass_matrix, mode_shapes, natural_freqs, damping_rat
                            floor_heights, time, ug_ddot, meas_ground, q, u, u_ddot, V_base, M_base,
                            analyzer, output_dir):
     """
-    Create comprehensive Problem 3 summary page organized by problem parts (a)-(e).
+    Create comprehensive Step 3 summary page organized by problem parts (a)-(e).
     
     Parameters:
     -----------
@@ -80,7 +80,7 @@ def create_problem3_summary(mass_matrix, mode_shapes, natural_freqs, damping_rat
 """
     
     # Write HTML file
-    output_path = output_dir / 'problem3_summary.html'
+    output_path = output_dir / 'step3_modal_response.html'
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(html_content)
     
@@ -117,7 +117,7 @@ def generate_html_template():
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>Problem 3: Modal Response Analysis Summary</title>
+		<title>Step 3: Modal Response Analysis Summary</title>
 		<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
 		<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 		<script>
@@ -199,7 +199,7 @@ def generate_html_template():
 	</head>
 	<body>
 		<div class="container">
-			<h1>Problem 3: Modal Response Analysis Summary</h1>
+			<h1>Step 3: Modal Response Analysis Summary</h1>
 			<p style="font-size: 1.1em; color: #6b7280; margin-bottom: 2rem;">
 				This page summarizes the modal response analysis of the 3-story MDOF building 
 				subjected to the <strong>100% Loma Prieta at Palo Alto ground motion</strong>. 

@@ -127,7 +127,7 @@ def load_measured_floor_accelerations(data_dir=None):
 def run_problem3_analysis(mass_matrix, mode_shapes, natural_freqs, damping_ratios,
                           floor_heights, output_dir):
     """
-    Run Problem 3 modal response analysis.
+    Run Step 3 modal response analysis.
     
     Parameters:
     -----------
@@ -277,7 +277,7 @@ def run_problem3_analysis(mass_matrix, mode_shapes, natural_freqs, damping_ratio
     plot_base_moment(time, M_base_kipft, output_dir)
     
     # Create comprehensive summary page
-    print("\nCreating Problem 3 summary page...")
+    print("\nCreating Step 3 summary page...")
     create_problem3_summary(
         mass_matrix=mass_matrix,
         mode_shapes=mode_shapes,
@@ -296,7 +296,7 @@ def run_problem3_analysis(mass_matrix, mode_shapes, natural_freqs, damping_ratio
         output_dir=output_dir
     )
     
-    print("\nProblem 3 analysis complete!")
+    print("\nStep 3 analysis complete!")
 
 
 def main():

@@ -216,7 +216,7 @@ def main():
     ])
     floor_heights = np.array([3.5, 7.0, 10.5])  # [m]
 
-    # Problem 3: Modal Response Analysis
+    # Step 3: Modal Response Analysis
     print("\n" + "=" * 70)
     print("Problem #3: Modal Response Analysis")
     print("=" * 70)
@@ -230,13 +230,13 @@ def main():
             output_dir=output_dir
         )
     except Exception as e:
-        print(f"\nWarning: Problem 3 analysis failed: {e}")
+        print(f"\nWarning: Step 3 analysis failed: {e}")
         import traceback
         traceback.print_exc()
 
-    # Problem 4: Response Spectrum Analysis
+    # Step 4: Response Spectrum Analysis
     print("\n" + "=" * 70)
-    print("Problem #4: Response Spectrum Analysis")
+    print("Step 4: Response Spectrum Analysis")
     print("=" * 70)
     try:
         run_problem4(
@@ -248,7 +248,7 @@ def main():
             output_dir=output_dir
         )
     except Exception as e:
-        print(f"\nWarning: Problem 4 analysis failed: {e}")
+        print(f"\nWarning: Step 4 analysis failed: {e}")
         import traceback
         traceback.print_exc()
 
@@ -267,9 +267,9 @@ def main():
     print("  - problem3_floor_accelerations.html")
     print("  - problem3_base_shear.html")
     print("  - problem3_base_moment.html")
-    print("  - problem3_summary.html")
+    print("  - step3_modal_response.html")
     print("  - problem4_spectrum.html")
-    print("  - problem4_summary.html")
+    print("  - step4_response_spectrum.html")
 
 
 if __name__ == '__main__':

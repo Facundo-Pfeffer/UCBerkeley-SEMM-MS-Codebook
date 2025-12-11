@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Problem #4: Response Spectrum Analysis (RSA)
---------------------------------------------
+Step 4: Response Spectrum Analysis (RSA)
+-----------------------------------------
 Computes spectral ordinates for the 3-DOF building using the provided design
 spectrum, applies SRSS to estimate peak floor displacements and base shear,
 and generates plots/HTML summary.
@@ -140,7 +140,7 @@ def create_summary_html(output_dir, mode_table, floor_table, base_shear_kips,
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Problem 4: Response Spectrum Analysis</title>
+<title>Step 4: Response Spectrum Analysis</title>
 <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <style>
 body {{ font-family: Arial, sans-serif; line-height: 1.5; max-width: 1100px; margin: 0 auto; padding: 2rem; color: #2c3e50; }}
@@ -154,8 +154,8 @@ tr:nth-child(even) {{ background: #f7f7f7; }}
 </style>
 </head>
 <body>
-<h1>Problem 4: Peak Response via Response Spectrum Analysis</h1>
-<p>This summary presents the RSA of the 3-DOF frame under the 100% Loma Prieta (Palo Alto) motion. It shows (1) the design spectrum and modal ordinates obtained by period and damping interpolation; (2) the resulting spectral displacements per mode; (3) SRSS peak floor displacements; and (4) SRSS base shear. Compare these SRSS results to the direct time-history results from Problem 3.</p>
+<h1>Step 4: Peak Response via Response Spectrum Analysis</h1>
+<p>This summary presents the RSA of the 3-DOF frame under the 100% Loma Prieta (Palo Alto) motion. It shows (1) the design spectrum and modal ordinates obtained by period and damping interpolation; (2) the resulting spectral displacements per mode; (3) SRSS peak floor displacements; and (4) SRSS base shear. Compare these SRSS results to the direct time-history results from Step 3.</p>
 
 <p><strong>Computation steps (RSA):</strong></p>
 <ul>
@@ -190,7 +190,7 @@ tr:nth-child(even) {{ background: #f7f7f7; }}
 
 </body>
 </html>"""
-    out_path = output_dir / "problem4_summary.html"
+    out_path = output_dir / "step4_response_spectrum.html"
     out_path.write_text(html, encoding='utf-8')
     print(f"  Generated: {out_path}")
 
@@ -244,12 +244,12 @@ def run_problem4(mass_matrix=None, mode_shapes=None, natural_freqs=None, damping
     A_modes_inps2 = psa_mps2 * 39.3701
 
     # SRSS floor displacements
-    n_floors = Phi.shape[0]
+    n_floors = mode_shapes.shape[0]
     u_srss_in = np.zeros(n_floors)
     for j in range(n_floors):
         terms = []
-        for n in range(len(omega_n)):
-            terms.append((analyzer.Gamma[n] * Phi[j, n] * D_modes_in[n]) ** 2)
+        for n in range(len(natural_freqs)):
+            terms.append((analyzer.Gamma[n] * mode_shapes[j, n] * D_modes_in[n]) ** 2)
         u_srss_in[j] = np.sqrt(np.sum(terms))
 
     # SRSS base shear
@@ -260,9 +260,9 @@ def run_problem4(mass_matrix=None, mode_shapes=None, natural_freqs=None, damping
 
     # Tables
     mode_rows = []
-    for i in range(len(omega_n)):
+    for i in range(len(natural_freqs)):
         low_pct, up_pct, w_up = damping_info[i]
-        zeta_pct = zeta[i] * 100.0
+        zeta_pct = damping_ratios[i] * 100.0
         mode_rows.append(
             f"<tr><td>Mode {i+1}</td>"
             f"<td>{T_modes[i]:.3f}</td>"
