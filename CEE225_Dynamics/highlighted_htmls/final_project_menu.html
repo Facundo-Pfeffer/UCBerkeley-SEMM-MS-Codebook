@@ -1,0 +1,198 @@
+<!DOCTYPE HTML>
+<!--
+	Phantom by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>3-Story MDOF Building Analysis | CEE225 Final Project</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<meta name="description" content="Vibration analysis of a 3-story MDOF building - Final Project for CEE225" />
+		<link rel="stylesheet" href="../../webpage/assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="../../webpage/assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<div class="inner">
+
+							<!-- Logo -->
+								<a href="../../webpage/cee225-dynamics.html" class="logo">
+									<span class="symbol"><img src="../../webpage/images/logo.png" alt="" /></span><span class="title">CEE225 - Dynamics</span>
+								</a>
+
+							<!-- Nav -->
+								<nav>
+									<ul>
+										<li><a href="#menu">Menu</a></li>
+									</ul>
+								</nav>
+
+						</div>
+					</header>
+
+				<!-- Menu -->
+					<nav id="menu">
+						<h2>Menu</h2>
+						<ul>
+							<li><a href="../../webpage/index.html">Home</a></li>
+							<li><a href="../../webpage/cee225-dynamics.html">CEE225 - Structural Dynamics</a></li>
+							<li><a href="../../webpage/cee220-analysis.html">CEE220 - Structural Analysis</a></li>
+							<li><a href="../../webpage/cee231-mechanics.html">CEE231 - Solid Mechanics</a></li>
+							<li><a href="../../webpage/about.html">About</a></li>
+							<li><a href="../../webpage/contact.html">Contact</a></li>
+						</ul>
+					</nav>
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+							<h1>3-Story MDOF Building Vibration Analysis</h1>
+							<p style="font-size: 1.1em; color: #6b7280; margin-bottom: 2rem;">
+								Final Project - CEE225 Structural Dynamics<br>
+								Complete analysis pipeline: Mode shapes, damping, modal response, and response spectrum analysis
+							</p>
+
+							<h2>Analysis Pipeline</h2>
+							<section class="tiles">
+								<article class="style1">
+									<span class="image">
+										<img src="../../webpage/images/pic02.jpg" alt="Mode Shape Analysis" />
+									</span>
+									<a href="step1_mode_shapes.html">
+										<h2>Step 1: Mode Shape Extraction</h2>
+										<div class="content">
+											<p>Extract and normalize mode shapes from acceleration data using RMS ratios and correlation analysis. Analyze all three modes with statistical confidence metrics.</p>
+										</div>
+									</a>
+								</article>
+								<article class="style2">
+									<span class="image">
+										<img src="../../webpage/images/pic04.jpg" alt="Damping Analysis" />
+									</span>
+									<a href="step2_damping.html">
+										<h2>Step 2: Damping Analysis</h2>
+										<div class="content">
+											<p>Compute damping ratios using logarithmic decrement method. Analyze free vibration decay for all three modes.</p>
+										</div>
+									</a>
+								</article>
+								<article class="style3">
+									<span class="image">
+										<img src="../../webpage/images/pic05.jpg" alt="Combined Analysis" />
+									</span>
+									<a href="step3_combined.html">
+										<h2>Step 3: Combined Mode Shapes</h2>
+										<div class="content">
+											<p>Compare all three mode shapes side-by-side with confidence intervals and statistical validation.</p>
+										</div>
+									</a>
+								</article>
+								<article class="style4">
+									<span class="image">
+										<img src="../../webpage/images/pic02.jpg" alt="Modal Response" />
+									</span>
+									<a href="problem3_summary.html">
+										<h2>Problem 3: Modal Response Analysis</h2>
+										<div class="content">
+											<p>Time-history analysis of building response to 100% Loma Prieta ground motion. Includes modal displacements, floor responses, base shear, and overturning moment with measured data comparison.</p>
+										</div>
+									</a>
+								</article>
+								<article class="style1">
+									<span class="image">
+										<img src="../../webpage/images/pic04.jpg" alt="Response Spectrum" />
+									</span>
+									<a href="problem4_summary.html">
+										<h2>Problem 4: Response Spectrum Analysis</h2>
+										<div class="content">
+											<p>Spectral analysis using design response spectrum with SRSS modal combination. Computes peak floor displacements and base shear from spectral ordinates.</p>
+										</div>
+									</a>
+								</article>
+							</section>
+
+							<div style="background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; padding:1.5rem; margin:2rem 0;">
+								<h3 style="margin-top:0;">Project Overview</h3>
+								<p style="margin-bottom:1rem;">This project implements a complete structural dynamics analysis workflow for a 3-story MDOF building structure. The analysis pipeline includes:</p>
+								<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:1rem;">
+									<div>
+										<strong>Mode Shape Extraction</strong><br>
+										<span style="color:#6b7280;">Extraction of mass-normalized mode shapes from experimental acceleration data using RMS ratios and correlation analysis</span>
+									</div>
+									<div>
+										<strong>Damping Analysis</strong><br>
+										<span style="color:#6b7280;">Computation of damping ratios using logarithmic decrement method from free vibration decay</span>
+									</div>
+									<div>
+										<strong>Modal Response Analysis</strong><br>
+										<span style="color:#6b7280;">Time-history analysis using modal superposition and Newmark's method for ground motion response</span>
+									</div>
+									<div>
+										<strong>Response Spectrum Analysis</strong><br>
+										<span style="color:#6b7280;">Spectral analysis using design spectrum with SRSS modal combination for peak response estimation</span>
+									</div>
+									<div>
+										<strong>Statistical Validation</strong><br>
+										<span style="color:#6b7280;">Uncertainty quantification with coefficient of variation and 95% confidence intervals</span>
+									</div>
+									<div>
+										<strong>Measured Data Comparison</strong><br>
+										<span style="color:#6b7280;">Validation of computed responses against experimental floor accelerations and displacements</span>
+									</div>
+								</div>
+								<p style="font-size:.90rem; color:#6b7280; margin-top:1rem; margin-bottom:0;">
+									<strong>Data Sources:</strong> Experimental acceleration measurements (L1AccX, L2AccX, L3AccX) from mode-specific excitations; 100% Loma Prieta at Palo Alto ground motion; Design response spectrum with multiple damping ratios
+								</p>
+							</div>
+
+							<div style="text-align: center; margin: 2rem 0;">
+								<a href="../../webpage/cee225-dynamics.html" class="button" style="background-color: #003262; color: white; padding: 1rem 2rem; text-decoration: none; border-radius: 5px; margin-right: 1rem;">Back to CEE225</a>
+								<a href="https://github.com/Facundo-Pfeffer/UCBerkeley-SEMM-MS-Codebook" class="button primary" style="background-color: #FDB515; color: #003262; padding: 1rem 2rem; text-decoration: none; border-radius: 5px;">View Code on GitHub</a>
+							</div>
+						</div>
+					</div>
+
+				<!-- Footer -->
+					<footer id="footer">
+						<div class="inner">
+							<section>
+								<h2>Get in touch</h2>
+								<p>Interested in collaborating on structural engineering research or discussing computational methods? I'd love to hear from you!</p>
+								<ul class="icons">
+									<li><a href="mailto:facundo.pfeffer@berkeley.edu" class="icon solid style2 fa-envelope"><span class="label">Email</span></a></li>
+									<li><a href="https://github.com/facundopfeffer" class="icon brands style2 fa-github"><span class="label">GitHub</span></a></li>
+									<li><a href="https://linkedin.com/in/facundopfeffer" class="icon brands style2 fa-linkedin"><span class="label">LinkedIn</span></a></li>
+									<li><a href="https://berkeley.edu" class="icon solid style2 fa-university"><span class="label">UC Berkeley</span></a></li>
+								</ul>
+							</section>
+							<section>
+								<h2>Academic Information</h2>
+								<p><strong>Facundo L. Pfeffer</strong><br>
+								MS Student, Structural Engineering, Mechanics and Materials<br>
+								University of California, Berkeley<br>
+								Email: facundo.pfeffer@berkeley.edu</p>
+							</section>
+							<ul class="copyright">
+								<li>&copy; 2025 Facundo L. Pfeffer. All rights reserved</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+							</ul>
+						</div>
+					</footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="../../webpage/assets/js/jquery.min.js"></script>
+			<script src="../../webpage/assets/js/browser.min.js"></script>
+			<script src="../../webpage/assets/js/breakpoints.min.js"></script>
+			<script src="../../webpage/assets/js/util.js"></script>
+			<script src="../../webpage/assets/js/main.js"></script>
+
+	</body>
+</html>
+

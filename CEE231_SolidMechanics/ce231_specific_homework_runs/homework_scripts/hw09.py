@@ -7,8 +7,12 @@ Combined viscoelastic dashboards for CEE231:
 This file imports and executes both dashboard generators.
 """
 
+from pathlib import Path
+
 from visco_step import build_step_response_dashboard
 from visco_sinusoidal import build_sinusoidal_dashboard
+
+HW_DIR = Path(__file__).resolve().parent
 
 
 if __name__ == "__main__":
@@ -19,14 +23,16 @@ if __name__ == "__main__":
     # Generate Step Response Dashboard
     print("[1/2] Generating Step Response Dashboard...")
     fig_step = build_step_response_dashboard()
-    fig_step.write_html("visco_dashboard_step.html", include_plotlyjs="cdn", auto_open=False)
-    print("      [SUCCESS] Generated: visco_dashboard_step.html\n")
+    step_output = HW_DIR / "visco_dashboard_step.html"
+    fig_step.write_html(step_output, include_plotlyjs="cdn", auto_open=False)
+    print(f"      [SUCCESS] Generated: {step_output}\n")
     
     # Generate Sinusoidal Response Dashboard
     print("[2/2] Generating Sinusoidal Response Dashboard...")
     fig_sin = build_sinusoidal_dashboard()
-    fig_sin.write_html("sls_sinusoidal_dashboard.html", include_plotlyjs="cdn", auto_open=False)
-    print("      [SUCCESS] Generated: sls_sinusoidal_dashboard.html\n")
+    sin_output = HW_DIR / "sls_sinusoidal_dashboard.html"
+    fig_sin.write_html(sin_output, include_plotlyjs="cdn", auto_open=False)
+    print(f"      [SUCCESS] Generated: {sin_output}\n")
     
     print("="*70)
     print("All dashboards generated successfully!")

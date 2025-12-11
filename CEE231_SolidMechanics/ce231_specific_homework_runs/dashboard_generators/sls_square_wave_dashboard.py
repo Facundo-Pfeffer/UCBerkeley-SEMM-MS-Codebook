@@ -5,8 +5,13 @@ Standard Linear Solid subjected to square wave strain with time integration
 """
 
 import sys
-import os
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+from pathlib import Path
+
+DASHBOARD_ROOT = Path(__file__).resolve().parent.parent
+if str(DASHBOARD_ROOT) not in sys.path:
+    sys.path.append(str(DASHBOARD_ROOT))
+
+PROJECT_ROOT = DASHBOARD_ROOT.parent
 
 import numpy as np
 import plotly.graph_objects as go
@@ -277,7 +282,7 @@ for annotation in fig['layout']['annotations'][:4]:
 
 
 # Save to highlighted_htmls (web deployment folder)
-output_path = os.path.join(os.path.dirname(__file__), '..', '..', 'highlighted_htmls', 'sls_square_wave_clean.html')
+output_path = PROJECT_ROOT / 'highlighted_htmls' / 'sls_square_wave_clean.html'
 save_figure(fig, output_path)
 print(f"  {len(dt_vals)} time step values | Single slider | 4 plots")
 print(f"  Time range: 0 to {t_max} s")

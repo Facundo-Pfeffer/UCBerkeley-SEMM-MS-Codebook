@@ -2,10 +2,12 @@ import numpy as np
 from dash import Dash, dcc, html, Input, Output
 import plotly.graph_objs as go
 import sys
-import os
+from pathlib import Path
 
-# Add parent directory to path to import plotly_templates
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+# Add parent directory to path using an absolute location
+RUNS_ROOT = Path(__file__).resolve().parent.parent
+if str(RUNS_ROOT) not in sys.path:
+    sys.path.append(str(RUNS_ROOT))
 from plotly_templates import (
     UCBerkeleyColors as Colors,
     get_axis_style,

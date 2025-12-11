@@ -1,6 +1,9 @@
 import numpy as np
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+from pathlib import Path
+
+HW_DIR = Path(__file__).resolve().parent
 
 
 def compute_torsional_stiffness(b, c, mu, num_terms):
@@ -186,9 +189,9 @@ def plot_convergence_analysis(b, c, mu, num_terms=500):
     fig.show()
     
     # Export as HTML
-    output_filename = f"CEE231_HW7_Convergence_Analysis.html"
-    fig.write_html(output_filename)
-    print(f"✓ Plot saved to: {output_filename}")
+    output_path = HW_DIR / "CEE231_HW7_Convergence_Analysis.html"
+    fig.write_html(output_path)
+    print(f"✓ Plot saved to: {output_path}")
     print("=" * 70)
 
 

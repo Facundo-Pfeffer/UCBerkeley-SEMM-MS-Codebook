@@ -1,0 +1,170 @@
+<!DOCTYPE HTML>
+<!--
+	Phantom by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Step 2: Damping Analysis | 3-Story MDOF Analysis</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<meta name="description" content="Damping analysis using logarithmic decrement method" />
+		<link rel="stylesheet" href="../../webpage/assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="../../webpage/assets/css/noscript.css" /></noscript>
+		<!-- MathJax for LaTeX rendering -->
+		<script>
+		MathJax = {
+			tex: {
+				inlineMath: [['$', '$'], ['\\(', '\\)']],
+				displayMath: [['$$', '$$'], ['\\[', '\\]']]
+			}
+		};
+		</script>
+		<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<div class="inner">
+
+							<!-- Logo -->
+								<a href="final_project_menu.html" class="logo">
+									<span class="symbol"><img src="../../webpage/images/logo.png" alt="" /></span><span class="title">Final Project</span>
+								</a>
+
+							<!-- Nav -->
+								<nav>
+									<ul>
+										<li><a href="#menu">Menu</a></li>
+									</ul>
+								</nav>
+
+						</div>
+					</header>
+
+				<!-- Menu -->
+					<nav id="menu">
+						<h2>Menu</h2>
+						<ul>
+							<li><a href="../../webpage/index.html">Home</a></li>
+							<li><a href="final_project_menu.html">Final Project Menu</a></li>
+							<li><a href="../../webpage/cee225-dynamics.html">CEE225 - Structural Dynamics</a></li>
+							<li><a href="../../webpage/cee220-analysis.html">CEE220 - Structural Analysis</a></li>
+							<li><a href="../../webpage/cee231-mechanics.html">CEE231 - Solid Mechanics</a></li>
+						</ul>
+					</nav>
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+							<h1>Step 2: Damping Analysis</h1>
+							<p style="font-size: 1.1em; color: #6b7280; margin-bottom: 2rem;">
+								Estimate damping ratios using logarithmic decrement method from free vibration decay
+							</p>
+
+							<div style="background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; padding:1.5rem; margin:2rem 0;">
+								<h3 style="margin-top:0;">Methodology</h3>
+								<p style="margin-bottom:0.75rem;">The damping analysis uses the logarithmic decrement method on the free vibration decay portion:</p>
+								<ol style="margin-left: 1.5rem;">
+									<li><strong>Decay Detection</strong>: Automatically identifies when forced vibration ends and free decay begins by detecting consistent negative slope in the amplitude envelope.</li>
+									<li><strong>Peak Extraction</strong>: Finds local maxima and minima in the decay portion using prominence and distance constraints based on the natural period.</li>
+									<li><strong>Logarithmic Decrement</strong>: Computes $\\delta = \\frac{1}{n}\\ln\\left(\\frac{x_0}{x_n}\\right)$ averaged over $n$ cycles for stability.</li>
+									<li><strong>Damping Ratio</strong>: Calculates $\\zeta = \\frac{\\delta}{\\sqrt{4\\pi^2 + \\delta^2}} \\approx \\frac{\\delta}{2\\pi}$ for small damping.</li>
+									<li><strong>Multi-Floor Analysis</strong>: Estimates damping from each floor's modal acceleration to assess consistency and compute mean ± standard deviation.</li>
+								</ol>
+							</div>
+
+							<h2>Mode 1 Damping Analysis</h2>
+							<div style="border:1px solid #e5e7eb; border-radius:8px; overflow:hidden; margin: 1.5rem 0;">
+								<iframe src="mode_1_damping.html" style="width:100%; height:900px; border:none;"></iframe>
+							</div>
+
+							<h2>Mode 2 Damping Analysis</h2>
+							<div style="border:1px solid #e5e7eb; border-radius:8px; overflow:hidden; margin: 1.5rem 0;">
+								<iframe src="mode_2_damping.html" style="width:100%; height:900px; border:none;"></iframe>
+							</div>
+
+							<h2>Mode 3 Damping Analysis</h2>
+							<div style="border:1px solid #e5e7eb; border-radius:8px; overflow:hidden; margin: 1.5rem 0;">
+								<iframe src="mode_3_damping.html" style="width:100%; height:900px; border:none;"></iframe>
+							</div>
+
+							<section id="damping_summary">
+								<h2>Damping Summary</h2>
+								<div style="background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; padding:1.5rem; margin:2rem 0;">
+									<p>The visualizations above show four key analyses for each mode:</p>
+									<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:1rem; margin-top:1rem;">
+										<div>
+											<strong>1. Full Time History</strong><br>
+											<span style="color:#6b7280;">Complete acceleration response showing forced and free vibration portions.</span>
+										</div>
+										<div>
+											<strong>2. Decay with Peaks</strong><br>
+											<span style="color:#6b7280;">Free vibration decay portion with detected peaks marked for logarithmic decrement calculation.</span>
+										</div>
+										<div>
+											<strong>3. Envelope Decay</strong><br>
+											<span style="color:#6b7280;">Hilbert transform envelope showing exponential decay fit for damping estimation.</span>
+										</div>
+										<div>
+											<strong>4. Floor Comparison</strong><br>
+											<span style="color:#6b7280;">Damping ratio estimates from each floor with mean value for consistency assessment.</span>
+										</div>
+									</div>
+								</div>
+							</section>
+
+							<div style="text-align: center; margin: 2rem 0;">
+								<a href="final_project_menu.html" class="button" style="background-color: #003262; color: white; padding: 1rem 2rem; text-decoration: none; border-radius: 5px; margin-right: 1rem;">Back to Menu</a>
+								<a href="step1_mode_shapes.html" class="button" style="background-color: #003262; color: white; padding: 1rem 2rem; text-decoration: none; border-radius: 5px; margin-right: 1rem;">Step 1: Mode Shapes</a>
+								<a href="step3_combined.html" class="button primary" style="background-color: #FDB515; color: #003262; padding: 1rem 2rem; text-decoration: none; border-radius: 5px;">Step 3: Combined Analysis</a>
+							</div>
+						</div>
+					</div>
+
+				<!-- Footer -->
+					<footer id="footer">
+						<div class="inner">
+							<section>
+								<h2>Get in touch</h2>
+								<p>Interested in collaborating on structural engineering research or discussing computational methods? I'd love to hear from you!</p>
+								<ul class="icons">
+									<li><a href="mailto:facundo.pfeffer@berkeley.edu" class="icon solid style2 fa-envelope"><span class="label">Email</span></a></li>
+									<li><a href="https://github.com/facundopfeffer" class="icon brands style2 fa-github"><span class="label">GitHub</span></a></li>
+									<li><a href="https://linkedin.com/in/facundopfeffer" class="icon brands style2 fa-linkedin"><span class="label">LinkedIn</span></a></li>
+									<li><a href="https://berkeley.edu" class="icon solid style2 fa-university"><span class="label">UC Berkeley</span></a></li>
+								</ul>
+							</section>
+							<section>
+								<h2>Academic Information</h2>
+								<p><strong>Facundo L. Pfeffer</strong><br>
+								MS Student, Structural Engineering, Mechanics and Materials<br>
+								University of California, Berkeley<br>
+								Email: facundo.pfeffer@berkeley.edu</p>
+							</section>
+							<ul class="copyright">
+								<li>&copy; 2025 Facundo L. Pfeffer. All rights reserved</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+							</ul>
+						</div>
+					</footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="../../webpage/assets/js/jquery.min.js"></script>
+			<script src="../../webpage/assets/js/browser.min.js"></script>
+			<script src="../../webpage/assets/js/breakpoints.min.js"></script>
+			<script src="../../webpage/assets/js/util.js"></script>
+			<script src="../../webpage/assets/js/main.js"></script>
+
+	</body>
+</html>
+
+
+
+
+

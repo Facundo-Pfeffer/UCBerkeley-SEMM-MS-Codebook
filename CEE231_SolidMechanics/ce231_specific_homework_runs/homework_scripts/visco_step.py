@@ -5,7 +5,18 @@ Step Response Dashboard (from HW8) - extracted as reusable function.
 import numpy as np
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from plot_config import COLORS, AXIS_STYLE, TABLE_HEADER_STYLE, TABLE_CELL_STYLE, LAYOUT_DEFAULTS, SLIDER_STYLE, ANNOTATION_FONTS
+from pathlib import Path
+from plot_config import (
+    COLORS,
+    AXIS_STYLE,
+    TABLE_HEADER_STYLE,
+    TABLE_CELL_STYLE,
+    LAYOUT_DEFAULTS,
+    SLIDER_STYLE,
+    ANNOTATION_FONTS,
+)
+
+HW_DIR = Path(__file__).resolve().parent
 
 
 def build_step_response_dashboard():
@@ -253,6 +264,7 @@ def build_step_response_dashboard():
 
 if __name__ == "__main__":
     fig = build_step_response_dashboard()
-    fig.write_html("visco_dashboard_step.html", include_plotlyjs="cdn", auto_open=False)
-    print("[SUCCESS] Generated: visco_dashboard_step.html")
+    output_path = HW_DIR / "visco_dashboard_step.html"
+    fig.write_html(output_path, include_plotlyjs="cdn", auto_open=False)
+    print(f"[SUCCESS] Generated: {output_path}")
 

@@ -7,7 +7,7 @@ Organized repository for CEE 231 Solid Mechanics course homework assignments and
 ```
 ce231_specific_homework_runs/
 │
-├── homework_scripts/          # Individual homework Python scripts (hw01.py - hw11.py)
+├── homework_scripts/          # Individual homework Python scripts (01HW.py - 09HW.py)
 ├── dashboard_generators/      # Python scripts that generate dashboards → ../highlighted_htmls/
 ├── hw7_outputs/              # HW7 specific outputs (LaTeX, README)
 │
@@ -135,13 +135,12 @@ python sls_square_wave_dashboard.py
 
 ## 📚 Homework Scripts
 
-Individual homework Python scripts (`hw01.py` through `hw11.py`) are located in `homework_scripts/`.
+Individual homework Python scripts (01HW.py through 09HW.py) are located in `homework_scripts/`.
 
 Each script contains problem-specific implementations:
-- **hw01 - hw07**: Various solid mechanics problems
-- **hw08**: Viscoelastic step response (basis for dashboard)
-- **hw09**: SLS sinusoidal response (basis for dashboard)
-- **hw11**: Power-law plasticity Dash app backend
+- **01HW - 07HW**: Various solid mechanics problems
+- **08HW**: Viscoelastic step response (basis for dashboard)
+- **09HW**: SLS sinusoidal response (basis for dashboard)
 
 ## 🎓 HW7 Documentation
 

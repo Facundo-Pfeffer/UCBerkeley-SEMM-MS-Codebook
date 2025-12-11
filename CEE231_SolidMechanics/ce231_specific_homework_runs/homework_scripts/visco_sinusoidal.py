@@ -5,7 +5,18 @@ Sinusoidal Response Dashboard (from original HW9) - extracted as reusable functi
 import numpy as np
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from plot_config import COLORS, AXIS_STYLE, TABLE_HEADER_STYLE, TABLE_CELL_STYLE, LAYOUT_DEFAULTS, SLIDER_STYLE, ANNOTATION_FONTS
+from pathlib import Path
+from plot_config import (
+    COLORS,
+    AXIS_STYLE,
+    TABLE_HEADER_STYLE,
+    TABLE_CELL_STYLE,
+    LAYOUT_DEFAULTS,
+    SLIDER_STYLE,
+    ANNOTATION_FONTS,
+)
+
+HW_DIR = Path(__file__).resolve().parent
 
 
 def build_sinusoidal_dashboard():
@@ -212,6 +223,7 @@ def build_sinusoidal_dashboard():
 
 if __name__ == "__main__":
     fig = build_sinusoidal_dashboard()
-    fig.write_html("sls_sinusoidal_dashboard.html", include_plotlyjs="cdn", auto_open=False)
-    print("[SUCCESS] Generated: sls_sinusoidal_dashboard.html")
+    output_path = HW_DIR / "sls_sinusoidal_dashboard.html"
+    fig.write_html(output_path, include_plotlyjs="cdn", auto_open=False)
+    print(f"[SUCCESS] Generated: {output_path}")
 

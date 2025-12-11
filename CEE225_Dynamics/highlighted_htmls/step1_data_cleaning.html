@@ -1,0 +1,128 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Step 1A: Data Cleaning Sensitivity</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<meta name="description" content="Effect of skipping data cleaning for mode shape extraction" />
+		<link rel="stylesheet" href="../../webpage/assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="../../webpage/assets/css/noscript.css" /></noscript>
+		<!-- MathJax for LaTeX rendering -->
+		<script>
+		MathJax = {
+			tex: {
+				inlineMath: [['$', '$'], ['\\(', '\\)']],
+				displayMath: [['$$', '$$'], ['\\[', '\\]']]
+			}
+		};
+		</script>
+		<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+	</head>
+	<body class="is-preload">
+		<div id="wrapper">
+			<header id="header">
+				<div class="inner">
+					<a href="final_project_menu.html" class="logo">
+						<span class="symbol"><img src="../../webpage/images/logo.png" alt="" /></span>
+						<span class="title">Final Project</span>
+					</a>
+					<nav>
+						<ul>
+							<li><a href="#menu">Menu</a></li>
+						</ul>
+					</nav>
+				</div>
+			</header>
+
+			<nav id="menu">
+				<h2>Menu</h2>
+				<ul>
+					<li><a href="../../webpage/index.html">Home</a></li>
+					<li><a href="final_project_menu.html">Final Project Menu</a></li>
+					<li><a href="../../webpage/cee225-dynamics.html">CEE225 - Structural Dynamics</a></li>
+				</ul>
+			</nav>
+
+			<div id="main">
+				<div class="inner">
+					<h1>What Happens Without Data Cleaning?</h1>
+					<p style="font-size:1.05em; color:#4b5563;">
+						The filtered workflow removes samples where the reference floor is almost silent, the
+						global response is below instrumentation noise, or the instantaneous shape diverges from
+						the reference mode by more than 18°. The plots below show the behavior obtained
+						<em>before</em> applying those checks.
+					</p>
+
+					<div style="border:1px solid #e5e7eb; border-radius:8px; padding:1.5rem; background:#fef2f2;">
+						<h3 style="margin-top:0;">Observed Issues Without Cleaning</h3>
+						<ul style="margin-left:1.25rem;">
+							<li>Large clusters appear at the opposite sign because low-energy segments flip phase randomly.</li>
+							<li>The coefficient of variation of upper floors exceeds 40%, masking the physical hierarchy of floors.</li>
+							<li>Gaussian envelopes stretch across the entire horizontal axis, suggesting non-existent modal coupling.</li>
+						</ul>
+						<p style="margin-top:1rem;">
+							In short, the unfiltered analysis suggests that the first mode has comparable participation on all
+							floors and even intermittent inversions—behavior that contradicts the measured story-drifts and the
+							known physics of a shear-building. Filtering restores the monotonic profile and suppresses the
+							spurious outliers.
+						</p>
+					</div>
+
+					<h2>Unfiltered Mode Shape Analyses</h2>
+					<p style="font-size:0.95em; color:#4b5563;">
+						Each panel below is identical in layout to the main Step 1 plots, but uses the
+						<em>raw</em> instantaneous shapes (no amplitude or shape-consistency filters).
+					</p>
+
+					<h3>Mode 1 &mdash; Unfiltered</h3>
+					<div style="border:1px solid #e5e7eb; border-radius:8px; overflow:hidden; margin: 1.5rem 0;">
+						<iframe src="mode_1_analysis_raw.html" style="width:100%; height:900px; border:none;"></iframe>
+					</div>
+
+					<h3>Mode 2 &mdash; Unfiltered</h3>
+					<div style="border:1px solid #e5e7eb; border-radius:8px; overflow:hidden; margin: 1.5rem 0;">
+						<iframe src="mode_2_analysis_raw.html" style="width:100%; height:900px; border:none;"></iframe>
+					</div>
+
+					<h3>Mode 3 &mdash; Unfiltered</h3>
+					<div style="border:1px solid #e5e7eb; border-radius:8px; overflow:hidden; margin: 1.5rem 0;">
+						<iframe src="mode_3_analysis_raw.html" style="width:100%; height:900px; border:none;"></iframe>
+					</div>
+
+					<div style="background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; padding:1.5rem; margin-top:2rem;">
+						<h3 style="margin-top:0;">How to Reproduce</h3>
+						<ol style="margin-left:1.25rem;">
+							<li>Open <code>mode_shape_analysis.py</code>.</li>
+							<li>Call <code>compute_mode_shape_statistics(..., use_filter=False)</code>.</li>
+							<li>Regenerate <code>mode_#_analysis.html</code> to see the raw scatter and CV values.</li>
+						</ol>
+						<p>Switching back to <code>use_filter=True</code> enables the amplitude + shape consistency gates used throughout the report.</p>
+					</div>
+
+					<div style="text-align:center; margin:2rem 0;">
+						<a href="step1_mode_shapes.html" class="button" style="background:#003262; color:#fff;">Return to Step 1 Dashboard</a>
+					</div>
+				</div>
+			</div>
+
+			<footer id="footer">
+				<div class="inner">
+					<section>
+						<h2>Contact</h2>
+						<p>facundo.pfeffer@berkeley.edu</p>
+					</section>
+					<section>
+						<h2>Note</h2>
+						<p>This page summarizes the risks of skipping the cleaning stage used for the main visualizations.</p>
+					</section>
+				</div>
+			</footer>
+		</div>
+		<script src="../../webpage/assets/js/jquery.min.js"></script>
+		<script src="../../webpage/assets/js/browser.min.js"></script>
+		<script src="../../webpage/assets/js/breakpoints.min.js"></script>
+		<script src="../../webpage/assets/js/util.js"></script>
+		<script src="../../webpage/assets/js/main.js"></script>
+	</body>
+</html>
+
