@@ -57,8 +57,12 @@ When linking to PDFs from HTML files in the `webpage/` folder:
 <link rel="stylesheet" href="../../assets/css/main.css" />
 <script src="../../assets/js/jquery.min.js"></script>
 
-<!-- ✅ CORRECT - Image paths -->
+<!-- ✅ CORRECT - Image paths (logo, general images) -->
 <img src="../../images/logo.png" alt="" />
+
+<!-- ✅ CORRECT - Thumbnail images (matches CEE231 pattern) -->
+<img src="../../images/CE225/Step1.png" alt="Mode Shape Analysis" />
+<img src="../../images/projects/cee-231-hw6-materialA.png" alt="Fe Directional E" />
 
 <!-- ✅ CORRECT - Navigation links to main pages -->
 <a href="../../cee225-dynamics.html">CEE225</a>
@@ -67,8 +71,15 @@ When linking to PDFs from HTML files in the `webpage/` folder:
 <!-- ❌ INCORRECT - DO NOT include 'webpage/' in paths -->
 <link rel="stylesheet" href="../../webpage/assets/css/main.css" />
 <img src="../../webpage/images/logo.png" alt="" />
+<img src="../../webpage/images/CE225/Step1.png" alt="" />
 <a href="../../webpage/cee225-dynamics.html">CEE225</a>
 ```
+
+**Thumbnail Image Path Pattern:**
+- **CEE231 pattern:** Uses `images/projects/...` from `webpage/` root (e.g., `images/projects/cee-231-hw6-materialA.png`)
+- **CEE225 pattern:** Uses `../../images/CE225/...` from `highlighted_htmls/` folder (e.g., `../../images/CE225/Step1.png`)
+- **Key:** Both patterns work because after deployment, `webpage/images/` becomes `dist/images/`, so from `dist/CEE225_Dynamics/highlighted_htmls/`, the path `../../images/` correctly points to `dist/images/`
+- **Storage:** Images are stored in `webpage/images/CE225/` or `webpage/images/projects/` but referenced without `webpage/` in the path
 
 **Why:** The deployment copies `webpage/` contents to `dist/` root, so `webpage/assets` becomes `dist/assets`. From `dist/CEE225_Dynamics/highlighted_htmls/`, you go up two levels (`../../`) to reach `dist/`, then access `assets/` or `images/` directly.
 
@@ -145,6 +156,16 @@ This collaborative approach helps maintain code quality and prevents breaking ex
 - Use `../../images/` instead of `../../webpage/images/`
 - Use `../../*.html` instead of `../../webpage/*.html` for navigation links
 - **Remember:** `webpage/` contents are copied to `dist/` root during deployment
+
+### Thumbnail Images Not Displaying in `highlighted_htmls` Files
+**Problem:** Thumbnail images in `highlighted_htmls` files (e.g., `final_project_menu.html`) don't display  
+**Root Cause:** Using incorrect paths like `../../webpage/images/CE225/Step1.png` instead of `../../images/CE225/Step1.png`  
+**Solution:**
+- Use `../../images/CE225/...` (without `webpage/`) for images stored in `webpage/images/CE225/`
+- Match the pattern from CEE231: `images/projects/...` from `webpage/` root, or `../../images/...` from `highlighted_htmls/`
+- **Reference:** CEE231 uses `images/projects/cee-231-hw6-materialA.png` from `webpage/cee231-mechanics.html`
+- **For `highlighted_htmls`:** Use `../../images/CE225/Step1.png` (two levels up, then into images folder)
+- **Storage location:** Images are in `webpage/images/CE225/` but referenced as `../../images/CE225/` from `highlighted_htmls/` files
 
 ### Inconsistent Styling
 **Problem:** New sections look different from existing ones  
