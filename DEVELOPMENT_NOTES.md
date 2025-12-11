@@ -194,6 +194,55 @@ From any HTML file in `webpage/`, use `../` to access folders at root level.
 
 **Prevention:** Always verify paths in `highlighted_htmls` files match the deployment structure. Use `../../assets/` not `../../webpage/assets/`.
 
+### December 2025: Template CSS/JS Loading Issues in `highlighted_htmls` Files
+
+**Issue:** Step 1 and Step 2 pages (`step1_mode_shapes.html`, `step2_damping.html`) were not rendering correctly, while Problem 3 and Problem 4 pages (`problem3_summary.html`, `problem4_summary.html`) rendered perfectly.
+
+**Root Cause Analysis:**
+
+**Problem 3 & 4 (Working):**
+- Use **inline `<style>` tags** with all CSS embedded directly in HTML
+- Do NOT depend on external CSS/JS files
+- Use `<!DOCTYPE html>` (lowercase)
+- Self-contained HTML with embedded styles
+- Only depend on CDN resources (MathJax, polyfill)
+
+**Step 1 & 2 (Not Working):**
+- Use **Phantom template** from HTML5 UP
+- Depend on external CSS: `../../assets/css/main.css`
+- Depend on external JS: `../../assets/js/jquery.min.js`, `browser.min.js`, `breakpoints.min.js`, `util.js`, `main.js`
+- Use `<!DOCTYPE HTML>` (uppercase)
+- Require Phantom template CSS/JS to render correctly
+- Template structure: `<div id="wrapper">`, `<header>`, `<nav>`, `<section class="tiles">`, etc.
+
+**Key Finding:** Files that depend on external template CSS/JS are more prone to path/loading issues in `highlighted_htmls` folders. Files with inline styles work reliably.
+
+**Best Practice for `highlighted_htmls` Files:**
+
+1. **Prefer inline styles** (like Problem 3/4) for reliability:
+   ```html
+   <style>
+   body { font-family: Arial, sans-serif; ... }
+   h1 { color: #003262; ... }
+   </style>
+   ```
+
+2. **If using templates** (like Phantom), ensure:
+   - All paths use `../../assets/` not `../../webpage/assets/`
+   - Verify CSS/JS files load correctly in browser console
+   - Test on deployed site, not just locally
+
+3. **CDN resources** (MathJax, Plotly) work fine - use full URLs:
+   ```html
+   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+   ```
+
+**Files Affected:**
+- `step1_mode_shapes.html` - Uses Phantom template, depends on external CSS/JS
+- `step2_damping.html` - Uses Phantom template, depends on external CSS/JS
+- `problem3_summary.html` - Uses inline styles, works perfectly ✅
+- `problem4_summary.html` - Uses inline styles, works perfectly ✅
+
 ---
 
 *Last Updated: December 2025*
