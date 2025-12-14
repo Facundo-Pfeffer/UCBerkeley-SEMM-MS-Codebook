@@ -104,6 +104,25 @@ cd dashboard_generators
 python sls_square_wave_dashboard.py
 ```
 
+### 4. **Exponential Saturation Hardening Plasticity Dashboard**
+**File**: `../highlighted_htmls/exponential_saturation_plasticity.html`  
+**Generator**: `dashboard_generators/exponential_saturation.py`
+
+Comprehensive analysis of one-dimensional exponential saturation isotropic hardening elastoplasticity model.
+
+- **Material Model**: Exponential saturation hardening Y(ε̄^p) = Y₀ + H[1 - exp(-α ε̄^p)]
+- **Material Properties**: E = 210 GPa, Y₀ = 410 MPa, H = 275 MPa, α = 100
+- **Applied Strain**: ε(t) = 0.01 sin(βt), β = 1 rad/s, 0 ≤ t ≤ 30 s
+- **Time Integration**: Backward Euler with return mapping and Newton solver for consistency equation
+- **Plots**: 6 vertical plots showing total strain, stress, plastic strain, accumulated plastic strain, plastic strain rate, and stress-strain path
+- **Features**: Detailed hover information including yield function f, elastic/plastic state, flow strength, and hardening rate; home/reset axes button; precise first yield time detection
+
+**To regenerate**:
+```bash
+cd dashboard_generators
+python exponential_saturation.py
+```
+
 ## 🔧 Development Workflow
 
 ### Creating a New Dashboard

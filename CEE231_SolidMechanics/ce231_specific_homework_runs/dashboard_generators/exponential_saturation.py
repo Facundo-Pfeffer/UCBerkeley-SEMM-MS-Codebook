@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """
-Exponential Saturation Hardening Plasticity Summary Page Generator
-==================================================================
+Exponential Saturation Hardening Plasticity Dashboard Generator
+================================================================
 Creates a comprehensive summary HTML page explaining the analysis steps
-and displaying the four required plots.
+and displaying six plots: total strain, stress, plastic strain, accumulated
+plastic strain, plastic strain rate, and stress-strain path.
 """
 
 import sys
@@ -668,7 +669,7 @@ def generate_summary_html(t, eps, sigma, eps_p, epsp_bar, epsp_bar_dot, plot_htm
 def main():
     """Generate the summary HTML page."""
     print("\n" + "="*70)
-    print("CEE231 - Exponential Saturation Hardening Summary Generator")
+    print("CEE231 - Exponential Saturation Hardening Plasticity Dashboard")
     print("="*70 + "\n")
     
     print("Computing response with default parameters...")
@@ -715,10 +716,10 @@ def main():
     html_content = generate_summary_html(t, eps, sigma, eps_p, epsp_bar, epsp_bar_dot, plot_html)
     
     # Save to highlighted_htmls
-    output_path = Path(__file__).parent.parent.parent / 'highlighted_htmls' / 'exponential_saturation_plasticity_summary.html'
+    output_path = Path(__file__).parent.parent.parent / 'highlighted_htmls' / 'exponential_saturation_plasticity.html'
     output_path.write_text(html_content, encoding='utf-8')
     
-    print(f"\n[SUCCESS] Summary generated: {output_path}")
+    print(f"\n[SUCCESS] Dashboard generated: {output_path}")
     print("="*70)
 
 
