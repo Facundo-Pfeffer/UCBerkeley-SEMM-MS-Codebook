@@ -239,6 +239,23 @@ def create_plots(t, eps, sigma, eps_p, epsp_bar, epsp_bar_dot, E, Y0, H, alpha, 
         text=hover_text_stress
     ), row=2, col=1)
     
+    # Add dashed lines showing Y₀ + H saturation limit
+    Y_saturation = Y0 + H
+    fig.add_trace(go.Scatter(
+        x=[t[0], t[-1]], y=[Y_saturation, Y_saturation],
+        mode='lines',
+        line=dict(color='gray', width=2, dash='dash'),
+        showlegend=False,
+        hovertemplate=f'Y₀ + H = {Y_saturation:.2f} MPa<extra></extra>'
+    ), row=2, col=1)
+    fig.add_trace(go.Scatter(
+        x=[t[0], t[-1]], y=[-Y_saturation, -Y_saturation],
+        mode='lines',
+        line=dict(color='gray', width=2, dash='dash'),
+        showlegend=False,
+        hovertemplate=f'-(Y₀ + H) = -{Y_saturation:.2f} MPa<extra></extra>'
+    ), row=2, col=1)
+    
     # Plot 3: Plastic Strain vs Time
     hover_text_eps_p = [
         f't = {ti:.6f} s<br>' +

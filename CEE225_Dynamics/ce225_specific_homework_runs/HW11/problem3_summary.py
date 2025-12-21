@@ -675,7 +675,7 @@ def create_displacement_plots_with_mode_shapes(time, u, q, mode_shapes, floor_he
                     )
                 ),
                 row=j+1, col=1
-            )
+        )
     
     fig.update_layout(
         title=dict(

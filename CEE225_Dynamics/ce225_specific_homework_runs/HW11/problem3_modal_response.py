@@ -95,39 +95,20 @@ def load_measured_floor_accelerations(data_dir=None):
     --------
     time : np.ndarray
         Time vector [s]
-    acc_measured : list of np.ndarray (floors)
-    acc_ground : np.ndarray
+    acc_measured : list of np.ndarray
         Measured accelerations for each floor [m/s²]
     """
-    from pathlib import Path
-    import pandas as pd
-    try:
-        data_dir = Path(data_dir) if data_dir else Path(__file__).parent / 'input_files'
-        csv_path = data_dir / 'ground_motion_excitation.csv'
-        df = pd.read_csv(csv_path)
-        time = df['time'].values
-        acc_all = [df[col].values for col in ['L1AccX_filtered', 'L2AccX_filtered', 'L3AccX_filtered']]
-        acc_ground = df['tableAccX_filtered'].values
-    except Exception as exc:
-        print(f"Measured acceleration data not loaded: {exc}")
-        return None, None, None
+    data_loader = DataLoader(data_dir)
     
-    time = np.asarray(time, dtype=float)
-    acc_measured = [np.asarray(a, dtype=float) for a in acc_all]
-    acc_ground = np.asarray(acc_ground, dtype=float)
-    
-    # Unit handling: these columns are in g (per user), convert to m/s²
-    acc_measured = [a * 9.81 for a in acc_measured]
-    acc_ground = acc_ground * 9.81
-    print("Measured floor and ground accelerations converted from g to m/s² (ground_motion_excitation.csv)")
-    
-    return time, acc_measured, acc_ground
+    # Try to load from a file that might contain measured data
+    # For now, return None - user can specify file
+    return None, None
 
 
 def run_problem3_analysis(mass_matrix, mode_shapes, natural_freqs, damping_ratios,
                           floor_heights, output_dir):
     """
-    Run Step 3 modal response analysis.
+    Run Problem 3 modal response analysis.
     
     Parameters:
     -----------
@@ -180,8 +161,6 @@ def run_problem3_analysis(mass_matrix, mode_shapes, natural_freqs, damping_ratio
     # Solve modal equations
     print("\nSolving modal equations...")
     D, D_dot, D_ddot = analyzer.solve_modal_equations(ug_ddot, time, dt)
-    D_ddot_inch = D_ddot * 39.3701  # m/s² to in/s² (modal relative accelerations)
-    D_ddot_rel = D_ddot.copy()  # relative modal accels for diagnostics
     
     # Compute modal coordinates q_n(t) = Γ_n D_n(t)
     q = analyzer.compute_modal_coordinates(D)
@@ -190,23 +169,10 @@ def run_problem3_analysis(mass_matrix, mode_shapes, natural_freqs, damping_ratio
     print("Computing floor responses...")
     u, u_dot, u_ddot = analyzer.compute_floor_responses(D, D_dot, D_ddot, ug_ddot=ug_ddot)
     
-    # Load measured floor accelerations (item v)
-    meas_time, meas_acc, meas_ground = load_measured_floor_accelerations()
-    if meas_time is not None and meas_acc is not None:
-        meas_acc = [np.asarray(a) for a in meas_acc]
-        meas_ground = np.asarray(meas_ground) if meas_ground is not None else None
-    else:
-        meas_acc = None
-        meas_ground = None
-    
     # Compute base shear and moment
     print("Computing base shear and moment...")
     V_base = analyzer.compute_base_shear(D)
     M_base = analyzer.compute_base_moment(D)
-    
-    # Debug: Print modal static base moments
-    print(f"  Modal static base moments Mb_static: {analyzer.Mb_static} N·m")
-    print(f"  Max base moment (before conversion): {np.max(np.abs(M_base)):.2f} N·m")
     
     # Convert units for output
     # Displacements: m to inches
@@ -215,25 +181,12 @@ def run_problem3_analysis(mass_matrix, mode_shapes, natural_freqs, damping_ratio
     
     # Accelerations: m/s² to inches/s²
     u_ddot_inch = u_ddot * 39.3701  # m/s² to in/s²
-    if meas_acc is not None:
-        meas_acc_inch = [a * 39.3701 for a in meas_acc]
-        meas_ground_inch = meas_ground * 39.3701 if meas_ground is not None else None
-        # Simple double integration to get measured displacements (baseline assumed zero)
-        meas_disp_m = [_integrate_acc_to_disp(meas_time, a) for a in meas_acc]
-        meas_disp_inch = [d * 39.3701 for d in meas_disp_m]
-    else:
-        meas_acc_inch = None
-        meas_ground_inch = None
-        meas_disp_inch = None
     
     # Base shear: N to kips
     V_base_kips = V_base / 4448.22  # N to kips
     
     # Base moment: N·m to kip-ft
-    # 1 kip-ft = 4448.22 N × 0.3048 m = 1355.82 N·m
-    # Therefore: 1 N·m = 1/1355.82 = 0.000737562 kip-ft
-    M_base_kipft = M_base * 0.000737562  # N·m to kip-ft
-    print(f"  Max base moment (after conversion): {np.max(np.abs(M_base_kipft)):.2f} kip-ft")
+    M_base_kipft = M_base * 0.737562  # N·m to kip-ft
     
     # Create plots
     print("\nGenerating plots...")
@@ -241,42 +194,12 @@ def run_problem3_analysis(mass_matrix, mode_shapes, natural_freqs, damping_ratio
     # (a) Modal displacement responses q_n(t)
     plot_modal_displacements(time, q_inch, output_dir)
     
-    # Ground motion plot (applied vs measured table)
-    plot_ground_motion(time, ug_ddot * 39.3701,
-                       meas_time=meas_time,
-                       meas_ground_inch=meas_ground_inch,
-                       output_dir=output_dir)
-    
-    # (a-extra) Modal accelerations vs input acceleration (overlay)
-    plot_mode_accelerations_vs_input(time, ug_ddot * 39.3701, D_ddot_inch, output_dir)
-    
     # (b) Floor displacement responses u_j(t)
-    plot_floor_displacements(time, u_inch, output_dir,
-                             measured_time=meas_time, measured_disp=meas_disp_inch)
+    plot_floor_displacements(time, u_inch, output_dir)
     
     # (c) Floor acceleration responses ü_j(t)
-    plot_floor_accelerations(time, u_ddot_inch, output_dir,
-                             measured_time=meas_time, measured_acc=meas_acc_inch)
+    plot_floor_accelerations(time, u_ddot_inch, output_dir)
     
-    # Diagnostics: floor 3 relative vs absolute, sign, and peak ratios
-    if meas_acc_inch is not None and meas_ground_inch is not None:
-        u_rel_m = np.zeros_like(u_ddot)  # relative floor accels (exclude ground)
-        for j in range(u_rel_m.shape[0]):
-            for n in range(D_ddot.shape[0]):
-                u_rel_m[j, :] += analyzer.Phi[j, n] * analyzer.Gamma[n] * D_ddot[n, :]
-        u_rel_inch = u_rel_m * 39.3701
-        meas_rel_inch = [meas_acc_inch[j] - meas_ground_inch for j in range(len(meas_acc_inch))]
-        plot_floor3_diagnostics(
-            time=time,
-            u_abs_inch=u_ddot_inch,
-            u_rel_inch=u_rel_inch,
-            meas_time=meas_time,
-            meas_abs_inch=meas_acc_inch,
-            meas_rel_inch=meas_rel_inch,
-            output_dir=output_dir
-        )
-        print_peak_ratios(u_ddot_inch, meas_acc_inch, time)
-
     # (d) Base shear
     plot_base_shear(time, V_base_kips, output_dir)
     
@@ -284,7 +207,7 @@ def run_problem3_analysis(mass_matrix, mode_shapes, natural_freqs, damping_ratio
     plot_base_moment(time, M_base_kipft, output_dir)
     
     # Create comprehensive summary page
-    print("\nCreating Step 3 summary page...")
+    print("\nCreating Problem 3 summary page...")
     create_problem3_summary(
         mass_matrix=mass_matrix,
         mode_shapes=mode_shapes,
@@ -292,8 +215,6 @@ def run_problem3_analysis(mass_matrix, mode_shapes, natural_freqs, damping_ratio
         damping_ratios=damping_ratios,
         floor_heights=floor_heights,
         time=time,
-        ug_ddot=ug_ddot * 39.3701,
-        meas_ground=meas_ground_inch,
         q=q_inch,
         u=u_inch,
         u_ddot=u_ddot_inch,
@@ -303,7 +224,7 @@ def run_problem3_analysis(mass_matrix, mode_shapes, natural_freqs, damping_ratio
         output_dir=output_dir
     )
     
-    print("\nStep 3 analysis complete!")
+    print("\nProblem 3 analysis complete!")
 
 
 def main():
@@ -358,7 +279,7 @@ def plot_modal_displacements(time, q, output_dir):
     fig = make_subplots(
         rows=3, cols=1,
         subplot_titles=[f'Mode {n+1} Displacement Response q_{n+1}(t)' for n in range(3)],
-        vertical_spacing=0.16
+        vertical_spacing=0.08
     )
     
     colors = [Colors.BERKELEY_BLUE, Colors.CALIFORNIA_GOLD, Colors.FOUNDERS_ROCK]
@@ -370,16 +291,8 @@ def plot_modal_displacements(time, q, output_dir):
                 y=q[n, :],
                 mode='lines',
                 name=f'Mode {n+1}',
-                line=dict(color=colors[n], width=1.5),
-                showlegend=True,
-                hovertemplate=(
-                    f"<b>Mode {n+1}</b><br>"
-                    "Time: %{x:.2f} s<br>"
-                    "Modal displacement q%{customdata}: %{y:.4f} in<br>"
-                    "Meaning: modal contribution before floor superposition."
-                    "<extra></extra>"
-                ),
-                customdata=np.full_like(time, n+1, dtype=float)
+                line=dict(color=colors[n], width=2),
+                showlegend=(n == 0)
             ),
             row=n+1, col=1
         )
@@ -388,32 +301,14 @@ def plot_modal_displacements(time, q, output_dir):
         title=dict(
             text='(a) Modal Displacement Responses q<sub>n</sub>(t)',
             x=0.5,
-            y=0.99,
-            pad=dict(t=20, b=10),
-            font=dict(size=18, color=Colors.TEXT_DARK, family='Arial, sans-serif', weight='bold')
+            font=dict(size=18, color=Colors.TEXT_DARK, family='Arial, sans-serif')
         ),
         plot_bgcolor=Colors.BG_LIGHT,
         paper_bgcolor=Colors.BG_WHITE,
         font=dict(family='Arial, sans-serif', size=12),
         height=900,
-        showlegend=True,
-        hovermode='x unified',
-        legend=dict(
-            orientation='v',
-            x=1.02,
-            xanchor='left',
-            y=1.0,
-            bgcolor='rgba(255,255,255,0.9)',
-            bordercolor='rgba(0,0,0,0.15)',
-            borderwidth=1
-        ),
-        margin=dict(l=80, r=200, t=200, b=100)
+        showlegend=True
     )
-
-    # Shift subplot titles upward to sit above the plotting area
-    for ann in fig['layout']['annotations']:
-        ann['y'] += 0.02
-        ann['yanchor'] = 'bottom'
     
     for row in range(1, 4):
         fig.update_xaxes(get_axis_style(), row=row, col=1, title_text="Time [s]")
@@ -424,30 +319,7 @@ def plot_modal_displacements(time, q, output_dir):
     print(f"  Generated: {output_path}")
 
 
-def _integrate_acc_to_disp(time, acc):
-    """Double integrate acceleration → displacement using trapezoidal rule."""
-    acc = np.asarray(acc, dtype=float)
-    time = np.asarray(time, dtype=float)
-    if len(time) < 2:
-        return np.zeros_like(time)
-    
-    vel = np.concatenate(([0.0], _cumtrapz(acc, time)))
-    disp = np.concatenate(([0.0], _cumtrapz(vel, time)))
-    return disp
-
-
-def _cumtrapz(y, x):
-    """Cumulative trapezoidal integration without SciPy."""
-    y = np.asarray(y, dtype=float)
-    x = np.asarray(x, dtype=float)
-    if len(x) < 2:
-        return np.zeros_like(x)
-    dx = np.diff(x)
-    y_mid = 0.5 * (y[:-1] + y[1:])
-    return np.cumsum(y_mid * dx)
-
-
-def plot_floor_displacements(time, u, output_dir, measured_time=None, measured_disp=None):
+def plot_floor_displacements(time, u, output_dir):
     """Plot floor displacement responses u_j(t) [inches]."""
     fig = make_subplots(
         rows=3, cols=1,
@@ -466,40 +338,10 @@ def plot_floor_displacements(time, u, output_dir, measured_time=None, measured_d
                 mode='lines',
                 name=floor_names[j],
                 line=dict(color=colors[j], width=2),
-                showlegend=True,
-                hovertemplate=(
-                    f"<b>{floor_names[j]}</b><br>"
-                    "Time: %{x:.2f} s<br>"
-                    "Floor displacement u%{customdata}: %{y:.3f} in<br>"
-                    "Meaning: relative to moving ground, converted to inches."
-                    "<extra></extra>"
-                ),
-                customdata=np.full_like(time, j+1, dtype=float)
+                showlegend=(j == 0)
             ),
             row=j+1, col=1
         )
-        
-        # Overlay measured displacement if available (derived from measured accelerations)
-        if measured_time is not None and measured_disp is not None:
-            fig.add_trace(
-                go.Scatter(
-                    x=measured_time,
-                    y=measured_disp[j],
-                    mode='markers',
-                    name=f'{floor_names[j]} (measured)',
-                    marker=dict(color=colors[j], size=5, symbol='circle-open'),
-                    line=dict(color=colors[j], width=1, dash='dot'),
-                    showlegend=True,
-                    hovertemplate=(
-                        f"<b>{floor_names[j]} measured</b><br>"
-                        "Time: %{x:.2f} s<br>"
-                        "Disp (via ∫∫acc): %{y:.3f} in<br>"
-                        "Computed by double-integrating measured accel."
-                        "<extra></extra>"
-                    )
-                ),
-                row=j+1, col=1
-            )
     
     fig.update_layout(
         title=dict(
@@ -511,10 +353,7 @@ def plot_floor_displacements(time, u, output_dir, measured_time=None, measured_d
         paper_bgcolor=Colors.BG_WHITE,
         font=dict(family='Arial, sans-serif', size=12),
         height=900,
-        showlegend=True,
-        hovermode='x unified',
-        legend=dict(orientation='h', x=0.5, xanchor='center', y=1.08),
-        margin=dict(l=80, r=140, t=90, b=80)
+        showlegend=True
     )
     
     for row in range(1, 4):
@@ -526,12 +365,12 @@ def plot_floor_displacements(time, u, output_dir, measured_time=None, measured_d
     print(f"  Generated: {output_path}")
 
 
-def plot_floor_accelerations(time, u_ddot, output_dir, measured_time=None, measured_acc=None):
+def plot_floor_accelerations(time, u_ddot, output_dir):
     """Plot floor acceleration responses ü_j(t) [inches/s²]."""
     fig = make_subplots(
         rows=3, cols=1,
         subplot_titles=[f'Floor {j+1} Acceleration Response ü_{j+1}(t)' for j in range(3)],
-        vertical_spacing=0.16
+        vertical_spacing=0.08
     )
     
     colors = [Colors.BERKELEY_BLUE, Colors.CALIFORNIA_GOLD, Colors.FOUNDERS_ROCK]
@@ -545,70 +384,23 @@ def plot_floor_accelerations(time, u_ddot, output_dir, measured_time=None, measu
                 mode='lines',
                 name=floor_names[j],
                 line=dict(color=colors[j], width=2),
-                showlegend=True,
-                hovertemplate=(
-                    f"<b>{floor_names[j]}</b><br>"
-                    "Time: %{x:.2f} s<br>"
-                    "Total accel ü%{customdata}: %{y:.2f} in/s²<br>"
-                    "Includes relative modal accel + ground motion."
-                    "<extra></extra>"
-                ),
-                customdata=np.full_like(time, j+1, dtype=float)
+                showlegend=(j == 0)
             ),
             row=j+1, col=1
         )
-        
-        if measured_time is not None and measured_acc is not None:
-            fig.add_trace(
-                go.Scatter(
-                    x=measured_time,
-                    y=measured_acc[j],
-                    mode='markers',
-                    name=f'{floor_names[j]} (measured)',
-                    marker=dict(color=colors[j], size=5, symbol='diamond-open'),
-                    line=dict(color=colors[j], width=1, dash='dot'),
-                    showlegend=True,
-                    hovertemplate=(
-                        f"<b>{floor_names[j]} measured</b><br>"
-                        "Time: %{x:.2f} s<br>"
-                        "Accel: %{y:.2f} in/s²<br>"
-                        "Unit source: item (v) file, converted from g."
-                        "<extra></extra>"
-                    )
-                ),
-                row=j+1, col=1
-            )
     
     fig.update_layout(
         title=dict(
             text='(c) Floor Acceleration Responses ü<sub>j</sub>(t)',
             x=0.5,
-            y=0.995,
-            pad=dict(t=10, b=20),
-            font=dict(size=18, color=Colors.TEXT_DARK, family='Arial, sans-serif', weight='bold')
+            font=dict(size=18, color=Colors.TEXT_DARK, family='Arial, sans-serif')
         ),
         plot_bgcolor=Colors.BG_LIGHT,
         paper_bgcolor=Colors.BG_WHITE,
         font=dict(family='Arial, sans-serif', size=12),
         height=900,
-        showlegend=True,
-        hovermode='x unified',
-        legend=dict(
-            orientation='v',
-            x=1.02,
-            xanchor='left',
-            y=1.0,
-            bgcolor='rgba(255,255,255,0.9)',
-            bordercolor='rgba(0,0,0,0.15)',
-            borderwidth=1
-        ),
-        margin=dict(l=80, r=200, t=200, b=100)
+        showlegend=True
     )
-
-    # Shift subplot titles upward to sit above the plotting area
-    for ann in fig['layout']['annotations']:
-        ann['y'] += 0.02
-        ann['yanchor'] = 'bottom'
     
     for row in range(1, 4):
         fig.update_xaxes(get_axis_style(), row=row, col=1, title_text="Time [s]")
@@ -629,14 +421,7 @@ def plot_base_shear(time, V_base, output_dir):
             y=V_base,
             mode='lines',
             name='Base Shear',
-            line=dict(color=Colors.BERKELEY_BLUE, width=2),
-            hovertemplate=(
-                "<b>Base shear</b><br>"
-                "Time: %{x:.2f} s<br>"
-                "V_b: %{y:.2f} kips<br>"
-                "Sign convention: positive pushes to +X at base."
-                "<extra></extra>"
-            )
+            line=dict(color=Colors.BERKELEY_BLUE, width=2)
         )
     )
     
@@ -653,9 +438,7 @@ def plot_base_shear(time, V_base, output_dir):
         xaxis=get_axis_style(),
         yaxis=get_axis_style(),
         xaxis_title="Time [s]",
-        yaxis_title="Base Shear [kips]",
-        hovermode='x unified',
-        margin=dict(l=80, r=140, t=90, b=70)
+        yaxis_title="Base Shear [kips]"
     )
     
     output_path = output_dir / 'problem3_base_shear.html'
@@ -673,14 +456,7 @@ def plot_base_moment(time, M_base, output_dir):
             y=M_base,
             mode='lines',
             name='Base Moment',
-            line=dict(color=Colors.BERKELEY_BLUE, width=2),
-            hovertemplate=(
-                "<b>Base overturning moment</b><br>"
-                "Time: %{x:.2f} s<br>"
-                "M_b: %{y:.2f} kip-ft<br>"
-                "Tip: slope of V_b influences rotations at the base."
-                "<extra></extra>"
-            )
+            line=dict(color=Colors.BERKELEY_BLUE, width=2)
         )
     )
     
@@ -697,201 +473,10 @@ def plot_base_moment(time, M_base, output_dir):
         xaxis=get_axis_style(),
         yaxis=get_axis_style(),
         xaxis_title="Time [s]",
-        yaxis_title="Base Moment [kip-ft]",
-        hovermode='x unified',
-        margin=dict(l=80, r=140, t=90, b=70)
+        yaxis_title="Base Moment [kip-ft]"
     )
     
     output_path = output_dir / 'problem3_base_moment.html'
-    fig.write_html(str(output_path), include_plotlyjs='cdn')
-    print(f"  Generated: {output_path}")
-
-
-def plot_floor3_diagnostics(time, u_abs_inch, u_rel_inch, meas_time, meas_abs_inch, meas_rel_inch, output_dir):
-    """Diagnostics for Floor 3: absolute vs relative, sign flip check."""
-    idx = 2  # Floor 3 (0-indexed)
-    fig = make_subplots(
-        rows=2, cols=1,
-        subplot_titles=[
-            "Floor 3: Absolute acceleration (computed vs measured, sign check)",
-            "Floor 3: Relative acceleration (computed vs measured-ground, sign check)"
-        ],
-        vertical_spacing=0.12
-    )
-    color = Colors.BERKELEY_BLUE
-    # Absolute
-    fig.add_trace(
-        go.Scatter(
-            x=time, y=u_abs_inch[idx, :],
-            mode='lines', name='Computed abs', line=dict(color=color, width=2)
-        ), row=1, col=1
-    )
-    fig.add_trace(
-        go.Scatter(
-            x=meas_time, y=meas_abs_inch[idx],
-            mode='markers', name='Measured abs', marker=dict(color=color, symbol='diamond-open', size=5)
-        ), row=1, col=1
-    )
-    fig.add_trace(
-        go.Scatter(
-            x=meas_time, y=-meas_abs_inch[idx],
-            mode='markers', name='Measured abs (flipped)', marker=dict(color='red', symbol='x', size=5)
-        ), row=1, col=1
-    )
-    # Relative
-    fig.add_trace(
-        go.Scatter(
-            x=time, y=u_rel_inch[idx, :],
-            mode='lines', name='Computed relative', line=dict(color=color, width=2, dash='solid')
-        ), row=2, col=1
-    )
-    fig.add_trace(
-        go.Scatter(
-            x=meas_time, y=meas_rel_inch[idx],
-            mode='markers', name='Measured rel = meas - ground', marker=dict(color=color, symbol='circle-open', size=5)
-        ), row=2, col=1
-    )
-    fig.add_trace(
-        go.Scatter(
-            x=meas_time, y=-meas_rel_inch[idx],
-            mode='markers', name='Measured rel (flipped)', marker=dict(color='red', symbol='cross', size=5)
-        ), row=2, col=1
-    )
-    fig.update_layout(
-        height=800,
-        title=dict(text="Floor 3 Diagnostics: absolute vs relative, sign check", x=0.5, font=dict(size=18, color=Colors.TEXT_DARK)),
-        plot_bgcolor=Colors.BG_LIGHT,
-        paper_bgcolor=Colors.BG_WHITE,
-        font=dict(family='Arial, sans-serif', size=12),
-        hovermode='x unified',
-        legend=dict(orientation='h', yanchor='bottom', y=1.05, xanchor='center', x=0.5)
-    )
-    fig.update_xaxes(get_axis_style(), row=1, col=1, title_text="Time [s]")
-    fig.update_yaxes(get_axis_style(), row=1, col=1, title_text="Acceleration [in/s²]")
-    fig.update_xaxes(get_axis_style(), row=2, col=1, title_text="Time [s]")
-    fig.update_yaxes(get_axis_style(), row=2, col=1, title_text="Acceleration [in/s²]")
-    output_path = output_dir / 'problem3_floor3_diagnostics.html'
-    fig.write_html(str(output_path), include_plotlyjs='cdn')
-    print(f"  Generated: {output_path}")
-
-
-def print_peak_ratios(u_abs_inch, meas_abs_inch, time):
-    """Print peak ratios Floor3:2:1 for computed and measured (absolute)."""
-    comp_peaks = [np.max(np.abs(u_abs_inch[j, :])) for j in range(3)]
-    meas_peaks = [np.max(np.abs(meas_abs_inch[j])) for j in range(3)]
-    def ratio(vals):
-        return [vals[2]/vals[1], vals[1]/vals[0], vals[2]/vals[0]] if all(v!=0 for v in vals) else [np.nan]*3
-    comp_ratio = ratio(comp_peaks)
-    meas_ratio = ratio(meas_peaks)
-    print("\nPeak abs acceleration (in/s²):")
-    print(f"  Computed floors 1/2/3: {comp_peaks}")
-    print(f"  Measured floors 1/2/3: {meas_peaks}")
-    print("Peak ratios (Floor3:2:1, 2:1, 3:1):")
-    print(f"  Computed: {comp_ratio}")
-    print(f"  Measured: {meas_ratio}")
-
-
-def plot_mode_accelerations_vs_input(time, ug_ddot_inch, D_ddot_inch, output_dir):
-    """Plot modal accelerations (relative) vs ground acceleration input [in/s²]."""
-    n_modes = D_ddot_inch.shape[0]
-    colors = [Colors.BERKELEY_BLUE, Colors.CALIFORNIA_GOLD, Colors.FOUNDERS_ROCK]
-    
-    fig = go.Figure()
-    
-    # Ground input
-    fig.add_trace(
-        go.Scatter(
-            x=time,
-            y=ug_ddot_inch,
-            mode='lines',
-            name='Ground accel (input)',
-            line=dict(color='gray', width=2, dash='dash'),
-            hovertemplate=(
-                "<b>Ground acceleration</b><br>"
-                "Time: %{x:.2f} s<br>"
-                "ü_g: %{y:.2f} in/s²"
-                "<extra></extra>"
-            )
-        )
-    )
-    
-    # Modal accelerations
-    for n in range(n_modes):
-        fig.add_trace(
-            go.Scatter(
-                x=time,
-                y=D_ddot_inch[n, :],
-                mode='lines',
-                name=f'Mode {n+1} ü_rel',
-                line=dict(color=colors[n], width=1.5),
-                hovertemplate=(
-                    f"<b>Mode {n+1} relative accel</b><br>"
-                    "Time: %{x:.2f} s<br>"
-                    "ü_rel: %{y:.2f} in/s²<br>"
-                    "From modal equation: D¨ + 2ζω D˙ + ω²D = -ü_g"
-                    "<extra></extra>"
-                )
-            )
-        )
-    
-    fig.update_layout(
-        title=dict(
-            text='Modal Accelerations vs Ground Acceleration',
-            x=0.5,
-            font=dict(size=18, color=Colors.TEXT_DARK, family='Arial, sans-serif')
-        ),
-        plot_bgcolor=Colors.BG_LIGHT,
-        paper_bgcolor=Colors.BG_WHITE,
-        font=dict(family='Arial, sans-serif', size=12),
-        height=500,
-        xaxis=get_axis_style(),
-        yaxis=get_axis_style(),
-        xaxis_title="Time [s]",
-        yaxis_title="Acceleration [in/s²]",
-        hovermode='x unified'
-    )
-    
-    output_path = output_dir / 'problem3_mode_accel_vs_input.html'
-    fig.write_html(str(output_path), include_plotlyjs='cdn')
-    print(f"  Generated: {output_path}")
-
-
-def plot_ground_motion(time, ug_ddot_inch, meas_time, meas_ground_inch, output_dir):
-    """Plot ground acceleration (table) [in/s²]."""
-    fig = go.Figure()
-    if meas_time is not None and meas_ground_inch is not None:
-        # Show only measured table points (requested)
-        fig.add_trace(
-            go.Scatter(
-                x=meas_time, y=meas_ground_inch,
-                mode='markers', name='Table acceleration (measured)',
-                marker=dict(color=Colors.BERKELEY_BLUE, size=4, symbol='diamond'),
-                hovertemplate="t=%{x:.2f}s<br>üg (table)=%{y:.2f} in/s²<extra></extra>"
-            )
-        )
-    else:
-        # Fallback to applied if measured missing
-        fig.add_trace(
-            go.Scatter(
-                x=time, y=ug_ddot_inch,
-                mode='markers', name='Ground acceleration (applied)',
-                marker=dict(color=Colors.BERKELEY_BLUE, size=4, symbol='diamond'),
-                hovertemplate="t=%{x:.2f}s<br>üg=%{y:.2f} in/s²<extra></extra>"
-            )
-        )
-    fig.update_layout(
-        title=dict(text='Ground Acceleration (Table)', x=0.5, font=dict(size=18, color=Colors.TEXT_DARK)),
-        plot_bgcolor=Colors.BG_LIGHT,
-        paper_bgcolor=Colors.BG_WHITE,
-        font=dict(family='Arial, sans-serif', size=12),
-        height=400,
-        xaxis=get_axis_style(),
-        yaxis=get_axis_style(),
-        xaxis_title="Time [s]",
-        yaxis_title="Acceleration [in/s²]",
-        hovermode='x unified'
-    )
-    output_path = output_dir / 'problem3_ground_motion.html'
     fig.write_html(str(output_path), include_plotlyjs='cdn')
     print(f"  Generated: {output_path}")
 

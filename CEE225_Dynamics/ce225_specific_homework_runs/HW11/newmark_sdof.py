@@ -98,3 +98,9 @@ def newmark_sdof(m: float, k: float, c: float, p: np.ndarray, dt: float,
     return np.column_stack((u, v, a))
 
 
+
+
+
+
+
+

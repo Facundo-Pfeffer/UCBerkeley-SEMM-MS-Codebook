@@ -131,8 +131,8 @@ def main():
     Phi_original = np.column_stack(all_mode_shapes)
     print(f"\nMode shape matrix Φ (from RMS ratios):")
     print(Phi_original)
-    all_mode_shapes_mass_normalized = None
-    has_mass_normalized = False
+        all_mode_shapes_mass_normalized = None
+        has_mass_normalized = False
 
     # Generate plots (filtered results)
     print("\nGenerating filtered visualizations...")
@@ -217,12 +217,12 @@ def main():
     # floor_heights already defined on line 47: [2.0828, 4.1656, 6.2484] meters
 
     # Step 3: Modal Response Analysis
-    print("\n" + "=" * 70)
-    print("Problem #3: Modal Response Analysis")
-    print("=" * 70)
-    try:
-        run_problem3_analysis(
-            mass_matrix=M,
+        print("\n" + "=" * 70)
+        print("Problem #3: Modal Response Analysis")
+        print("=" * 70)
+        try:
+            run_problem3_analysis(
+                mass_matrix=M,
             mode_shapes=Phi_used,
             natural_freqs=omega_used,
             damping_ratios=zeta_used,
@@ -244,13 +244,13 @@ def main():
             mode_shapes=Phi_used,
             natural_freqs=omega_used,
             damping_ratios=zeta_used,
-            floor_heights=floor_heights,
-            output_dir=output_dir
-        )
-    except Exception as e:
+                floor_heights=floor_heights,
+                output_dir=output_dir
+            )
+        except Exception as e:
         print(f"\nWarning: Step 4 analysis failed: {e}")
-        import traceback
-        traceback.print_exc()
+            import traceback
+            traceback.print_exc()
 
     # Summary
     print("\n" + "=" * 70)
@@ -262,11 +262,11 @@ def main():
         print(f"  - mode_{mode_num}_analysis_raw.html")
         print(f"  - mode_{mode_num}_damping.html")
     print("  - all_mode_shapes.html")
-    print("  - problem3_modal_displacements.html")
-    print("  - problem3_floor_displacements.html")
-    print("  - problem3_floor_accelerations.html")
-    print("  - problem3_base_shear.html")
-    print("  - problem3_base_moment.html")
+        print("  - problem3_modal_displacements.html")
+        print("  - problem3_floor_displacements.html")
+        print("  - problem3_floor_accelerations.html")
+        print("  - problem3_base_shear.html")
+        print("  - problem3_base_moment.html")
     print("  - step3_modal_response.html")
     print("  - problem4_spectrum.html")
     print("  - step4_response_spectrum.html")

@@ -21,7 +21,7 @@ class DataLoader:
         if mode_number == 'ground_motion':
             csv_path = self.data_dir / 'ground_motion_excitation.csv'
         else:
-            csv_path = self.data_dir / f'mode_{mode_number}_excitation.csv'
+        csv_path = self.data_dir / f'mode_{mode_number}_excitation.csv'
         
         if not csv_path.exists():
             raise FileNotFoundError(f"Data file not found: {csv_path}")
