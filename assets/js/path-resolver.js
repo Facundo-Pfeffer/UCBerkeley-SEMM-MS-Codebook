@@ -20,15 +20,21 @@
 /**
  * Configuration Constants
  * DO NOT MODIFY THESE UNLESS THE REPOSITORY STRUCTURE CHANGES
+ * 
+ * IMPORTANT: GitHub Pages serves the webpage/ folder contents as the root.
+ * This means paths should NOT include '/webpage/' - GitHub resolves it automatically.
+ * Example: 'index.html' in webpage/ becomes '/UCBerkeley-SEMM-MS-Codebook/index.html' on GitHub Pages
  */
 const CONFIG = {
 	// GitHub Pages repository subdirectory
+	// Note: webpage/ folder contents are served at this base path (webpage/ is resolved by GitHub)
 	GITHUB_PAGES_BASE: '/UCBerkeley-SEMM-MS-Codebook/',
 	
 	// Local development: webpage folder is the root
 	LOCAL_WEBPAGE_ROOT: 'webpage/',
 	
 	// Asset folders (relative to webpage root)
+	// These paths are used as-is on GitHub Pages (webpage/ is already resolved)
 	ASSET_FOLDERS: {
 		css: 'assets/css/',
 		js: 'assets/js/',
@@ -68,7 +74,8 @@ function getBasePath() {
 		return CONFIG.GITHUB_PAGES_BASE;
 	}
 	
-	// Local: no base path needed (webpage/ is root)
+	// Local: no base path needed
+	// Note: On GitHub Pages, webpage/ folder is served as root, so paths don't include '/webpage/'
 	return '';
 }
 

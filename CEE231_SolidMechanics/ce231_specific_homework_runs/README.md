@@ -2,7 +2,7 @@
 
 Organized repository for CEE 231 Solid Mechanics course homework assignments and interactive dashboards.
 
-## 📁 Folder Structure
+## Folder Structure
 
 ```
 ce231_specific_homework_runs/
@@ -17,7 +17,7 @@ ce231_specific_homework_runs/
 ../highlighted_htmls/          # Web-ready HTML files (deployed by GitHub Actions)
 ```
 
-## 🎨 Plotly Templates
+## Plotly Templates
 
 The `plotly_templates.py` file provides centralized styling for all dashboards:
 
@@ -46,7 +46,7 @@ fig.update_xaxes(**get_axis_style())
 save_figure(fig, "output.html")
 ```
 
-## 📊 Available Dashboards
+## Available Dashboards
 
 ### 1. **Viscoelastic Step Response Dashboard**
 **File**: `../highlighted_htmls/step_response_clean.html`  
@@ -123,7 +123,7 @@ cd dashboard_generators
 python exponential_saturation.py
 ```
 
-## 🔧 Development Workflow
+## Development Workflow
 
 ### Creating a New Dashboard
 
@@ -152,7 +152,7 @@ python exponential_saturation.py
 3. Test the output HTML file
 4. The updated dashboard will be automatically deployed via GitHub Actions
 
-## 📚 Homework Scripts
+## Homework Scripts
 
 Individual homework Python scripts (01HW.py through 09HW.py) are located in `homework_scripts/`.
 
@@ -161,7 +161,7 @@ Each script contains problem-specific implementations:
 - **08HW**: Viscoelastic step response (basis for dashboard)
 - **09HW**: SLS sinusoidal response (basis for dashboard)
 
-## 🎓 HW7 Documentation
+## HW7 Documentation
 
 Documentation files for Homework 7 (Anisotropic Materials Analysis) are in `hw7_outputs/`:
 - `HW7_README.md`: Detailed explanation of HW7 methodology
@@ -174,7 +174,7 @@ Documentation files for Homework 7 (Anisotropic Materials Analysis) are in `hw7_
 
 These are automatically copied to the deployed site by the GitHub Actions workflow.
 
-## 🌐 Web Integration
+## Web Integration
 
 All dashboards in `../highlighted_htmls/` are web-ready and automatically deployed via GitHub Actions. They can be:
 - Linked directly from course pages
@@ -190,7 +190,7 @@ All dashboards in `../highlighted_htmls/` are web-ready and automatically deploy
 
 **Note**: The GitHub Actions workflow copies `highlighted_htmls/` folders to the deployment root, preserving their relative paths.
 
-## 📝 Notes
+## Notes
 
 - All dashboards use **UC Berkeley official colors**
 - Interactive controls are **single synchronized sliders**

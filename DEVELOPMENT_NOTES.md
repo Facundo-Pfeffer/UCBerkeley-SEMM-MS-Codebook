@@ -23,10 +23,10 @@ The website is deployed via GitHub Actions (`.github/workflows/deploy-pages.yml`
 When linking to PDFs from HTML files in the `webpage/` folder:
 
 ```html
-<!-- ✅ CORRECT (works after deployment) -->
+<!-- CORRECT (works after deployment) -->
 <a href="CEE225_Dynamics/highlighted_pdfs/CE%20225%20HW5%20-%20Facundo%20L.%20Pfeffer.pdf">
 
-<!-- ❌ INCORRECT (results in 404 errors on deployed site) -->
+<!-- INCORRECT (results in 404 errors on deployed site) -->
 <a href="../CEE225_Dynamics/highlighted_pdfs/CE%20225%20HW5%20-%20Facundo%20L.%20Pfeffer.pdf">
 ```
 
@@ -53,22 +53,22 @@ When linking to PDFs from HTML files in the `webpage/` folder:
 **Correct Paths from `highlighted_htmls` files:**
 
 ```html
-<!-- ✅ CORRECT - CSS and JS paths -->
+<!-- CORRECT - CSS and JS paths -->
 <link rel="stylesheet" href="../../assets/css/main.css" />
 <script src="../../assets/js/jquery.min.js"></script>
 
-<!-- ✅ CORRECT - Image paths (logo, general images) -->
+<!-- CORRECT - Image paths (logo, general images) -->
 <img src="../../images/logo.png" alt="" />
 
-<!-- ✅ CORRECT - Thumbnail images (matches CEE231 pattern) -->
+<!-- CORRECT - Thumbnail images (matches CEE231 pattern) -->
 <img src="../../images/CE225/Step1.png" alt="Mode Shape Analysis" />
 <img src="../../images/projects/cee-231-hw6-materialA.png" alt="Fe Directional E" />
 
-<!-- ✅ CORRECT - Navigation links to main pages -->
+<!-- CORRECT - Navigation links to main pages -->
 <a href="../../cee225-dynamics.html">CEE225</a>
 <a href="../../index.html">Home</a>
 
-<!-- ❌ INCORRECT - DO NOT include 'webpage/' in paths -->
+<!-- INCORRECT - DO NOT include 'webpage/' in paths -->
 <link rel="stylesheet" href="../../webpage/assets/css/main.css" />
 <img src="../../webpage/images/logo.png" alt="" />
 <img src="../../webpage/images/CE225/Step1.png" alt="" />
@@ -261,8 +261,8 @@ From any HTML file in `webpage/`, use `../` to access folders at root level.
 **Files Affected:**
 - `step1_mode_shapes.html` - Uses Phantom template, depends on external CSS/JS
 - `step2_damping.html` - Uses Phantom template, depends on external CSS/JS
-- `problem3_summary.html` - Uses inline styles, works perfectly ✅
-- `problem4_summary.html` - Uses inline styles, works perfectly ✅
+- `problem3_summary.html` - Uses inline styles, works perfectly
+- `problem4_summary.html` - Uses inline styles, works perfectly
 
 ---
 

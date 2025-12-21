@@ -8,18 +8,18 @@ This portfolio demonstrates computational analysis work in structural dynamics, 
 
 ## Features
 
-### 🎓 Academic Focus
+### Academic Focus
 - **CEE225 - Structural Dynamics**: SDOF systems, numerical integration, response spectrum analysis
 - **CEE220 - Structural Analysis**: Truss analysis, equilibrium matrix methods
 - **CEE231 - Solid Mechanics**: Material properties, directional Young's modulus analysis
 
-### 💻 Technical Implementation
+### Technical Implementation
 - **Interactive Visualizations**: Plotly-based dynamic response plots
 - **Numerical Methods**: Central Difference and Average Acceleration methods
 - **Error Analysis**: Stability studies and convergence analysis
 - **Modular Architecture**: Object-oriented Python implementations
 
-### 🎨 Design
+### Design
 - **UC Berkeley Branding**: Official colors (#003262 Berkeley Blue, #FDB515 California Gold)
 - **Responsive Layout**: Mobile-friendly design using HTML5UP Phantom template
 - **Professional Navigation**: Easy access to all projects and information
