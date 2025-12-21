@@ -105,36 +105,26 @@ function getPathPrefix() {
 }
 
 /**
- * Get the GitHub Pages base path if we're on GitHub Pages
- * Returns empty string if not on GitHub Pages
- */
-function getGitHubPagesBase() {
-	const currentPath = window.location.pathname;
-	// Check if we're on GitHub Pages with the repository subdirectory
-	if (currentPath.includes('/UCBerkeley-SEMM-MS-Codebook/')) {
-		return '/UCBerkeley-SEMM-MS-Codebook/webpage/';
-	}
-	return '';
-}
-
-/**
  * Resolve a path relative to the webpage root
- * Handles both local development and GitHub Pages deployment
+ * Uses the robust path-resolver.js module if available, otherwise falls back to legacy logic
  */
 function resolvePath(href) {
+	// Use robust path resolver if available
+	if (window.PathResolver && window.PathResolver.resolveNavPath) {
+		return window.PathResolver.resolveNavPath(href);
+	}
+	
+	// Fallback to legacy logic (for backwards compatibility)
 	// External URLs don't need resolution
 	if (href.startsWith('http://') || href.startsWith('https://') || href.startsWith('#')) {
 		return href;
 	}
 	
-	// Check if we're on GitHub Pages
-	const githubBase = getGitHubPagesBase();
-	if (githubBase) {
-		// Use absolute path from GitHub Pages root
-		return githubBase + href;
+	const currentPath = window.location.pathname;
+	if (currentPath.includes('/UCBerkeley-SEMM-MS-Codebook/')) {
+		return '/UCBerkeley-SEMM-MS-Codebook/' + href;
 	}
 	
-	// Use relative path for local development
 	const prefix = getPathPrefix();
 	return prefix + href;
 }
@@ -173,9 +163,11 @@ function generateDesktopNav() {
 
 /**
  * Generate mobile menu HTML with proper path resolution
+ * Structure must match CSS expectations: #menu > .inner > ul > li
  */
 function generateMobileMenu() {
-	let html = '<nav id="menu"><h2>Menu</h2><ul>';
+	// CSS expects: #menu > .inner > ul > li structure
+	let html = '<div class="inner"><ul>';
 	
 	mobileMenuData.forEach(item => {
 		if (item.type === 'section') {
@@ -185,7 +177,7 @@ function generateMobileMenu() {
 		}
 	});
 	
-	html += '</ul></nav>';
+	html += '</ul></div>';
 	return html;
 }
 
@@ -209,12 +201,12 @@ function initNavigation() {
 	// Ensure logo exists with proper path
 	let logo = header.querySelector('.logo');
 	const githubBase = getGitHubPagesBase();
-	const prefix = githubBase ? githubBase.replace('/webpage/', '/') : getPathPrefix();
+	const prefix = githubBase ? githubBase : getPathPrefix();
 	if (!logo) {
 		logo = document.createElement('a');
 		logo.href = resolvePath('index.html');
 		logo.className = 'logo';
-		const logoPath = githubBase ? '/UCBerkeley-SEMM-MS-Codebook/webpage/images/logo.png' : prefix + 'images/logo.png';
+		const logoPath = githubBase ? '/UCBerkeley-SEMM-MS-Codebook/images/logo.png' : prefix + 'images/logo.png';
 		logo.innerHTML = `<span class="symbol"><img src="${logoPath}" alt="" /></span><span class="title">Facundo L. Pfeffer</span>`;
 		header.insertBefore(logo, header.firstChild);
 	} else {
@@ -223,7 +215,7 @@ function initNavigation() {
 		if (logoImg && !logoImg.src.includes('http')) {
 			const currentSrc = logoImg.getAttribute('src');
 			if (!currentSrc.startsWith('../') && !currentSrc.startsWith('http') && !currentSrc.startsWith('/UCBerkeley-SEMM-MS-Codebook/')) {
-				const logoPath = githubBase ? '/UCBerkeley-SEMM-MS-Codebook/webpage/images/logo.png' : prefix + 'images/logo.png';
+				const logoPath = githubBase ? '/UCBerkeley-SEMM-MS-Codebook/images/logo.png' : prefix + 'images/logo.png';
 				logoImg.src = logoPath;
 			}
 		}
@@ -259,11 +251,14 @@ function initNavigation() {
 	}
 	
 	// Replace or add mobile menu
+	// CSS expects: #menu > .inner > ul > li structure
 	let mobileMenu = document.querySelector('#menu');
-	const mobileMenuHTML = generateMobileMenu().replace('<nav id="menu">', '').replace('</nav>', '');
+	const mobileMenuHTML = generateMobileMenu(); // Already returns <div class="inner">...</div>
 	if (mobileMenu) {
+		// Update existing menu
 		mobileMenu.innerHTML = mobileMenuHTML;
 	} else {
+		// Create new menu with proper structure
 		mobileMenu = document.createElement('nav');
 		mobileMenu.id = 'menu';
 		mobileMenu.innerHTML = mobileMenuHTML;
