@@ -63,10 +63,16 @@ const mobileMenuData = [
 /**
  * Calculate the relative path prefix needed to reach the webpage root
  * Based on the current page's location in the directory structure
+ * Only used for local development (not GitHub Pages)
  */
 function getPathPrefix() {
 	const currentPath = window.location.pathname;
-	const pathDepth = currentPath.split('/').filter(segment => segment && !segment.endsWith('.html')).length;
+	
+	// If we're on GitHub Pages, this function shouldn't be used
+	// (resolvePath will handle GitHub Pages separately)
+	if (currentPath.includes('/UCBerkeley-SEMM-MS-Codebook/')) {
+		return '';
+	}
 	
 	// If we're in a highlighted_htmls folder or similar subdirectory
 	// We need to go up to reach the webpage root
@@ -99,7 +105,21 @@ function getPathPrefix() {
 }
 
 /**
+ * Get the GitHub Pages base path if we're on GitHub Pages
+ * Returns empty string if not on GitHub Pages
+ */
+function getGitHubPagesBase() {
+	const currentPath = window.location.pathname;
+	// Check if we're on GitHub Pages with the repository subdirectory
+	if (currentPath.includes('/UCBerkeley-SEMM-MS-Codebook/')) {
+		return '/UCBerkeley-SEMM-MS-Codebook/webpage/';
+	}
+	return '';
+}
+
+/**
  * Resolve a path relative to the webpage root
+ * Handles both local development and GitHub Pages deployment
  */
 function resolvePath(href) {
 	// External URLs don't need resolution
@@ -107,6 +127,14 @@ function resolvePath(href) {
 		return href;
 	}
 	
+	// Check if we're on GitHub Pages
+	const githubBase = getGitHubPagesBase();
+	if (githubBase) {
+		// Use absolute path from GitHub Pages root
+		return githubBase + href;
+	}
+	
+	// Use relative path for local development
 	const prefix = getPathPrefix();
 	return prefix + href;
 }
@@ -180,20 +208,23 @@ function initNavigation() {
 	
 	// Ensure logo exists with proper path
 	let logo = header.querySelector('.logo');
-	const prefix = getPathPrefix();
+	const githubBase = getGitHubPagesBase();
+	const prefix = githubBase ? githubBase.replace('/webpage/', '/') : getPathPrefix();
 	if (!logo) {
 		logo = document.createElement('a');
 		logo.href = resolvePath('index.html');
 		logo.className = 'logo';
-		logo.innerHTML = `<span class="symbol"><img src="${prefix}images/logo.png" alt="" /></span><span class="title">Facundo L. Pfeffer</span>`;
+		const logoPath = githubBase ? '/UCBerkeley-SEMM-MS-Codebook/webpage/images/logo.png' : prefix + 'images/logo.png';
+		logo.innerHTML = `<span class="symbol"><img src="${logoPath}" alt="" /></span><span class="title">Facundo L. Pfeffer</span>`;
 		header.insertBefore(logo, header.firstChild);
 	} else {
 		// Update logo paths if they exist
 		const logoImg = logo.querySelector('img');
 		if (logoImg && !logoImg.src.includes('http')) {
 			const currentSrc = logoImg.getAttribute('src');
-			if (!currentSrc.startsWith('../') && !currentSrc.startsWith('http')) {
-				logoImg.src = prefix + 'images/logo.png';
+			if (!currentSrc.startsWith('../') && !currentSrc.startsWith('http') && !currentSrc.startsWith('/UCBerkeley-SEMM-MS-Codebook/')) {
+				const logoPath = githubBase ? '/UCBerkeley-SEMM-MS-Codebook/webpage/images/logo.png' : prefix + 'images/logo.png';
+				logoImg.src = logoPath;
 			}
 		}
 		// Update logo link
