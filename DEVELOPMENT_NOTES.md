@@ -199,7 +199,44 @@ From any HTML file in `webpage/`, use `../` to access folders at root level.
 
 ---
 
+## ⚠️ CRITICAL: Read Before Making Changes
+
+**Before modifying any HTML files, paths, or navigation, ALWAYS read:**
+1. **`AGENT_CHECKLIST.md`** - Step-by-step checklist to prevent common mistakes
+2. **`PATH_RESOLUTION_GUIDE.md`** - Explains the path resolution system
+3. **This file** - Contains conventions and deployment structure
+
+**Common mistakes that can be avoided:**
+- ❌ Forgetting to include `path-resolver.js` before `navigation.js`
+- ❌ Using wrong path depth in `highlighted_htmls/` files
+- ❌ Including `webpage/` in paths from `highlighted_htmls/` files
+- ❌ Missing `file://` protocol check in local dev scripts
+- ❌ Not checking successful examples before creating new patterns
+
 ## Recent Fixes and Lessons Learned
+
+### December 2025: Missing Navigation Scripts in `highlighted_htmls` Files
+
+**Issue:** HTML files in `highlighted_htmls` folders (e.g., `CEE231_SolidMechanics/highlighted_htmls/Directional_Youngs_Modulus_A.html`) were missing navigation scripts, preventing navigation from working.
+
+**Root Cause:** Files were created without including the required JavaScript files (`path-resolver.js`, `navigation.js`, etc.) before the closing `</body>` tag.
+
+**Solution:** Added all required scripts with correct relative paths (`../../assets/js/...`).
+
+**Prevention:** Always use `AGENT_CHECKLIST.md` when adding navigation to HTML files.
+
+### December 2025: Corrupted PDF Paths in CEE244
+
+**Issue:** PDF paths in `webpage/cee244-structures.html` were not working when opening files locally via `file://` protocol.
+
+**Root Cause:** Local development path-fixing script was missing `file://` protocol check and `#` anchor check.
+
+**Solution:** Updated path-fixing script to:
+- Include `window.location.protocol === 'file:'` check
+- Add `!href.startsWith('#')` check to avoid breaking anchor links
+- Match the exact pattern from successful cases (CEE220, CEE225, CEE231)
+
+**Prevention:** Always copy the complete path-fixing script pattern from successful examples. See `AGENT_CHECKLIST.md` Pattern 4.
 
 ### December 2025: Path Issues in `highlighted_htmls` Files
 
@@ -266,6 +303,34 @@ From any HTML file in `webpage/`, use `../` to access folders at root level.
 
 ---
 
+## Quick Reference Guide
+
+### For Agents/AI Assistants
+
+**Before making ANY changes, read these files in order:**
+
+1. **`AGENT_CHECKLIST.md`** ⭐ **START HERE** - Comprehensive checklist for all common tasks
+2. **`PATH_RESOLUTION_GUIDE.md`** - Detailed explanation of path resolution system
+3. **`DEVELOPMENT_NOTES.md`** (this file) - Conventions and deployment structure
+
+### Most Common Tasks
+
+- **Adding navigation to HTML file**: See `AGENT_CHECKLIST.md` → "Adding Navigation to HTML Files"
+- **Fixing PDF paths**: See `AGENT_CHECKLIST.md` → "Adding PDF Links" and "Local Development Path Fixing Script"
+- **Creating new HTML in `highlighted_htmls/`**: See `AGENT_CHECKLIST.md` → "Path Patterns by File Location"
+
+### When in Doubt
+
+1. Check `AGENT_CHECKLIST.md` first
+2. Look at successful examples:
+   - `webpage/cee220-analysis.html`
+   - `webpage/cee225-dynamics.html`
+   - `CEE225_Dynamics/highlighted_htmls/final_project_menu.html`
+3. Verify script order matches `webpage/template-base.html`
+
+---
+
 *Last Updated: December 2025*
 *Maintained by: Facundo L. Pfeffer*
+*For agents: Always check AGENT_CHECKLIST.md before making changes*
 
