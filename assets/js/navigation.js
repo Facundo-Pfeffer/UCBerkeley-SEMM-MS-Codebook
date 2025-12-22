@@ -9,11 +9,13 @@
  * - Works from root, subdirectories, and nested folders
  * - Centralized navigation data - update once, applies everywhere
  * - Follows abstraction and best practices
+ * - Uses robust path-resolver.js for all path resolution
  * 
  * Usage:
- * 1. Include this script: <script src="../../assets/js/navigation.js"></script> (adjust path as needed)
- * 2. Navigation initializes automatically
- * 3. To add new pages, update the navigationData object below
+ * 1. Include path-resolver.js BEFORE this script
+ * 2. Include this script: <script src="../../assets/js/navigation.js"></script> (adjust path as needed)
+ * 3. Navigation initializes automatically
+ * 4. To add new pages, update the navigationData object below
  */
 
 // Navigation data structure - easily extensible
@@ -122,7 +124,9 @@ function resolvePath(href) {
 	
 	const currentPath = window.location.pathname;
 	if (currentPath.includes('/UCBerkeley-SEMM-MS-Codebook/')) {
-		return '/UCBerkeley-SEMM-MS-Codebook/' + href;
+		// CRITICAL: Remove any /webpage/ that might be in the path (GitHub serves webpage/ as root)
+		let cleanHref = href.replace(/^\/?webpage\//, '').replace(/\/webpage\//, '/');
+		return '/UCBerkeley-SEMM-MS-Codebook/' + cleanHref;
 	}
 	
 	const prefix = getPathPrefix();
@@ -200,13 +204,24 @@ function initNavigation() {
 	
 	// Ensure logo exists with proper path
 	let logo = header.querySelector('.logo');
-	const githubBase = getGitHubPagesBase();
-	const prefix = githubBase ? githubBase : getPathPrefix();
+	
+	// Use robust path resolver if available
+	let logoPath, prefix;
+	if (window.PathResolver && window.PathResolver.resolveImagePath) {
+		logoPath = window.PathResolver.resolveImagePath('images/logo.png');
+		prefix = window.PathResolver.getBasePath() || getPathPrefix();
+	} else {
+		// Fallback to legacy logic
+		const currentPath = window.location.pathname;
+		const isGitHubPages = currentPath.includes('/UCBerkeley-SEMM-MS-Codebook/');
+		prefix = isGitHubPages ? '/UCBerkeley-SEMM-MS-Codebook/' : getPathPrefix();
+		logoPath = isGitHubPages ? '/UCBerkeley-SEMM-MS-Codebook/images/logo.png' : prefix + 'images/logo.png';
+	}
+	
 	if (!logo) {
 		logo = document.createElement('a');
 		logo.href = resolvePath('index.html');
 		logo.className = 'logo';
-		const logoPath = githubBase ? '/UCBerkeley-SEMM-MS-Codebook/images/logo.png' : prefix + 'images/logo.png';
 		logo.innerHTML = `<span class="symbol"><img src="${logoPath}" alt="" /></span><span class="title">Facundo L. Pfeffer</span>`;
 		header.insertBefore(logo, header.firstChild);
 	} else {
@@ -215,7 +230,6 @@ function initNavigation() {
 		if (logoImg && !logoImg.src.includes('http')) {
 			const currentSrc = logoImg.getAttribute('src');
 			if (!currentSrc.startsWith('../') && !currentSrc.startsWith('http') && !currentSrc.startsWith('/UCBerkeley-SEMM-MS-Codebook/')) {
-				const logoPath = githubBase ? '/UCBerkeley-SEMM-MS-Codebook/images/logo.png' : prefix + 'images/logo.png';
 				logoImg.src = logoPath;
 			}
 		}

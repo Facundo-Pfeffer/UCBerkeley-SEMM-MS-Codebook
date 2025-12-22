@@ -124,7 +124,9 @@ function resolvePath(href) {
 	
 	const currentPath = window.location.pathname;
 	if (currentPath.includes('/UCBerkeley-SEMM-MS-Codebook/')) {
-		return '/UCBerkeley-SEMM-MS-Codebook/' + href;
+		// CRITICAL: Remove any /webpage/ that might be in the path (GitHub serves webpage/ as root)
+		let cleanHref = href.replace(/^\/?webpage\//, '').replace(/\/webpage\//, '/');
+		return '/UCBerkeley-SEMM-MS-Codebook/' + cleanHref;
 	}
 	
 	const prefix = getPathPrefix();

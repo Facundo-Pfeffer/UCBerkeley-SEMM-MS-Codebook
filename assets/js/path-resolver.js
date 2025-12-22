@@ -134,7 +134,9 @@ function resolveNavPath(href) {
 	
 	if (env === 'github-pages') {
 		// Use absolute path from GitHub Pages root
-		return CONFIG.GITHUB_PAGES_BASE + href;
+		// CRITICAL: Remove any /webpage/ that might be in the path (GitHub serves webpage/ as root)
+		let cleanHref = href.replace(/^\/?webpage\//, '').replace(/\/webpage\//, '/');
+		return CONFIG.GITHUB_PAGES_BASE + cleanHref;
 	}
 	
 	// Local: use relative path
