@@ -247,40 +247,39 @@
 		<script src="assets/js/navigation.js"></script>
 			<script src="assets/js/main.js"></script>
 			
-			<!-- Fix paths for local development -->
-			<script>
-				// Fix paths for local development
-				(function() {
-					function fixPaths() {
-						const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-						if (isLocal && window.location.pathname.includes('/webpage/')) {
-							// Fix all links to course directories
-							document.querySelectorAll('a[href*="CEE244_RCStructures/"]').forEach(function(link) {
-								const href = link.getAttribute('href');
-								if (href && !href.startsWith('../') && !href.startsWith('http')) {
-									link.setAttribute('href', '../' + href);
-								}
-							});
-							// Fix object/embed data/src attributes
-							document.querySelectorAll('object[data*="CEE244_RCStructures/"], embed[src*="CEE244_RCStructures/"]').forEach(function(el) {
-								const attr = el.tagName === 'OBJECT' ? 'data' : 'src';
-								const value = el.getAttribute(attr);
-								if (value && !value.startsWith('../') && !value.startsWith('http')) {
-									el.setAttribute(attr, '../' + value);
-								}
-							});
+		<script>
+		// Fix paths for local development - run immediately
+		(function() {
+			function fixPaths() {
+				const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
+				if (isLocal && (window.location.pathname.includes('/webpage/') || window.location.protocol === 'file:')) {
+					// Fix all links to course directories
+					document.querySelectorAll('a[href*="CEE244_RCStructures/"]').forEach(function(link) {
+						const href = link.getAttribute('href');
+						if (href && !href.startsWith('../') && !href.startsWith('http') && !href.startsWith('#')) {
+							link.setAttribute('href', '../' + href);
 						}
-					}
-					// Run immediately if DOM is ready, otherwise wait
-					if (document.readyState === 'loading') {
-						document.addEventListener('DOMContentLoaded', fixPaths);
-					} else {
-						fixPaths();
-					}
-					// Also run after a short delay to catch dynamically added content
-					setTimeout(fixPaths, 100);
-				})();
-			</script>
+					});
+					// Fix object/embed data/src attributes
+					document.querySelectorAll('object[data*="CEE244_RCStructures/"], embed[src*="CEE244_RCStructures/"]').forEach(function(el) {
+						const attr = el.tagName === 'OBJECT' ? 'data' : 'src';
+						const value = el.getAttribute(attr);
+						if (value && !value.startsWith('../') && !value.startsWith('http')) {
+							el.setAttribute(attr, '../' + value);
+						}
+					});
+				}
+			}
+			// Run immediately if DOM is ready, otherwise wait
+			if (document.readyState === 'loading') {
+				document.addEventListener('DOMContentLoaded', fixPaths);
+			} else {
+				fixPaths();
+			}
+			// Also run after a short delay to catch dynamically added content
+			setTimeout(fixPaths, 100);
+		})();
+		</script>
 			
 			<!-- PDF Preview Responsive Display -->
 			<script>
