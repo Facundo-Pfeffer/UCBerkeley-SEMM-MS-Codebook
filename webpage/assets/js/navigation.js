@@ -31,7 +31,7 @@ const navigationData = {
 				{ href: 'cee225-dynamics.html', text: 'CEE225 - Structural Dynamics' },
 				{ href: 'cee220-analysis.html', text: 'CEE220 - Structural Analysis' },
 				{ href: 'cee231-mechanics.html', text: 'CEE231 - Solid Mechanics' },
-				{ href: 'cee244-structures.html', text: 'CEE244 - Reinforced Concrete Structures' }
+				{ href: 'cee244-structures.html', text: 'CEE244 - RC Structures' }
 			]
 		},
 		{
@@ -55,7 +55,7 @@ const mobileMenuData = [
 	{ href: 'cee225-dynamics.html', text: 'CEE225 - Structural Dynamics' },
 	{ href: 'cee220-analysis.html', text: 'CEE220 - Structural Analysis' },
 	{ href: 'cee231-mechanics.html', text: 'CEE231 - Solid Mechanics' },
-	{ href: 'cee244-structures.html', text: 'CEE244 - Reinforced Concrete Structures' },
+	{ href: 'cee244-structures.html', text: 'CEE244 - RC Structures' },
 	{ type: 'section', text: 'Personal Projects' },
 	{ href: 'https://facundo-pfeffer.github.io/ACSAHE.github.io/', text: 'ACSAHE' },
 	{ href: 'about.html', text: 'About' },
