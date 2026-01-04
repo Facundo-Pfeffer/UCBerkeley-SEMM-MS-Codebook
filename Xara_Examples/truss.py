@@ -36,8 +36,8 @@ model.fix(3, (1, 1))
 model.material("Elastic", 1, E=3000.0, nu=0.3)
 
 # Define sections, referencing material 1
-model.section("Truss", 1, A=10.0, material=1)
-model.section("Truss", 2, A=5.0,  material=1)
+model.section("Truss", 1, area=10.0, material=1)
+model.section("Truss", 2, area=5.0,  material=1)
 
 # Define truss elements
 model.element("Truss", 1, (1, 4), section=1)
