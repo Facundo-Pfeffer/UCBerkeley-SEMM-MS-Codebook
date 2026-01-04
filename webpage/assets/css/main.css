@@ -2574,7 +2574,7 @@ input, select, textarea {
 		-webkit-flex-wrap: wrap;
 		-ms-flex-wrap: wrap;
 		flex-wrap: wrap;
-		postiion: relative;
+		position: relative;
 		margin: -2.5em 0 0 -2.5em;
 	}
 
@@ -2819,6 +2819,15 @@ input, select, textarea {
 
 		* + .tiles {
 			margin-top: 2em;
+		}
+
+	/* Section spacing improvements for project pages */
+		h2 + .tiles {
+			margin-top: 1em; /* Reduce gap between h2 and tiles */
+		}
+
+		.tiles + h2 {
+			margin-top: 3em; /* Add space between tiles section and next h2 */
 		}
 
 		body.is-preload .tiles article {
@@ -3594,7 +3603,6 @@ input, select, textarea {
 			word-break: keep-all !important;
 			overflow: visible !important;
 			text-overflow: clip !important;
-		}
 			max-width: none !important;
 			width: auto !important;
 			min-width: fit-content !important;
@@ -3844,5 +3852,104 @@ input, select, textarea {
 		.sponsor-item img {
 			max-height: 45px;
 			max-width: 100px;
+		}
+	}
+
+/* Latest Updates Section */
+	.updates-section {
+		background-color: #ffffff;
+	}
+
+	.updates-grid {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 2rem;
+		max-width: 1000px;
+		margin: 0 auto;
+	}
+
+	.update-card {
+		background-color: #ffffff;
+		border: 1px solid #e5e7eb;
+		border-radius: 8px;
+		padding: 2rem;
+		transition: all 0.3s ease;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.update-card:hover {
+		box-shadow: 0 4px 12px rgba(0, 50, 98, 0.1);
+		transform: translateY(-2px);
+		border-color: #003262;
+	}
+
+	.update-link {
+		text-decoration: none;
+		color: inherit;
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+	}
+
+	.update-link:hover {
+		text-decoration: none;
+	}
+
+	.update-date {
+		margin-bottom: 1rem;
+	}
+
+	.date-badge {
+		display: inline-block;
+		background-color: #003262;
+		color: #ffffff;
+		padding: 0.5rem 1rem;
+		border-radius: 4px;
+		font-size: 0.85em;
+		font-weight: 700;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+	}
+
+	.update-content {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.update-content h3 {
+		font-weight: 900;
+		letter-spacing: 0.05em;
+		margin: 0 0 0.75rem 0;
+		color: #003262;
+	}
+
+	.update-content p {
+		flex: 1;
+		margin: 0;
+		color: #585858;
+		line-height: 1.6;
+	}
+
+	.read-more {
+		margin-top: 1rem;
+		color: #003262;
+		font-weight: 600;
+		transition: color 0.2s ease;
+	}
+
+	.update-link:hover .read-more {
+		color: #FDB515;
+	}
+
+	@media screen and (max-width: 736px) {
+		.updates-grid {
+			grid-template-columns: 1fr;
+			gap: 1.5rem;
+		}
+
+		.update-card {
+			padding: 1.5rem;
 		}
 	}
