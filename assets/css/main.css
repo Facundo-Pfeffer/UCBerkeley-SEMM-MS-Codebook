@@ -3861,6 +3861,13 @@ input, select, textarea {
 		margin: 0 auto;
 	}
 
+	@media screen and (min-width: 737px) {
+		.updates-grid {
+			grid-template-columns: repeat(2, 1fr);
+			display: grid;
+		}
+	}
+
 	.update-card {
 		background-color: #ffffff;
 		border: 1px solid #e5e7eb;
