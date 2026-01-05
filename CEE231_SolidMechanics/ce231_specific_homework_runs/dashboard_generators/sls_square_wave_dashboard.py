@@ -23,7 +23,7 @@ from plotly_templates import (
     get_table_header_style,
     get_table_cells_style,
     format_hover_template,
-    save_figure
+    save_figure_with_template
 )
 
 # Material parameters
@@ -281,9 +281,28 @@ for annotation in fig['layout']['annotations'][:4]:
     annotation['font'] = dict(size=14, color=Colors.BERKELEY_BLUE, family='Arial, sans-serif')
 
 
+# Explanation text
+explanation = """
+					<p><strong>What is Square Wave Loading?</strong> This dashboard shows how a viscoelastic material responds to a square wave strain input—a pattern that alternates between two constant values (like an on/off switch). This type of loading is useful for understanding how materials respond to sudden changes and for testing numerical integration methods.</p>
+					
+					<p><strong>How to Read the Plots:</strong></p>
+					<ul style="margin-left: 1.5rem;">
+						<li><strong>Top Left - Stress Response:</strong> Shows how the stress evolves over time in response to the square wave strain. Notice how the stress doesn't jump instantly when the strain changes—it transitions smoothly due to the material's viscoelastic nature. The stress relaxes during each constant-strain period.</li>
+						<li><strong>Top Right - Strain Input:</strong> The square wave strain alternates between 0 and a constant value (0.01) every 0.5 seconds. This creates a periodic on/off pattern.</li>
+						<li><strong>Bottom Left - Stress-Strain Relationship:</strong> Shows how stress and strain are related during the loading cycle. The path forms a loop that evolves over multiple cycles as the material reaches a steady-state response.</li>
+						<li><strong>Bottom Right - Characteristic Values:</strong> Key parameters including the current time step (Δt) used in the numerical simulation, maximum stress, and material properties. The time step affects the accuracy of the numerical solution.</li>
+					</ul>
+					
+					<p><strong>Using the Slider:</strong> Adjust the time step (Δt) to see how the numerical integration accuracy changes. Smaller time steps provide more accurate results but require more computation. Larger time steps may introduce numerical errors, especially during rapid changes in the strain.</p>
+					
+					<p><strong>Real-World Example:</strong> Imagine repeatedly pressing and releasing a stress ball. Each press applies a sudden load (like the square wave), and you can feel how the material responds and relaxes. This dashboard simulates that behavior and shows how engineers use numerical methods to predict material responses accurately.</p>
+					
+					<p><strong>Note on Numerical Methods:</strong> This simulation uses the Backward Euler method, a numerical technique for solving differential equations that govern viscoelastic behavior. The choice of time step is crucial—too large and the solution becomes inaccurate; too small and computation becomes inefficient.</p>
+"""
+
 # Save to highlighted_htmls (web deployment folder)
 output_path = PROJECT_ROOT / 'highlighted_htmls' / 'sls_square_wave_clean.html'
-save_figure(fig, output_path)
+save_figure_with_template(fig, str(output_path), title="Standard Linear Solid (SLS) - Square Wave Response", div_id='sls-square-wave-plot', explanation=explanation)
 print(f"  {len(dt_vals)} time step values | Single slider | 4 plots")
 print(f"  Time range: 0 to {t_max} s")
 print(f"  Square wave: period = 1 s, amplitude = 0.01, duty cycle = 50%")

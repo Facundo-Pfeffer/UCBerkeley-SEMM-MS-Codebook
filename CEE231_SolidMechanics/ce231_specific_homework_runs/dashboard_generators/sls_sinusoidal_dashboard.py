@@ -18,7 +18,7 @@ from plotly_templates import (
     get_table_header_style,
     get_table_cells_style,
     format_hover_template,
-    save_figure
+    save_figure_with_template
 )
 
 # Material parameters (fixed)
@@ -175,7 +175,24 @@ for annotation in fig['layout']['annotations'][:4]:
     annotation['text'] = f'<b>{annotation["text"]}</b>'
     annotation['font'] = dict(size=14, color=Colors.BERKELEY_BLUE, family='Arial, sans-serif')
 
+# Explanation text
+explanation = """
+					<p><strong>What is Sinusoidal Loading?</strong> This dashboard shows how a viscoelastic material responds when it is cyclically stretched and compressed in a smooth, wave-like pattern (like a sine wave). This type of loading is common in engineering applications like vibration analysis and fatigue testing.</p>
+					
+					<p><strong>How to Read the Plots:</strong></p>
+					<ul style="margin-left: 1.5rem;">
+						<li><strong>Top Left - Stress Response:</strong> Shows how the stress oscillates in response to the cyclic strain. Notice that the stress wave is slightly "out of phase" with the strain—it peaks at a slightly different time. This phase difference indicates energy dissipation (damping).</li>
+						<li><strong>Top Right - Strain Input:</strong> The applied sinusoidal strain (deformation) oscillates smoothly between positive and negative values, representing cyclic stretching and compression.</li>
+						<li><strong>Bottom Left - Stress-Strain Hysteresis Loop:</strong> This is perhaps the most important plot! It shows stress vs. strain in a closed loop. The area inside the loop represents energy lost per cycle (hysteresis). A larger loop means more energy dissipation. In purely elastic materials, this would be a straight line with no loop.</li>
+						<li><strong>Bottom Right - Characteristic Values:</strong> Key parameters including the loss angle (how much the stress lags behind strain), maximum stress, and material constants.</li>
+					</ul>
+					
+					<p><strong>Using the Slider:</strong> Adjust the strain amplitude (ε₀) to see how different amounts of cyclic deformation affect the response. Larger amplitudes produce larger stress responses and wider hysteresis loops, indicating more energy dissipation.</p>
+					
+					<p><strong>Real-World Example:</strong> Think of a car's shock absorber. As the car goes over bumps, the shock absorber experiences cyclic loading. The hysteresis loop shows how much energy is absorbed and dissipated as heat—this is what makes the ride smoother. A material with a larger loop area would provide better damping.</p>
+"""
+
 # Save to highlighted_htmls (web deployment folder)
 output_path = os.path.join(os.path.dirname(__file__), '..', '..', 'highlighted_htmls', 'sls_sinusoidal_clean.html')
-save_figure(fig, output_path)
+save_figure_with_template(fig, output_path, title="Standard Linear Solid (SLS) - Sinusoidal Response", div_id='sls-sinusoidal-plot', explanation=explanation)
 print(f"  {len(eps0_vals)} strain amplitudes | Single slider | 4 plots")

@@ -18,7 +18,7 @@ from plotly_templates import (
     get_table_header_style,
     get_table_cells_style,
     format_hover_template,
-    save_figure
+    save_figure_with_template
 )
 
 # Material parameters
@@ -206,7 +206,24 @@ for annotation in fig['layout']['annotations'][:4]:
     annotation['text'] = f'<b>{annotation["text"]}</b>'
     annotation['font'] = dict(size=14, color=Colors.BERKELEY_BLUE, family='Arial, sans-serif')
 
+# Explanation text
+explanation = """
+					<p><strong>What is a Step Response?</strong> This visualization shows how a viscoelastic material responds when it is suddenly stretched to a constant length and held there. Unlike purely elastic materials (like a spring), viscoelastic materials exhibit time-dependent behavior.</p>
+					
+					<p><strong>How to Read the Plots:</strong></p>
+					<ul style="margin-left: 1.5rem;">
+						<li><strong>Top Left - Stress Response:</strong> Shows how the stress (force per area) in the material changes over time. Notice how it starts high and gradually decreases—this is called "stress relaxation." The material "remembers" its initial state but gradually relaxes.</li>
+						<li><strong>Top Right - Relaxation Modulus:</strong> This represents the material's stiffness over time. It starts at a higher value (glassy modulus) and decreases toward an equilibrium value as the material relaxes.</li>
+						<li><strong>Bottom Left - Step Strain Input:</strong> The applied strain (deformation) jumps from 0 to a constant value at time t=0. This is the "step" that triggers the response.</li>
+						<li><strong>Bottom Right - Characteristic Values:</strong> Key parameters describing the material's response, including maximum stress, relaxation time, and material constants.</li>
+					</ul>
+					
+					<p><strong>Using the Slider:</strong> Adjust the strain amplitude (ε₀) to see how different amounts of stretching affect the material's response. Larger strains produce proportionally larger stresses, but the relaxation behavior remains similar.</p>
+					
+					<p><strong>Real-World Example:</strong> Imagine stretching a rubber band and holding it at a fixed length. Initially, it feels very tight (high stress), but over time, the force required to maintain that length decreases as the material relaxes. This is exactly what these plots show!</p>
+"""
+
 # Save to highlighted_htmls (web deployment folder)
 output_path = os.path.join(os.path.dirname(__file__), '..', '..', 'highlighted_htmls', 'step_response_clean.html')
-save_figure(fig, output_path)
+save_figure_with_template(fig, output_path, title="Viscoelastic Step Response", div_id='step-response-plot', explanation=explanation)
 print(f"  {len(eps0_vals)} strain values | Single slider | 4 plots")
