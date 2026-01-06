@@ -249,14 +249,12 @@ input, select, textarea {
 
 	sub {
 		font-size: 0.8em;
-		position: relative;
-		top: 0.5em;
+		/* Let the browser handle baseline positioning for cleaner math layout */
 	}
 
 	sup {
 		font-size: 0.8em;
-		position: relative;
-		top: -0.5em;
+		/* Let the browser handle baseline positioning for cleaner math layout */
 	}
 
 	blockquote {

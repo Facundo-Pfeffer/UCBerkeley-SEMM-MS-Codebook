@@ -84,11 +84,11 @@
 
 					<p><strong>Computation steps (RSA):</strong></p>
 					<ul>
-						<li><em>Period interpolation:</em> For each damping curve, A<sub>n,0</sub> at the modal period T<sub>n</sub> is obtained by linear interpolation in T.</li>
-						<li><em>Damping interpolation:</em> A<sub>n,0</sub> is then interpolated between the bounding damping curves (0, 1, 2, 3, 5%) toward the mode damping.</li>
-						<li><em>Spectral displacement:</em> D<sub>n,0</sub> = A<sub>n,0</sub> / ω<sub>n</sub><sup>2</sup> (reported in inches).</li>
-						<li><em>SRSS floor displacement:</em> modal contributions Gamma<sub>n</sub> · φ<sub>jn</sub> · D<sub>n,0</sub> are combined as u<sub>j,SRSS</sub> = √( Σ (Gamma<sub>n</sub> · φ<sub>jn</sub> · D<sub>n,0</sub>)² ) (assumes statistical independence).</li>
-						<li><em>SRSS base shear:</em> modal pseudo-accelerations multiply modal static base shears V<sub>b,n</sub><sup>st</sup>; combined as V<sub>b,SRSS</sub> = √( Σ ( V<sub>b,n</sub><sup>st</sup> · A<sub>n,0</sub> )² ), then converted to kips.</li>
+						<li><em>Period interpolation:</em> For each damping curve, \(A_{n,0}\) at the modal period \(T_n\) is obtained by linear interpolation in \(T\).</li>
+						<li><em>Damping interpolation:</em> \(A_{n,0}\) is then interpolated between the bounding damping curves (0, 1, 2, 3, 5%) toward the mode damping.</li>
+						<li><em>Spectral displacement:</em> \(D_{n,0} = \dfrac{A_{n,0}}{\omega_n^2}\) (reported in inches).</li>
+						<li><em>SRSS floor displacement:</em> modal contributions \(\Gamma_n \cdot \phi_{jn} \cdot D_{n,0}\) are combined as \(u_{j,SRSS} = \sqrt{\sum (\Gamma_n \cdot \phi_{jn} \cdot D_{n,0})^2}\) (assumes statistical independence).</li>
+						<li><em>SRSS base shear:</em> modal pseudo-accelerations multiply modal static base shears \(V_{b,n}^{st}\); combined as \(V_{b,SRSS} = \sqrt{\sum \left(V_{b,n}^{st} \cdot A_{n,0}\right)^2}\), then converted to kips.</li>
 					</ul>
 
 					<section>
@@ -137,8 +137,8 @@
 
 					<section>
 						<h2>SRSS Base Shear</h2>
-						<p>The SRSS base shear combines modal pseudo-accelerations with modal static base shears V_{b,n}^{st}; the result is reported in kips.</p>
-						<p><strong>V_b,SRSS = 11.71 kips</strong></p>
+						<p>The SRSS base shear combines modal pseudo-accelerations with modal static base shears \(V_{b,n}^{st}\); the result is reported in kips.</p>
+						<p><strong>\(V_{b,SRSS} = 11.71\) kips</strong></p>
 					</section>
 
 				</div>
