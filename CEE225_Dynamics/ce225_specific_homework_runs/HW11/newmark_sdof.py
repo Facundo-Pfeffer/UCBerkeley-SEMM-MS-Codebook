@@ -96,16 +96,3 @@ def newmark_sdof(m: float, k: float, c: float, p: np.ndarray, dt: float,
     
     # Return results as a single 2D NumPy array
     return np.column_stack((u, v, a))
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -93,19 +93,3 @@ def test_mode2_decay_end():
 
 if __name__ == '__main__':
     test_mode2_decay_end()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

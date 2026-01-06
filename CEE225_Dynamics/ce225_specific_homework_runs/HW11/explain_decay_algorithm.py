@@ -126,19 +126,3 @@ print("""
    - Adjust search parameters based on total signal length
    - For 32s signals, be more aggressive in finding decay start
 """)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
