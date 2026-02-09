@@ -29,12 +29,12 @@ jobs:
           set -e
           mkdir -p dist
           rsync -a --delete webpage/ dist/
-          # Expose ALL highlighted_htmls folders preserving their relative paths
+          # Copy each parent of highlighted_htmls so report pages and their assets (e.g. ce211_hw1) deploy
           while IFS= read -r -d '' dir; do
-            # strip leading ./ if present
-            rel="${dir#./}"
+            parent="$(dirname "$dir")"
+            rel="${parent#./}"
             mkdir -p "dist/${rel}"
-            rsync -a "${dir}/" "dist/${rel}/"
+            rsync -a "${parent}/" "dist/${rel}/"
           done < <(find . -type d -name highlighted_htmls -print0)
 
           # Expose ALL highlighted_pdfs folders preserving their relative paths
