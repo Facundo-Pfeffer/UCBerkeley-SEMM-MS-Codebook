@@ -30,6 +30,7 @@ const navigationData = {
 			items: [
 				{ href: 'cee225-dynamics.html', text: 'CEE225 - Structural Dynamics' },
 				{ href: 'cee220-analysis.html', text: 'CEE220 - Structural Analysis' },
+				{ href: 'cee221-nonlinear.html', text: 'CE221 - Nonlinear Structural Analysis' },
 				{ href: 'cee231-mechanics.html', text: 'CEE231 - Solid Mechanics' },
 				{ href: 'cee244-structures.html', text: 'CEE244 - RC Structures' }
 			]
@@ -54,6 +55,7 @@ const mobileMenuData = [
 	{ type: 'section', text: 'UC Berkeley Work' },
 	{ href: 'cee225-dynamics.html', text: 'CEE225 - Structural Dynamics' },
 	{ href: 'cee220-analysis.html', text: 'CEE220 - Structural Analysis' },
+	{ href: 'cee221-nonlinear.html', text: 'CE221 - Nonlinear Structural Analysis' },
 	{ href: 'cee231-mechanics.html', text: 'CEE231 - Solid Mechanics' },
 	{ href: 'cee244-structures.html', text: 'CEE244 - RC Structures' },
 	{ type: 'section', text: 'Personal Projects' },
