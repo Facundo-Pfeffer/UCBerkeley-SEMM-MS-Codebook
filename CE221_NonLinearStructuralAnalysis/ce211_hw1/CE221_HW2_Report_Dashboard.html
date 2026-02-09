@@ -1,0 +1,324 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<title>CE221 HW2 — Nonlinear Structural Analysis Report | Facundo L. Pfeffer</title>
+	<style>
+		:root {
+			--ucb-blue: #003262;
+			--ucb-gold: #FDB515;
+			--founders-rock: #3B7EA1;
+			--text-dark: #2C3E50;
+			--bg-light: #f8fafc;
+			--border: rgba(0, 50, 98, 0.2);
+		}
+		* { box-sizing: border-box; }
+		body {
+			font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+			margin: 0;
+			padding: 0;
+			color: var(--text-dark);
+			background: var(--bg-light);
+			line-height: 1.6;
+		}
+		.dashboard-wrapper {
+			max-width: 1000px;
+			margin: 0 auto;
+			padding: 2rem 1.5rem 4rem;
+		}
+		header.dashboard-header {
+			text-align: center;
+			padding: 2rem 0 2.5rem;
+			border-bottom: 3px solid var(--ucb-blue);
+			margin-bottom: 2rem;
+		}
+		header.dashboard-header h1 {
+			color: var(--ucb-blue);
+			font-size: 1.85rem;
+			margin: 0 0 0.5rem;
+			font-weight: 700;
+		}
+		header.dashboard-header .subtitle {
+			color: var(--founders-rock);
+			font-size: 1rem;
+			margin: 0;
+		}
+		/* Step progress / loading animation */
+		.step-progress {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.5rem;
+			margin: 1.5rem 0 2rem;
+			justify-content: center;
+		}
+		.step-progress a {
+			display: inline-block;
+			padding: 0.4rem 0.9rem;
+			background: white;
+			color: var(--ucb-blue);
+			border: 2px solid var(--ucb-blue);
+			border-radius: 6px;
+			text-decoration: none;
+			font-size: 0.9rem;
+			font-weight: 600;
+			transition: background 0.2s, color 0.2s;
+		}
+		.step-progress a:hover {
+			background: var(--ucb-blue);
+			color: white;
+		}
+		section.report-section {
+			background: white;
+			border-radius: 10px;
+			box-shadow: 0 2px 12px rgba(0,50,98,0.08);
+			padding: 1.75rem 2rem;
+			margin-bottom: 2rem;
+			border-left: 5px solid var(--ucb-blue);
+			animation: fadeIn 0.5s ease-out;
+		}
+		@keyframes fadeIn {
+			from { opacity: 0; transform: translateY(10px); }
+			to { opacity: 1; transform: translateY(0); }
+		}
+		section.report-section h2 {
+			color: var(--ucb-blue);
+			font-size: 1.35rem;
+			margin: 0 0 0.75rem;
+			padding-bottom: 0.4rem;
+		}
+		section.report-section h3 {
+			color: var(--founders-rock);
+			font-size: 1.1rem;
+			margin: 1.25rem 0 0.5rem;
+		}
+		section.report-section p {
+			margin: 0 0 1rem;
+			color: #374151;
+		}
+		.plot-embed {
+			width: 100%;
+			min-height: 420px;
+			border: 1px solid var(--border);
+			border-radius: 8px;
+			margin: 1rem 0;
+			background: #fff;
+		}
+		.plot-embed iframe {
+			width: 100%;
+			height: 500px;
+			border: none;
+		}
+		.figure-caption {
+			font-size: 0.9rem;
+			color: #6b7280;
+			margin-top: 0.35rem;
+			margin-bottom: 1rem;
+		}
+		table.results-table {
+			width: 100%;
+			border-collapse: collapse;
+			margin: 1rem 0;
+			font-size: 0.95rem;
+		}
+		table.results-table th,
+		table.results-table td {
+			border: 1px solid var(--border);
+			padding: 0.6rem 0.9rem;
+			text-align: left;
+		}
+		table.results-table th {
+			background: var(--ucb-blue);
+			color: white;
+			font-weight: 600;
+		}
+		table.results-table tr:nth-child(even) { background: #f1f5f9; }
+		.references-list {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+		}
+		.references-list li {
+			margin-bottom: 0.6rem;
+			padding-left: 1rem;
+			border-left: 3px solid var(--ucb-gold);
+		}
+		.cantilever-svg {
+			max-width: 280px;
+			height: auto;
+			display: block;
+			margin: 1rem auto;
+		}
+		.back-link {
+			display: inline-block;
+			margin-bottom: 1.5rem;
+			color: var(--ucb-blue);
+			text-decoration: none;
+			font-weight: 600;
+		}
+		.back-link:hover { text-decoration: underline; }
+	</style>
+	<script>
+		MathJax = {
+			tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }
+		};
+	</script>
+	<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+</head>
+<body>
+	<div class="dashboard-wrapper">
+		<a class="back-link" href="../../webpage/index.html">← Back to Portfolio</a>
+
+		<header class="dashboard-header">
+			<h1>CE 221: Nonlinear Structural Analysis — Homework 2</h1>
+			<p class="subtitle">Report dashboard: 1DOF workflow, linear beam, P–Δ, Xara comparison, and axial force diagnostics</p>
+			<p class="subtitle">UC Berkeley SEMM</p>
+			<p class="contributors">Professor: Khalid M. Mosalam · Instructors: Guanren Zhou, Fan Hu · Students: Luciana Vargas, Carlos Quezada, Facundo Pfeffer</p>
+		</header>
+
+		<nav class="step-progress" aria-label="Report sections">
+			<a href="#p1">1. Loading Protocol</a>
+			<a href="#p2">2. Linear Beam</a>
+			<a href="#p3">3. Fixed-Δ vs Self-Consistent</a>
+			<a href="#p4">4. Xara Analyses</a>
+			<a href="#p5">5. Axial Force</a>
+			<a href="#refs">References</a>
+		</nav>
+
+		<!-- Problem 1 -->
+		<section id="p1" class="report-section">
+			<h2>1. Problem 1 — 1DOF Spring Workflow (Notebook 0)</h2>
+			<p><strong>Goal:</strong> Confirm your environment and establish a minimal workflow: model → analyze → plot. The assignment asks to run Notebook 0 end-to-end, then add three modifications: (A) change the loading protocol (e.g., smaller increments and more steps), (B) change a stiffness parameter and re-plot, and (C) add a second loading branch (load up and unload) and plot the full path, with plots and a short interpretation per change.</p>
+
+			<h3>1.1 Change in Loading Protocol</h3>
+			<p>The problem at hand constitutes a <strong>linear elastic spring model</strong>; therefore, the displacement depends only on the <strong>final applied load</strong> and not on the size of the load increments. Accordingly, refining the load step should not change the displacement when the total load reaches $P = 10$, yielding the closed-form response $u = P/k$, which is confirmed in the notebook. The plot below compares different numbers of load steps (same total $P$); the final displacement is unchanged.</p>
+			<div class="plot-embed">
+				<iframe src="fig_steps.html" title="Loading protocol comparison"></iframe>
+			</div>
+			<p class="figure-caption">Figure 1.1: Change in loading protocol — different numbers of load steps (same total P).</p>
+
+			<h3>1.2 Change in Stiffness Parameter</h3>
+			<p>An increase in the stiffness parameter $k$ implies a <strong>proportionally smaller displacement</strong> for the same load level, whereas a decrease in $k$ implies a proportionally larger displacement $u$. This proportional trend is confirmed programmatically in the notebook and is evident in the plot below.</p>
+			<div class="plot-embed">
+				<iframe src="fig_k.html" title="Stiffness parameter effect"></iframe>
+			</div>
+			<p class="figure-caption">Figure 1.2: Effect of stiffness parameter $k$ on displacement.</p>
+
+			<h3>1.3 Second Unloading Branch</h3>
+			<p>Adding a second loading branch that displays the <strong>unloading process</strong> allows us to visualize more clearly the linear elastic behavior of the spring: the unloading portion of the “loop” perfectly overlaps the initial loading portion. There is no hysteresis; the response is reversible and path-independent.</p>
+			<div class="plot-embed">
+				<iframe src="fig_load_unload.html" title="Load–unload cycle"></iframe>
+			</div>
+			<p class="figure-caption"><strong>Figure 1.3: Full load–unload path (second loading branch).</strong> $P$ vs $u$ for the 1DOF spring: load increased to $P$ then decreased to $P/2$; loading (blue) and unloading (orange dashed) overlap (linear elasticity).</p>
+			<p><strong>Interpretation:</strong> All three changes confirm that for a linear elastic 1DOF spring, the response is path-independent and determined solely by $u = P/k$. Refining the load protocol does not alter the final displacement; changing $k$ scales $u$ inversely; and the load–unload path closes exactly, with no permanent deformation.</p>
+		</section>
+
+		<!-- Problem 2 -->
+		<section id="p2" class="report-section">
+			<h2>2. Problem 2 — Linear Elastic Beam (Notebook 1)</h2>
+			<p><strong>From this section onward</strong> we consider the <strong>cantilever beam</strong> (not the 1DOF spring of Problem 1). The figure below illustrates the problem: a beam of length $L$ and flexural rigidity $EI$ with <strong>fixed</strong> left end, and axial load $P$ (blue) plus lateral tip load $F$ (green). The right panel shows the deformed configuration (deflection exaggerated). The interplay between $P$ and lateral deflection is the P–Δ effect studied in Problems 2–5.</p>
+			<div class="intro-cover">
+				<img src="../../webpage/images/CE221/Cover.png" alt="Cantilever: undeformed and deformed configuration with axial load P and lateral load F at the tip." width="800" height="auto" />
+				<p class="figure-caption"><strong>Figure 2.0:</strong> Beam problem used in Sections 2–5. Undeformed (left) and deformed (right). Fixed support at left; $P$ (axial, blue) and $F$ (lateral, green) at the tip. Deformation shown with 30× amplification.</p>
+			</div>
+			<p><strong>Model:</strong> Cantilever beam/column of length $L$, flexural rigidity $EI$, tip lateral force $F$, and axial load $P$. <strong>Baseline parameters</strong> (used unless a subpart asks to vary them): $L = 6.0\,\text{m}$, $EI = 1000.0\,\text{kN}\cdot\text{m}^2$, $F = 10.0\,\text{kN}$, $P = 50.0\,\text{kN}$. The assignment asks for (1) the linear closed-form tip deflection $\Delta_{\text{lin}}$ and (2) a BVP check: compute $\Delta_{\text{BVP,lin}}$ with $P=0$ and report absolute and relative errors.</p>
+
+			<h3>2.1 Theoretical Solution (Euler–Bernoulli)</h3>
+			<p>With the given geometry and material properties, the linear tip deflection is obtained from the Euler–Bernoulli ODE [1, 2, 3]. For a cantilever with tip force $F$:</p>
+			<p>$$\Delta_{\text{lin}} = \frac{FL^3}{3EI} = \frac{(10.0\,\text{kN})(6.0\,\text{m})^3}{3(1000.0\,\text{kN}\cdot\text{m}^2)} = 0.72\,\text{m}.$$</p>
+			<p>This calculation is performed in the notebook both explicitly and by solving the linear ODE, as discussed in Section 2.2.</p>
+
+			<h3>2.2 BVP Numerical Result</h3>
+			<p>Using Notebook 1’s BVP approach with $P = 0$ (or using the linear ODE), the numerical tip deflection $\Delta_{\text{BVP,lin}}$ is computed and compared to $\Delta_{\text{lin}}$. The absolute and relative errors are $e = |\Delta_{\text{BVP,lin}} - \Delta_{\text{lin}}|$ and $e_r = e/|\Delta_{\text{lin}}|$. The governing equation for the linear case is $EI v''(x) = F(L-x)$ with $v(0) = 0$, $v'(0) = 0$. The BVP solution matches the closed-form result to within numerical precision.</p>
+		</section>
+
+		<!-- Problem 3 -->
+		<section id="p3" class="report-section">
+			<h2>3. Problem 3 — Fixed-Δ vs Self-Consistent P–Δ (Notebook 1)</h2>
+			<p><strong>Goal:</strong> Reproduce and explain the difference between the two approaches. The governing equation (as used in Notebook 1) is $EI v''(x) = F(L-x) - P\,v(x)$ with $v(0) = 0$, $v'(0) = 0$. Two solution strategies are compared: (1) <strong>Fixed-Δ</strong>: $\Delta$ is taken as $\Delta_{\text{lin}}$ and treated as known; (2) <strong>Self-consistent</strong>: iterate $\Delta^{(k+1)} = v^{(k)}(L)$ from $\Delta^{(0)} = \Delta_{\text{lin}}$ until $|\Delta^{(k+1)} - \Delta^{(k)}|/|\Delta^{(k+1)}|$ is below a stated tolerance.</p>
+
+			<h3>3.1 Fixed-Δ Approach</h3>
+			<p>In the fixed-Δ (baseline) approach, the tip displacement $\Delta$ is set equal to the linear estimate $\Delta_{\text{lin}}$ and held fixed. The resulting tip displacement from this one-shot solution is <strong>$\Delta_{\text{fixed}} = 1.15491\,\text{m}$</strong>. This value does not account for the feedback between deflection and secondary moments.</p>
+
+			<h3>3.2 Self-Consistent Approach</h3>
+			<p>The self-consistent iteration was implemented with a convergence tolerance of <strong>$10^{-8}$</strong> on the relative change in $\Delta$. The nonlinear solver converged in <strong>70 iterations</strong> to a converged tip displacement <strong>$\Delta_{\text{sc}} = 2.63458\,\text{m}$</strong>. The resulting <strong>amplification ratio</strong> is $\Delta_{\text{sc}}/\Delta_{\text{lin}} = 3.65914$: the true P–Δ response is about 3.66 times the linear deflection.</p>
+
+			<h3>3.3 Interpretation</h3>
+			<p>The fixed-Δ approach is inaccurate because it <strong>decouples the geometric nonlinearity</strong> from the structural response: it assumes that the secondary moments are generated by a static, pre-determined displacement (the smaller linear deflection $\Delta_{\text{lin}}$). In a true nonlinear P–Δ problem, there is a <strong>feedback loop</strong>: the axial load increases the deflection, which makes the moment arm longer, which in turn generates larger moments and more deflection. By fixing $\Delta$ at the initial estimate, the method ignores this amplification process and fails to update the moment arm to reflect the structure’s actual deformed shape. This leads to <strong>non-conservative</strong> results that differ increasingly from the true solution as $P$ increases.</p>
+		</section>
+
+		<!-- Problem 4 -->
+		<section id="p4" class="report-section">
+			<h2>4. Problem 4 — χara: Linear vs P–Δ vs Corotational</h2>
+			<p><strong>Goal:</strong> Replicate the cantilever as a discretized FE model and compare transformation options. <strong>FE modeling requirements:</strong> Use a 2D model with DOFs $(u_x, u_y, \theta_z)$; discretize the cantilever into $n_{\text{ele}}$ equal elements; apply loads in two steps—(1) axial load $P$ to converge, then (2) lateral load $F$ in increments. Compare three geometric transformation options: Linear, PDelta, and Corotational.</p>
+
+			<h3>4.1 Baseline Comparison at One Discretization</h3>
+			<p>With $n_{\text{ele}} = 10$, the tip lateral displacement $u_x(L)$ for each transformation type is reported below (Table 1).</p>
+			<table class="results-table">
+				<thead>
+					<tr><th>Method</th><th>Tip disp. $u_x(L)$ [m]</th><th>Amplif. $u_x(L)/\Delta_{\text{lin}}$</th></tr>
+				</thead>
+				<tbody>
+					<tr><td>BVP Linear</td><td>0.720</td><td>1.000</td></tr>
+					<tr><td>BVP Self-consistent P–Δ</td><td>2.635</td><td>3.659</td></tr>
+					<tr><td>Xara Linear</td><td>0.720</td><td>1.000</td></tr>
+					<tr><td>Xara PDelta</td><td>2.620</td><td>3.639</td></tr>
+					<tr><td>Xara Corotational</td><td>2.071</td><td>2.876</td></tr>
+				</tbody>
+			</table>
+			<p class="figure-caption">Table 1: Baseline comparison at one discretization ($n_{\text{ele}} = 10$).</p>
+
+			<h3>4.2 Discretization Study (P–δ Sensitivity)</h3>
+			<p><strong>4.2.1 Obtained results.</strong> The tip displacement was computed for $n_{\text{ele}} \in \{2, 5, 10, 20\}$. In the BVP solver, $n_{\text{ele}}$ only affects the number of points where the ODE solution is evaluated; the BVP reference values do not change. For Xara, coarser meshes ($n_{\text{ele}} = 2$) give 2.325 m (PDelta) and 1.943 m (Corotational); at $n_{\text{ele}} = 20$, Xara PDelta reaches 2.631 m and Corotational 2.075 m.</p>
+			<div class="plot-embed">
+				<iframe src="tip_displacement.html" title="Tip displacement vs discretization"></iframe>
+			</div>
+			<p class="figure-caption">Figure 4.1: Tip displacement $u_x(L)$ vs. $n_{\text{ele}}$ for each formulation.</p>
+			<p><strong>4.2.2 Trend discussion.</strong> For the linear analyses, regardless of the engine (χara or BVP), the result is 0.72 m for all discretizations—equilibrium is formulated in the <strong>undeformed configuration</strong> [2, 3]. The self-consistent P–Δ method enforces equilibrium in the <strong>deformed configuration</strong> and approaches 2.63458 m as discretization increases. The Corotational method follows a similar trend but with smaller tip displacements (Section 4.3).</p>
+
+			<h3>4.3 Geometric Transformation Discussion</h3>
+			<p>Increasing the number of elements reduces discretization error and produces convergence [4, 5]. The <strong>PDelta</strong> transformation captures the classical <strong>second-order (destabilizing) effect</strong> of a compressive axial load through the lateral deflection, approaching the BVP P–Δ prediction as $n_{\text{ele}}$ increases. The <strong>Corotational02</strong> transformation evaluates each element in a frame that follows its current (non-small) rotation, using updated geometry at each step. Since $K_G$ depends on the element axial force $N$, a <strong>smaller effective compressive force</strong> toward the free end reduces the destabilizing P–Δ amplification. Corotational02 therefore predicts a stiffer response and a <strong>different limiting tip displacement</strong> than PDelta. Section 5.2 examines the axial-force distribution $N/P$ along the member.</p>
+		</section>
+
+		<!-- Problem 5 -->
+		<section id="p5" class="report-section">
+			<h2>5. Problem 5 — Axial Force Distribution $N_e$ (Post-Processing)</h2>
+			<p><strong>Goal:</strong> Verify whether the axial force is uniform along the member and relate the results to the formulation and discretization. For one discretization ($n_{\text{ele}} = 10$), an axial force measure $N_e$ per element is extracted for both PDelta and Corotational and plotted vs. element index (or height).</p>
+
+			<h3>5.1 Plot $N_e$ vs Element Index</h3>
+			<p>For $n_{\text{ele}}=10$, the axial force measure $N_e$ per element for PDelta and Corotational is plotted vs. element index (or height) below.</p>
+			<div class="plot-embed">
+				<iframe src="normal_vs_displacement.html" title="Axial force and displacement"></iframe>
+			</div>
+			<p class="figure-caption">Figure 5.1: Axial force and related quantities vs element/position.</p>
+			<p>Optional: <a href="fig_np_coro.html" target="_blank">Open N_e / P vs element (fig_np_coro)</a> in a new tab if available.</p>
+
+			<h3>5.2 Interpretation</h3>
+			<p><strong>5.2.1 Variation of axial force $N_e$ across beam span.</strong> The Corotational formulation evaluates element forces in an updated (rotated) local frame, whereas PDelta keeps the element orientation tied to the original configuration. The extracted $N_e$ is <strong>not uniform</strong> in the Corotational case: it is close to 1.00 near the fixed end (element 1, where rotations are small) and decreases toward the tip, reaching approximately 0.75 at element 10. PDelta returns $N_e \approx 1.00$ along the member. Kinematically: as the member rotates, the applied load $P$ is increasingly decomposed into axial and transverse components in each element’s updated local axes, so the axial component captured by Corotational reduces toward the tip where rotations are larger. With mesh refinement (increasing $n_{\text{ele}}$), the Corotational distribution at the fixed end is expected to approach the PDelta result (1.00).</p>
+			<p><strong>5.2.2 Stiffness change.</strong> Increasing flexural stiffness (e.g. to $EI = 2000\,\text{kN}\cdot\text{m}^2$) reduces tip deflection and rotations, so $N_e$ becomes more nearly constant along the member in the Corotational formulation and the nonlinear solve becomes easier—iteration count drops (e.g. from 70 to 20). Decreasing stiffness (e.g. to $EI = 850\,\text{kN}\cdot\text{m}^2$) produces larger rotations and stronger geometric nonlinearity, increasing amplification and making convergence more demanding (e.g. about 107 iterations). When gradually increasing $P$ toward the Euler critical load, displacements grow rapidly and convergence becomes more difficult.</p>
+			<p><strong>5.2.3 Instability analysis: compressive load increment.</strong> The incremental compressive load $P$ plotted against tip displacement shows that increasing $P$ leads to instability near the Euler critical load $P_{cr} \approx \pi^2 EI/(2L)^2 = 68.5\,\text{kN}$ for the nonlinear transformations (linear theory does not capture instability). The Corotational and PDelta formulations exhibit similar initial stiffness; at higher load levels the Corotational response is stiffer, consistent with the stiffness discussion above.</p>
+			<div class="plot-embed">
+				<iframe src="fig_p.html" title="Stability: P vs tip displacement"></iframe>
+			</div>
+			<p class="figure-caption">Figure 5.4: Incremental compressive load $P$ vs. tip displacement for Linear, PDelta, and Corotational formulations; $P_{cr}$ indicates Euler critical load.</p>
+			<p><strong>5.2.4 Instability analysis: tensile load increment.</strong> For increments in tensile load, no instability is observed; the tensile $P$ contributes to returning the structure toward its original configuration.</p>
+		</section>
+
+		<!-- References -->
+		<section id="refs" class="report-section">
+			<h2>6. References</h2>
+			<ol class="references-list">
+				<li>K. Mosalam, “Lectures for CE 221: Nonlinear structural analysis.” UC Berkeley, Fall 2025.</li>
+				<li>F. C. Filippou, <em>Structural Analysis: Theory and Applications</em>. UC Berkeley CEE.</li>
+				<li>M. DeJong et al., “SEMM graduate program primer: 2025,” UCB/SEMM-2025/04.</li>
+				<li>S. Govindjee, “Lectures for CE 222: Finite element methods.” UC Berkeley, Spring 2026.</li>
+				<li>O. C. Zienkiewicz, R. L. Taylor, S. Govindjee, <em>The Finite Element Method: Its Basis and Fundamentals</em>. Elsevier, 8th ed., 2024.</li>
+			</ol>
+		</section>
+
+		<p style="text-align: center; margin-top: 2rem;">
+			<a class="back-link" href="../../webpage/index.html">← Back to Portfolio</a>
+		</p>
+	</div>
+</body>
+</html>

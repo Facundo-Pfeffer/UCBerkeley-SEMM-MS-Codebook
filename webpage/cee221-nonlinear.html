@@ -1,0 +1,97 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>CE221 - Nonlinear Structural Analysis | Facundo L. Pfeffer</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<meta name="description" content="Nonlinear structural analysis: 1DOF workflow, P–Δ cantilever, χara FE comparison, and axial force diagnostics" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+		<script>
+		MathJax = {
+			tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }
+		};
+		</script>
+		<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+	</head>
+	<body class="is-preload">
+		<div id="wrapper">
+			<header id="header">
+				<div class="inner">
+					<a href="index.html" class="logo">
+						<span class="symbol"><img src="images/logo.png" alt="" /></span><span class="title">Facundo L. Pfeffer</span>
+					</a>
+				</div>
+			</header>
+
+			<div id="main">
+				<div class="inner">
+					<h1>CE221 - Nonlinear Structural Analysis</h1>
+					<p>Selected work from Homework 2: 1DOF spring workflow (Notebook 0), linear cantilever and P–Δ BVP (Notebook 1), χara FE comparison (Linear, PDelta, Corotational), and axial force diagnostics. Interactive report dashboard below.</p>
+
+					<h2>Homework 2 Report Dashboard</h2>
+					<section class="tiles">
+						<article class="style1">
+							<span class="image">
+								<img src="images/CE221/Cover.png" alt="CE221 HW2 Report" />
+							</span>
+							<a href="../CE221_NonLinearStructuralAnalysis/highlighted_htmls/CE221_HW2_menu.html" target="_blank" rel="noopener noreferrer">
+								<h2>HW2 – Full Report</h2>
+								<div class="content">
+									<p>Step-by-step report: loading protocol, stiffness, unload branch; linear beam & BVP; fixed-Δ vs self-consistent P–Δ; χara Linear/PDelta/Corotational; discretization study; axial force distribution and stability plot.</p>
+								</div>
+							</a>
+						</article>
+					</section>
+
+					<p><strong>Contents:</strong> Problem 1 (1DOF modifications), Problem 2 (Euler–Bernoulli tip deflection and BVP check), Problem 3 (fixed-Δ vs self-consistent iteration and interpretation), Problem 4 (baseline table, tip displacement vs $n_{\text{ele}}$, geometric transformation discussion), Problem 5 (plot $N_e$ vs element, stiffness/instability/tension discussion), and References.</p>
+				</div>
+			</div>
+
+			<footer id="footer">
+				<div class="inner">
+					<section>
+						<h2>Get in touch</h2>
+						<ul class="icons">
+							<li><a href="mailto:facundo.pfeffer@berkeley.edu" class="icon solid style2 fa-envelope"><span class="label">Email</span></a></li>
+							<li><a href="https://github.com/Facundo-Pfeffer" class="icon brands style2 fa-github"><span class="label">GitHub</span></a></li>
+							<li><a href="https://www.linkedin.com/in/facundopfeffer/" class="icon brands style2 fa-linkedin"><span class="label">LinkedIn</span></a></li>
+						</ul>
+					</section>
+					<section>
+						<h2>Academic Information</h2>
+						<p><strong>Facundo L. Pfeffer</strong><br>MS Student, UC Berkeley SEMM</p>
+					</section>
+				</div>
+			</footer>
+		</div>
+		<script src="assets/js/jquery.min.js"></script>
+		<script src="assets/js/browser.min.js"></script>
+		<script src="assets/js/breakpoints.min.js"></script>
+		<script src="assets/js/util.js"></script>
+		<script src="assets/js/path-resolver.js"></script>
+		<script src="assets/js/navigation.js"></script>
+		<script src="assets/js/main.js"></script>
+		<script>
+		(function() {
+			function fixPaths() {
+				var isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+				if (isLocal && window.location.pathname.indexOf('/webpage/') !== -1) {
+					document.querySelectorAll('a[href*="CE221_NonLinearStructuralAnalysis/"]').forEach(function(link) {
+						var href = link.getAttribute('href');
+						if (href && href.indexOf('../') !== 0 && href.indexOf('http') !== 0 && href.indexOf('#') !== 0) {
+							link.setAttribute('href', '../' + href);
+						}
+					});
+				}
+			}
+			if (document.readyState === 'loading') {
+				document.addEventListener('DOMContentLoaded', fixPaths);
+			} else {
+				fixPaths();
+			}
+			setTimeout(fixPaths, 100);
+		})();
+		</script>
+	</body>
+</html>
