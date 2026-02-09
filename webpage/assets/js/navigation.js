@@ -21,8 +21,7 @@
 // Navigation data structure - easily extensible
 const navigationData = {
 	main: [
-		{ href: 'index.html', text: 'Home' },
-		{ href: 'cv.html', text: 'Curriculum Vitae' }
+		{ href: 'index.html', text: 'Home' }
 	],
 	dropdowns: [
 		{
@@ -51,7 +50,6 @@ const navigationData = {
 // Mobile menu data (same structure, but flattened)
 const mobileMenuData = [
 	{ href: 'index.html', text: 'Home' },
-	{ href: 'cv.html', text: 'Curriculum Vitae' },
 	{ type: 'section', text: 'UC Berkeley Work' },
 	{ href: 'cee225-dynamics.html', text: 'CEE225 - Structural Dynamics' },
 	{ href: 'cee220-analysis.html', text: 'CEE220 - Structural Analysis' },
