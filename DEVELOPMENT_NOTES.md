@@ -179,21 +179,38 @@ This collaborative approach helps maintain code quality and prevents breaking ex
 
 ```
 Repository Root/
-├── webpage/                           # All HTML files here
+├── webpage/                               # All HTML files here
 │   ├── index.html
 │   ├── about.html
-│   ├── cee225-dynamics.html
 │   ├── cee220-analysis.html
-│   └── cee231-mechanics.html
-├── CEE225_Dynamics/                   # Dynamics course files
-│   └── highlighted_pdfs/              # PDF files for CEE225
-├── CEE220_StructuralAnalysis/         # Analysis course files
-│   └── highlighted_pdfs/              # PDF files for CEE220
-└── CEE231_SolidMechanics/             # Mechanics course files
-    └── highlighted_pdfs/              # PDF files for CEE231
+│   ├── cee225-dynamics.html
+│   ├── cee231-mechanics.html
+│   └── cee244-structures.html
+├── CEE220_StructuralAnalysis/             # Analysis course files
+│   └── highlighted_pdfs/                  # PDF files for CEE220
+├── CEE225_Dynamics/                       # Dynamics course files
+│   └── highlighted_pdfs/                  # PDF files for CEE225
+├── CEE231_SolidMechanics/                 # Mechanics course files
+│   └── highlighted_pdfs/                  # PDF files for CEE231
+├── CEE244_RCStructures/                   # RC structures course files
+│   └── higlighted_pdfs/                   # PDF files for CEE244 (intentional name)
+└── CE223_EarthquakeProtectiveSystems/     # Earthquake protective systems
+    └── highlighted_htmls/                 # HTML dashboards for CE223 (e.g., SDOF hysteresis)
 ```
 
 From any HTML file in `webpage/`, use `../` to access folders at root level.
+
+### CE223 – Earthquake Protective Systems dashboards
+
+- Python generators for CE223 dashboards (for example the SDOF hysteresis comparison) live inside `CE223_EarthquakeProtectiveSystems/` and write their output to `CE223_EarthquakeProtectiveSystems/highlighted_htmls/`.
+- HTML files in this `highlighted_htmls` folder must follow the same asset and navigation patterns as other course dashboards:
+  - CSS/JS: `../../assets/...`
+  - Images and logo: `../../images/...`
+  - Links back to main site: `../../index.html`, `../../cee225-dynamics.html`, etc.
+- When creating a new CE223 dashboard:
+  - Start from a successful example such as `CEE225_Dynamics/highlighted_htmls/final_project_menu.html`.
+  - Keep the Phantom wrapper structure (`#wrapper`, `#header`, `#main`, `#footer`) and include the standard navigation scripts listed in `AGENT_CHECKLIST.md`.
+  - Add MathJax in the `<head>` when the page includes equations, using the same configuration as the existing CE223 SDOF hysteresis dashboard.
 
 ---
 
