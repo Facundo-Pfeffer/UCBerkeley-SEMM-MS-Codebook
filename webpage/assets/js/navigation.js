@@ -27,11 +27,12 @@ const navigationData = {
 		{
 			label: 'UC Berkeley Work',
 			items: [
-				{ href: 'cee225-dynamics.html', text: 'CEE225 - Structural Dynamics' },
-				{ href: 'cee220-analysis.html', text: 'CEE220 - Structural Analysis' },
+				{ href: 'cee225-dynamics.html', text: 'CE225 - Structural Dynamics' },
+				{ href: 'cee220-analysis.html', text: 'CE220 - Structural Analysis' },
+				{ href: 'cee223-earthquake-protective-systems.html', text: 'CE223 - Earthquake Protective Systems' },
 				{ href: 'cee221-nonlinear.html', text: 'CE221 - Nonlinear Structural Analysis' },
-				{ href: 'cee231-mechanics.html', text: 'CEE231 - Solid Mechanics' },
-				{ href: 'cee244-structures.html', text: 'CEE244 - RC Structures' }
+				{ href: 'cee231-mechanics.html', text: 'CE231 - Solid Mechanics' },
+				{ href: 'cee244-structures.html', text: 'CE244 - RC Structures' }
 			]
 		},
 		{
@@ -51,11 +52,12 @@ const navigationData = {
 const mobileMenuData = [
 	{ href: 'index.html', text: 'Home' },
 	{ type: 'section', text: 'UC Berkeley Work' },
-	{ href: 'cee225-dynamics.html', text: 'CEE225 - Structural Dynamics' },
-	{ href: 'cee220-analysis.html', text: 'CEE220 - Structural Analysis' },
+	{ href: 'cee225-dynamics.html', text: 'CE225 - Structural Dynamics' },
+	{ href: 'cee220-analysis.html', text: 'CE220 - Structural Analysis' },
+	{ href: 'cee223-earthquake-protective-systems.html', text: 'CE223 - Earthquake Protective Systems' },
 	{ href: 'cee221-nonlinear.html', text: 'CE221 - Nonlinear Structural Analysis' },
-	{ href: 'cee231-mechanics.html', text: 'CEE231 - Solid Mechanics' },
-	{ href: 'cee244-structures.html', text: 'CEE244 - RC Structures' },
+	{ href: 'cee231-mechanics.html', text: 'CE231 - Solid Mechanics' },
+	{ href: 'cee244-structures.html', text: 'CE244 - RC Structures' },
 	{ type: 'section', text: 'Personal Projects' },
 	{ href: 'https://facundo-pfeffer.github.io/ACSAHE.github.io/', text: 'ACSAHE' },
 	{ href: 'about.html', text: 'About' },
