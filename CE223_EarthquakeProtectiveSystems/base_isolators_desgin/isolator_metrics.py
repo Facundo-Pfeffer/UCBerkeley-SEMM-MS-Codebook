@@ -15,6 +15,70 @@ def _polygon_area(poly: np.ndarray) -> float:
     )
 
 
+def _loop_area_shoelace(points: np.ndarray) -> float:
+    """
+    Enclosed area of the loop using shoelace formula on points ordered by angle
+    from the centroid. Can be inflated when multiple cycles are overlaid (the
+    polygon traces the outer boundary of the cloud). Prefer _loop_area_median_radius
+    for one-cycle area when overlaid cycles are present.
+    """
+    pts = np.asarray(points, dtype=float)
+    if pts.shape[0] < 3:
+        return 0.0
+    u, F = pts[:, 0], pts[:, 1]
+    u_c, F_c = float(np.mean(u)), float(np.mean(F))
+    angles = np.arctan2(F - F_c, u - u_c)
+    order = np.argsort(angles)
+    ordered = pts[order]
+    closed = np.vstack([ordered, ordered[0:1]])
+    return abs(_polygon_area(closed))
+
+
+def _loop_area_median_radius(
+    points: np.ndarray,
+    n_angle_bins: int = 360,
+) -> float:
+    """
+    One-cycle loop area by binning points by angle and using median radius per bin,
+    then shoelace on the resulting (u, F) polygon. With overlaid cycles, max/min
+    or angle-ordered-all-points methods can inflate the area; the median radius
+    at each angle traces a single "middle" loop, so the result is one-cycle area
+    without any divisor.
+    """
+    pts = np.asarray(points, dtype=float)
+    if pts.shape[0] < 3:
+        return 0.0
+    u, F = pts[:, 0], pts[:, 1]
+    u_c, F_c = float(np.mean(u)), float(np.mean(F))
+    u_prime = u - u_c
+    F_prime = F - F_c
+    angles = np.arctan2(F_prime, u_prime)
+    angles_norm = np.where(angles < 0, angles + 2 * np.pi, angles)
+    radii = np.sqrt(u_prime**2 + F_prime**2)
+
+    bin_edges = np.linspace(0, 2 * np.pi, n_angle_bins + 1)
+    polygon_pts = []
+    for i in range(n_angle_bins):
+        lo, hi = bin_edges[i], bin_edges[i + 1]
+        if i < n_angle_bins - 1:
+            mask = (angles_norm >= lo) & (angles_norm < hi)
+        else:
+            mask = (angles_norm >= lo) & (angles_norm <= hi)
+        if not np.any(mask):
+            continue
+        r_median = float(np.median(radii[mask]))
+        angle_mid = (lo + hi) * 0.5
+        u_pt = u_c + r_median * np.cos(angle_mid)
+        F_pt = F_c + r_median * np.sin(angle_mid)
+        polygon_pts.append([u_pt, F_pt])
+
+    if len(polygon_pts) < 3:
+        return 0.0
+    poly = np.array(polygon_pts)
+    closed = np.vstack([poly, poly[0:1]])
+    return abs(_polygon_area(closed))
+
+
 def _estimate_num_cycles(centered: np.ndarray, n_angle_bins: int = 72) -> int:
     """
     Estimate how many times the hysteresis loop was traced (overlaid cycles)
@@ -49,58 +113,56 @@ def _estimate_num_cycles(centered: np.ndarray, n_angle_bins: int = 72) -> int:
 def compute_loop_area(
     points: np.ndarray,
     *,
+    n_angle_bins: int = 360,
     n_bins: int = 400,
     min_points_per_bin: int = 2,
 ) -> float:
     """
     Energy dissipated per cycle (area of one hysteresis loop) in the (u, F) plane.
 
-    Standard, order-independent approximation used in practice:
-
-      1. Project the loop onto the displacement axis u and discretize
-         [u_min, u_max] into bins.
-      2. In each bin, find the upper envelope F_max(u) and lower envelope
-         F_min(u) of the cloud.
-      3. Approximate the enclosed area as
-             W_D ≈ ∑_bins (F_max - F_min) * Δu.
-
-    This uses only the envelopes of the loop and is robust to:
-      - Point ordering (no reliance on trace sequence),
-      - Multiple overlaid cycles (repeating the same loop many times does
-        not change F_max/F_min in each bin).
-    The same algorithm is applied to all strain levels.
+    Primary method: median-radius single loop. Bin points by angle from centroid;
+    in each bin use median radius, build (u, F) polygon, shoelace area. This
+    yields one-cycle area even when the cloud contains multiple overlaid cycles
+    (no divisor). Fallback: if the cloud is too sparse for a stable median loop,
+    we use the minimum of envelope and angle-ordered shoelace (which can overestimate
+    with overlaid cycles).
     """
     pts = np.asarray(points, dtype=float)
     if pts.ndim != 2 or pts.shape[1] != 2:
         raise ValueError("compute_loop_area expects an (N, 2) array of points.")
 
+    if pts.shape[0] < 3:
+        return 0.0
+
     u = pts[:, 0]
     F = pts[:, 1]
-
     u_min = float(np.min(u))
     u_max = float(np.max(u))
     if not np.isfinite(u_min) or not np.isfinite(u_max) or u_max <= u_min:
         return 0.0
 
-    n_bins = int(n_bins)
-    if n_bins < 10:
-        n_bins = 10
+    # Primary: one-cycle area via median radius per angle bin (robust to overlaid cycles).
+    area_median = _loop_area_median_radius(pts, n_angle_bins=n_angle_bins)
 
+    # Fallback: envelope and shoelace can overestimate (axis points, or union of cycles).
+    # Use them only to guard against median being too low (e.g. very sparse).
+    n_bins = max(int(n_bins), 10)
     bin_edges = np.linspace(u_min, u_max, n_bins + 1)
-    bin_indices = np.digitize(u, bin_edges) - 1  # -> [0, n_bins-1]
+    bin_indices = np.digitize(u, bin_edges, right=True) - 1
+    bin_indices = np.clip(bin_indices, 0, n_bins - 1)
     widths = bin_edges[1:] - bin_edges[:-1]
-
-    area = 0.0
+    area_envelope = 0.0
     for i in range(n_bins):
         mask = bin_indices == i
         if np.count_nonzero(mask) < min_points_per_bin:
             continue
         f_slice = F[mask]
-        f_top = float(np.max(f_slice))
-        f_bottom = float(np.min(f_slice))
-        area += (f_top - f_bottom) * float(widths[i])
+        area_envelope += (float(np.max(f_slice)) - float(np.min(f_slice))) * float(widths[i])
+    area_envelope = abs(area_envelope)
+    area_shoelace = _loop_area_shoelace(pts)
 
-    return abs(area)
+    # Return median-loop area, but never exceed the envelope (sanity: one cycle can't be bigger than span).
+    return min(area_median, area_envelope, area_shoelace)
 
 
 def compute_envelope_point_mask(
@@ -201,7 +263,7 @@ def compute_isolator_metrics(points: np.ndarray, omega_over_omegan: float = 1.0)
 
     K0 = P0 / U0 if U0 > 0 else float("nan")
 
-    # Energy per cycle (kip·in) as area of loop
+    # Energy per cycle (kip·in): one-cycle area via median-radius method (no divisor).
     WD = compute_loop_area(pts)
 
     # Loss stiffness

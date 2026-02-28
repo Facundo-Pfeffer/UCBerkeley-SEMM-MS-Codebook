@@ -48,62 +48,37 @@
 						<div class="inner">
 							<h1>CE223 - Earthquake Protective Systems</h1>
 
-							<section style="margin-bottom: 2.5rem;">
-								<h2>Objective</h2>
-								<p style="max-width: 920px; line-height: 1.65;">
-									The goal is to characterize <strong>earthquake protective systems</strong>—base isolation and
-									energy-dissipating mechanisms—and to predict their seismic response. Work is organized in two
-									strands: (1) <strong>base isolator design</strong>, from digitized test curves to equivalent
-									linear SDOF and time-history analysis; (2) <strong>SDOF damping model comparison</strong>,
-									comparing viscous, hysteretic, and fractional damping under harmonic and earthquake loading.
-									Each strand produces interactive dashboards that show what is computed at each step and why.
-								</p>
+							<section style="margin-bottom: 2rem;">
+								<h2>What this is about</h2>
+								<ul style="max-width: 920px; padding-left: 1.5rem; line-height: 1.7; margin: 0;">
+									<li>Characterize <strong>base isolation</strong> and <strong>energy dissipation</strong> and predict seismic response.</li>
+									<li><strong>Two strands:</strong> (1) base isolator design — from test curves to equivalent SDOF and earthquake response; (2) SDOF damping models — compare viscous, hysteretic, and fractional damping.</li>
+									<li>Each step has an interactive dashboard linked below.</li>
+								</ul>
 							</section>
 
-							<section style="margin-bottom: 2.5rem;">
+							<section style="margin-bottom: 2rem;">
 								<h2>Base isolator strand</h2>
-								<p style="max-width: 920px; margin-bottom: 1.25rem; line-height: 1.6;">
-									A rigid superstructure (mass \(m\)) is supported by <strong>4 high-damping rubber (HDR)
-									bearings</strong>. Test data give force–displacement hysteresis loops at several shear strain
-									levels. The objective is to turn these into equivalent linear properties and then compute
-									the response to a real ground motion (Kobe KBU090).
-								</p>
-								<ol style="max-width: 920px; padding-left: 1.5rem; margin-bottom: 1.5rem; line-height: 1.7;">
-									<li><strong>Step (a):</strong> From scanned hysteresis plots, digitize the loops and compute
-										per-bearing storage stiffness \(K_1\), loss stiffness \(K_2\), and effective damping ratio
-										\(\zeta_{\mathrm{eff}}\) as functions of shear strain. This is the input for the next step.</li>
-									<li><strong>Step (b):</strong> Approximate the isolation system as a single-degree-of-freedom (SDOF)
-										oscillator with system stiffness \(k = 4K_1\) and equivalent damping. Because \(K_1\) and
-										\(\zeta_{\mathrm{eff}}\) depend on strain, an <strong>iterative procedure</strong> is used:
-										assume a peak displacement, read off \(K_1\) and \(\zeta_{\mathrm{eff}}\), run Newmark’s
-										method, update the peak from the response, and repeat until convergence.</li>
-									<li><strong>Step (c):</strong> Solve the same converged SDOF using the <strong>FFT</strong>
-										(frequency-domain transfer function) and plot both solutions together for comparison.</li>
-								</ol>
-								<p style="max-width: 920px; color:#6b7280; font-size: 0.95em; margin-bottom: 1.25rem;">
-									Two dashboards support this strand: the first shows the hysteresis metrics and trends (Step a);
-									the second shows the iteration, convergence, and Newmark vs FFT response (Steps b–c).
-								</p>
+								<ul style="max-width: 920px; padding-left: 1.5rem; line-height: 1.7; margin: 0 0 1rem 0;">
+									<li>4 HDR bearings support a rigid mass. Test data: force–displacement loops at several strain levels.</li>
+									<li><strong>Step (a):</strong> Digitize loops → get \(K_1\), \(K_2\), \(\zeta_{\mathrm{eff}}\) vs shear strain.</li>
+									<li><strong>Step (b):</strong> Equivalent SDOF with \(k = 4K_1\). Iterate: assume peak displacement → read \(K_1\), \(\zeta_{\mathrm{eff}}\) → run Newmark → update peak → repeat until convergence.</li>
+									<li><strong>Step (c):</strong> Same SDOF solved with FFT; compare to Newmark.</li>
+								</ul>
+								<p style="max-width: 920px; color:#6b7280; font-size: 0.95em; margin: 0;">Two dashboards: hysteresis metrics (Step a), then iteration and Newmark vs FFT (Steps b–c).</p>
 							</section>
 
-							<section style="margin-bottom: 2.5rem;">
+							<section style="margin-bottom: 2rem;">
 								<h2>SDOF damping models strand</h2>
-								<p style="max-width: 920px; margin-bottom: 1.25rem; line-height: 1.6;">
-									Three linear damping models—<strong>Kelvin–Voigt (viscous)</strong>, <strong>hysteretic
-									(structural)</strong>, and <strong>fractional Kelvin–Voigt</strong>—are compared under
-									prescribed harmonic displacement and under earthquake excitation. The objective is to see how
-									storage stiffness \(K_1(\omega)\), loss stiffness \(K_2(\omega)\), and energy dissipated per
-									cycle (EDC) depend on frequency, and how that affects earthquake response when using the
-									correct dynamic stiffness \(\hat{R}(\omega)\) in the transfer function.
-								</p>
-								<p style="max-width: 920px; color:#6b7280; font-size: 0.95em; margin-bottom: 1.25rem;">
-									One full dashboard explains the models, shows hysteresis loops and EDC vs frequency, and
-									includes the frequency-domain earthquake response. A second link gives a compact loops-only
-									view.
-								</p>
+								<ul style="max-width: 920px; padding-left: 1.5rem; line-height: 1.7; margin: 0 0 1rem 0;">
+									<li>Compare three models: Kelvin–Voigt (viscous), hysteretic, fractional Kelvin–Voigt.</li>
+									<li>Under harmonic displacement: loops, \(K_1(\omega)\), \(K_2(\omega)\), EDC vs \(\omega\).</li>
+									<li>Under earthquake: frequency-domain response using the correct \(\hat{R}(\omega)\) for each model.</li>
+								</ul>
+								<p style="max-width: 920px; color:#6b7280; font-size: 0.95em; margin: 0;">Full dashboard (theory + loops + EDC + earthquake) and a compact loops-only view.</p>
 							</section>
 
-							<h2>Interactive dashboards</h2>
+							<h2>Dashboards</h2>
 							<section class="tiles">
 								<article class="style6">
 									<span class="image">
@@ -113,53 +88,52 @@
 										<h2>Base isolator hysteresis (Step a)</h2>
 										<div class="content">
 											<p>
-												Digitized force–displacement loops at four shear strain levels. Per-bearing
-												\(K_1\), \(K_2\), \(\zeta_{\mathrm{eff}}\), and energy per cycle; trend plots
-												vs strain. Input for the equivalent-SDOF iteration.
+												• Digitized loops at four strain levels<br>
+												• Per-bearing \(K_1\), \(K_2\), \(\zeta_{\mathrm{eff}}\), energy per cycle<br>
+												• Trend plots vs strain
 											</p>
 										</div>
 									</a>
 								</article>
 								<article class="style3">
 									<span class="image">
-										<img src="images/CE223/CE223_Thumbnail.png" alt="Base isolator iteration and response" />
+										<img src="images/CE223/CE_Convergence_Thumbnail.png" alt="Iteration and response" />
 									</span>
 									<a href="CE223_EarthquakeProtectiveSystems/highlighted_htmls/isolator_iteration_dashboard.html">
-										<h2>Base isolator iteration and response (Steps b–c)</h2>
+										<h2>Iteration and response (Steps b–c)</h2>
 										<div class="content">
 											<p>
-												Equivalent-SDOF fixed-point iteration (4 bearings, system \(k = 4K_1\)).
-												Convergence of shear strain and \(\zeta_{\mathrm{eff}}\); Newmark vs FFT
-												response (displacement, velocity, absolute acceleration) to Kobe KBU090.
+												• Fixed-point iteration (4 bearings, \(k = 4K_1\))<br>
+												• Convergence of strain and \(\zeta_{\mathrm{eff}}\)<br>
+												• Newmark vs FFT: displacement, velocity, acceleration (Kobe KBU090)
 											</p>
 										</div>
 									</a>
 								</article>
 								<article class="style6">
 									<span class="image">
-										<img src="images/CE223/CE223_Thumbnail.png" alt="SDOF damping models" />
+										<img src="images/CE223/FourierComparison_Thumbnail.png" alt="SDOF damping models" />
 									</span>
 									<a href="CE223_EarthquakeProtectiveSystems/highlighted_htmls/sdof_hysteresis_dashboard.html">
 										<h2>SDOF damping model comparisons</h2>
 										<div class="content">
 											<p>
-												Models A (viscous), B (hysteretic), C (fractional). Harmonic hysteresis loops,
-												\(K_1(\omega)\), \(K_2(\omega)\), EDC vs \(\omega\), and frequency-domain
-												earthquake response for all three.
+												• Models A, B, C: loops, \(K_1(\omega)\), \(K_2(\omega)\), EDC vs \(\omega\)<br>
+												• Frequency-domain earthquake response for all three
 											</p>
 										</div>
 									</a>
 								</article>
 								<article class="style4">
 									<span class="image">
-										<img src="images/CE223/CE223_Thumbnail.png" alt="SDOF hysteresis loops only" />
+										<img src="images/CE223/CENewmark_Thumbnail.png" alt="SDOF loops only" />
 									</span>
 									<a href="CE223_EarthquakeProtectiveSystems/highlighted_htmls/sdof_hysteresis_loops.html">
 										<h2>SDOF hysteresis loops (compact)</h2>
 										<div class="content">
 											<p>
-												Force–displacement loops only for Models A, B, C at selected frequencies.
-												Lightweight view without the full theory and EDC plots.
+												• Force–displacement loops only (Models A, B, C)<br>
+												• No theory or EDC plots
 											</p>
 										</div>
 									</a>
@@ -167,30 +141,12 @@
 							</section>
 
 							<div style="background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; padding:1.5rem; margin:2rem 0; max-width: 980px;">
-								<h3 style="margin-top:0;">Technical focus</h3>
-								<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:1rem;">
-									<div>
-										<strong>Hysteresis and energy dissipation</strong><br>
-										<span style="color:#6b7280;">
-											Loop area \(\oint f\,du\) as energy dissipated per cycle and its link to
-											loss stiffness \(K_2(\omega)\).
-										</span>
-									</div>
-									<div>
-										<strong>Equivalent linear SDOF</strong><br>
-										<span style="color:#6b7280;">
-											Mapping peak displacement to shear strain, \(K_1\), and \(\zeta_{\mathrm{eff}}\);
-											system stiffness \(k = 4K_1\) for four bearings in parallel.
-										</span>
-									</div>
-									<div>
-										<strong>Time vs frequency domain</strong><br>
-										<span style="color:#6b7280;">
-											Newmark’s method vs FFT transfer function
-											\(U(\omega) = H(\omega)\,\ddot{U}_g(\omega)\) for the same SDOF.
-										</span>
-									</div>
-								</div>
+								<h3 style="margin-top:0;">Concepts</h3>
+								<ul style="margin: 0; padding-left: 1.5rem; line-height: 1.65; color:#4b5563;">
+									<li><strong>Hysteresis:</strong> loop area \(\oint f\,du\) = energy per cycle; links to loss stiffness \(K_2\).</li>
+									<li><strong>Equivalent SDOF:</strong> peak displacement → strain → \(K_1\), \(\zeta_{\mathrm{eff}}\); system \(k = 4K_1\) (4 bearings).</li>
+									<li><strong>Newmark vs FFT:</strong> same SDOF; time-domain step-by-step vs frequency-domain \(U(\omega) = H(\omega)\,\ddot{U}_g(\omega)\).</li>
+								</ul>
 							</div>
 
 							<div style="text-align: center; margin: 2rem 0;">
