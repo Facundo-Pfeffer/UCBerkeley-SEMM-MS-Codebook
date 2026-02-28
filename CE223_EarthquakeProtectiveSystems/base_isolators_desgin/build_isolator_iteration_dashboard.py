@@ -34,6 +34,7 @@ from plotly.subplots import make_subplots
 
 from fft_sdof_response import sdof_response_fft_ground_motion
 from isolator_sdof_iteration import NUM_BEARINGS, IterationRecord, iterate_isolator_response
+from newmark_sdof import newmark_sdof
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -409,6 +410,145 @@ def build_response_fig(
     )
 
 
+def compute_fixed_base_response(
+    ug_ddot: np.ndarray,
+    dt: float,
+    *,
+    T_fixed: float = 0.3,
+    zeta_fixed: float = 0.05,
+    m: float = 1.0,
+) -> tuple[np.ndarray, np.ndarray, float, float]:
+    """
+    Compute the response of a fixed-base SDOF used as a comparison system.
+
+    The system has natural period T_fixed and damping ratio zeta_fixed. It is
+    excited by the same ground acceleration record as the isolated system.
+
+    Returns
+    -------
+    t : np.ndarray
+        Time vector [s].
+    a_abs : np.ndarray
+        Absolute acceleration history of the mass [in/s²].
+    k_fixed : float
+        Stiffness of the fixed-base SDOF.
+    c_fixed : float
+        Viscous damping coefficient of the fixed-base SDOF.
+    """
+    ug = np.asarray(ug_ddot, dtype=float).ravel()
+    n = ug.size
+    if n == 0:
+        raise ValueError("ug_ddot must contain at least one time point for fixed-base SDOF.")
+
+    omega_n = 2.0 * math.pi / T_fixed
+    k_fixed = m * omega_n**2
+    c_fixed = 2.0 * zeta_fixed * omega_n * m
+
+    # Forcing in relative coordinates: p(t) = -m * ü_g(t)
+    p = -m * ug
+    resp = newmark_sdof(m=m, k=k_fixed, c=c_fixed, p=p, dt=dt, u0=0.0, v0=0.0)
+    a_rel = resp[:, 2]
+    a_abs = a_rel + ug[: a_rel.size]
+    t = np.arange(0.0, a_rel.size * dt, dt)
+    return t, a_abs, k_fixed, c_fixed
+
+
+def build_fixed_base_comparison_fig(
+    t_iso: np.ndarray,
+    a_abs_iso: np.ndarray,
+    t_fixed: np.ndarray,
+    a_abs_fixed: np.ndarray,
+    ug_ddot: np.ndarray,
+    dt: float,
+) -> str:
+    """
+    Build a comparison figure: isolated vs fixed-base absolute acceleration.
+    """
+    n = min(a_abs_iso.size, a_abs_fixed.size, ug_ddot.size)
+    t = t_iso[:n]
+    iso = a_abs_iso[:n]
+    fixed = a_abs_fixed[:n]
+    ug = ug_ddot[:n]
+
+    fig = make_subplots(
+        rows=2,
+        cols=1,
+        shared_xaxes=True,
+        vertical_spacing=0.06,
+        subplot_titles=(
+            "Absolute acceleration – isolated vs fixed-base SDOF",
+            "Ground acceleration ü_g(t)",
+        ),
+    )
+
+    fig.add_trace(
+        go.Scatter(
+            x=t,
+            y=iso,
+            mode="lines",
+            name="Isolated mass – ü_abs(t)",
+            line=dict(color="rgb(0,55,95)", width=2.2),
+        ),
+        row=1,
+        col=1,
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=t_fixed[:n],
+            y=fixed,
+            mode="lines",
+            name="Fixed base T = 0.30 s, ζ = 0.05 – ü_abs(t)",
+            line=dict(color="rgb(220,38,38)", width=1.8, dash="dash"),
+        ),
+        row=1,
+        col=1,
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=t,
+            y=ug,
+            mode="lines",
+            name="ü_g(t) [in/s²]",
+            line=dict(color="rgb(0,0,0)", width=2.0, dash="dot"),
+        ),
+        row=2,
+        col=1,
+    )
+
+    fig.update_layout(
+        template="plotly_white",
+        autosize=True,
+        height=520,
+        title=dict(
+            text="Absolute acceleration: isolated vs fixed-base structure",
+            x=0.5,
+            xanchor="center",
+            font=dict(size=20, family="Arial", color="#1e293b"),
+        ),
+        showlegend=True,
+        legend=dict(
+            orientation="h",
+            y=-0.14,
+            yanchor="top",
+            x=0.5,
+            xanchor="center",
+            bgcolor="rgba(255,255,255,0.75)",
+            font=dict(size=13, family="Arial", color="#111827"),
+        ),
+        margin=dict(l=70, r=25, t=80, b=90),
+    )
+    fig.update_xaxes(title_text="Time [s]", row=2, col=1)
+    fig.update_yaxes(title_text="ü_abs(t) [in/s²]", row=1, col=1)
+    fig.update_yaxes(title_text="ü_g(t) [in/s²]", row=2, col=1)
+
+    return to_html(
+        fig,
+        include_plotlyjs=False,
+        full_html=False,
+        config=dict(displayModeBar=True, responsive=True),
+    )
+
+
 def build_html() -> None:
     # 1. Load or synthesize ground motion
     ug_ddot, dt, gm_label = load_ground_motion()
@@ -452,6 +592,33 @@ def build_html() -> None:
     )
 
     fig_resp_div = build_response_fig(response, response_fft, ug_ddot, dt)
+
+    # 4. Fixed-base SDOF with T = 0.30 s, ζ = 0.05 for acceleration comparison
+    n_resp = response.shape[0]
+    t_iso = np.arange(0.0, n_resp * dt, dt)
+    a_rel_iso = response[:, 2]
+    ug_trim = ug_ddot[:n_resp]
+    a_abs_iso = a_rel_iso + ug_trim
+
+    t_fixed, a_abs_fixed, k_fixed, c_fixed = compute_fixed_base_response(
+        ug_trim, dt, T_fixed=0.3, zeta_fixed=0.05, m=m_eff
+    )
+    fig_fixed_div = build_fixed_base_comparison_fig(
+        t_iso=t_iso,
+        a_abs_iso=a_abs_iso,
+        t_fixed=t_fixed,
+        a_abs_fixed=a_abs_fixed,
+        ug_ddot=ug_trim,
+        dt=dt,
+    )
+
+    # Peak absolute accelerations (for commentary), expressed in g.
+    peak_iso = float(np.max(np.abs(a_abs_iso)))
+    peak_fixed = float(np.max(np.abs(a_abs_fixed)))
+    peak_iso_g = peak_iso / 386.09
+    peak_fixed_g = peak_fixed / 386.09
+    ratio_iso_fixed = peak_iso / peak_fixed if peak_fixed > 0.0 else float("nan")
+    reduction_percent = (1.0 - ratio_iso_fixed) * 100.0 if peak_fixed > 0.0 else float("nan")
 
     # Build iteration summary rows
     iter_rows = []
@@ -773,6 +940,31 @@ __ITER_ROWS__
               __RESP_FIG__
             </div>
           </section>
+
+          <section class="box sdof-box">
+            <h3>Isolated vs fixed-base absolute acceleration</h3>
+            <p>
+              To quantify the benefit of isolation, we compare the calibrated isolated system with a
+              <strong>fixed-base SDOF</strong> having period \(T = 0.30~\mathrm{s}\) and damping
+              ratio \(\zeta = 0.05\). Both are driven by the same ground acceleration record.
+            </p>
+            <div class="plot-embed">
+              __FIXED_FIG__
+            </div>
+            <p>
+              For this motion, the isolated mass reaches a peak absolute acceleration of approximately
+              <strong>{peak_iso_g:.2f} g</strong>, while the fixed-base system reaches about
+              <strong>{peak_fixed_g:.2f} g</strong>. In other words, the isolated system experiences
+              roughly <strong>{ratio_iso_fixed:.2f}</strong> times the peak acceleration of the
+              fixed-base structure (a reduction of about <strong>{reduction_percent:.0f}%</strong>).
+            </p>
+            <p>
+              The price paid for this reduction in acceleration is larger relative displacement in the
+              isolator levels (visible in the response histories above), which is precisely what base
+              isolation is designed to trade: <em>less force and acceleration in the superstructure,
+              more controlled motion in the isolation layer</em>.
+            </p>
+          </section>
         </div>
       </div>
 
@@ -794,12 +986,17 @@ __ITER_ROWS__
         template.replace("__ITER_FIG__", fig_iter_div)
         .replace("__GM_FIG__", fig_gm_div)
         .replace("__RESP_FIG__", fig_resp_div)
+        .replace("__FIXED_FIG__", fig_fixed_div)
         .replace("__ITER_ROWS__", iter_table_body)
         .replace("{U_max_final:.3f}", f"{final.U_max_in:.3f}")
         .replace("{gamma_final:.1f}", f"{final.gamma_percent:.1f}")
         .replace("{K1_final:.3f}", f"{final.K1:.3f}")
         .replace("{K1_system:.3f}", f"{k_system_final:.3f}")
         .replace("{zeta_final:.3f}", f"{final.zeta_eff:.3f}")
+        .replace("{peak_iso_g:.2f}", f"{peak_iso_g:.2f}")
+        .replace("{peak_fixed_g:.2f}", f"{peak_fixed_g:.2f}")
+        .replace("{ratio_iso_fixed:.2f}", f"{ratio_iso_fixed:.2f}")
+        .replace("{reduction_percent:.0f}", f"{reduction_percent:.0f}")
     )
 
     # Canonical output: CE223_EarthquakeProtectiveSystems/highlighted_htmls
