@@ -40,6 +40,10 @@ IMG_DIR = BASE_DIR / "input_diagrams"
 #     γ = 100 * U_max / H_IN.
 RUBBER_THICKNESS_IN = 3.25
 
+# Number of HDR bearings in the isolation system (problem statement: 4 bearings).
+# Hysteresis curves give per-bearing K1; system stiffness for the SDOF is NUM_BEARINGS * K1.
+NUM_BEARINGS = 4
+
 # Match strain labels and numeric values used in the dashboard.
 STRAIN_LABELS: Dict[str, str] = {
     "strain10.png": "ε ≈ 9.8%",
@@ -252,10 +256,15 @@ def iterate_isolator_response(
             U_trial, m, strains, K1_vals, zeta_vals, H_in
         )
 
-        k = K1  # Use storage stiffness as the elastic constant.
+        # System stiffness = 4 × per-bearing K1 (four HDR bearings in parallel).
+        # ζ_eff is unchanged for the system; c_system = 2 ζ √(k_system m).
+        k_system = NUM_BEARINGS * K1
+        omega_n = float(np.sqrt(k_system / m))
+        c_system = 2.0 * zeta * omega_n * m
+
         p = -m * ug_ddot  # Effective force in relative coordinates.
 
-        resp = newmark_sdof(m, k, c, p, dt, u0=0.0, v0=0.0, method="constant")
+        resp = newmark_sdof(m, k_system, c_system, p, dt, u0=0.0, v0=0.0, method="constant")
         u = resp[:, 0]
         U_max = float(np.max(np.abs(u)))
 

@@ -560,7 +560,10 @@ def build_dashboard() -> None:
                         applied to compute \(U_0\), \(P_0\), \(K_0\), \(W_D\), \(K_1\), \(K_2\),
                         and \(\zeta_\mathrm{{eff}}\). The result is a consistent set of parameters
                         across four strain levels (approximately 9.8%, 74%, 124%, and 180%) for
-                        comparison and potential use in models.
+                        comparison and potential use in models. All values reported here are
+                        <strong>per bearing</strong>; the problem’s isolation system uses
+                        <strong>4 HDR bearings</strong> in parallel, so the system storage stiffness
+                        for SDOF analysis is \(4\times K_1\).
                     </p>
                 </section>
 

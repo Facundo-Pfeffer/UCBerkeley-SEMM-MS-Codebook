@@ -33,7 +33,7 @@ from plotly.io import to_html
 from plotly.subplots import make_subplots
 
 from fft_sdof_response import sdof_response_fft_ground_motion
-from isolator_sdof_iteration import IterationRecord, iterate_isolator_response
+from isolator_sdof_iteration import NUM_BEARINGS, IterationRecord, iterate_isolator_response
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -437,13 +437,15 @@ def build_html() -> None:
     fig_gm_div = build_ground_motion_preview(ug_ddot, dt, gm_label)
 
     # 3. Frequency-domain (FFT-based) response using converged equivalent SDOF
-    omega_n_final = math.sqrt(final.K1 / m_eff)
+    # System stiffness = 4×K1; ζ_eff unchanged, c = 2 ζ √(k_system m).
+    k_system = NUM_BEARINGS * final.K1
+    omega_n_final = math.sqrt(k_system / m_eff)
     c_final = 2.0 * final.zeta_eff * omega_n_final * m_eff
     response_fft = sdof_response_fft_ground_motion(
         ug_ddot=ug_ddot,
         dt=dt,
         m=m_eff,
-        k=final.K1,
+        k=k_system,
         c=c_final,
         zero_pad_factor=2,
         return_components="absolute",
@@ -586,6 +588,40 @@ def build_html() -> None:
           </p>
 
           <section class="box sdof-box">
+            <h3>Four-bearing isolation system</h3>
+            <p>
+              The problem considers a rigid superstructure of mass
+              \(m = 200\times 10^3\,\mathrm{kg}\) supported by
+              <strong>4 high-damping rubber (HDR) bearings</strong>. The hysteresis
+              curves (Figure 1 in the problem) describe the cyclic behavior of
+              <em>one</em> bearing; shear strain is the horizontal displacement divided
+              by the total rubber thickness \(H = 3.25\,\mathrm{in}\) for that bearing.
+            </p>
+            <p>
+              For the equivalent SDOF, the four bearings act in parallel, so the
+              <strong>system storage stiffness</strong> is
+              \(k = 4\times K_1\), where \(K_1\) is the per-bearing storage stiffness
+              from the hysteresis curves.
+            </p>
+            <p>
+              The effective damping ratio \(\zeta_{\mathrm{eff}}\) from the curves is
+              preserved at the system level for the following reason. Each hysteresis
+              test is performed with <strong>axial load \(M/4\)</strong> on that bearing
+              (one quarter of the total isolated mass). The per-bearing equivalent
+              viscous coefficient \(c_1\) inferred from \(\zeta_{\mathrm{eff}}\) therefore
+              incorporates this factor (it is the \(c\) that gives \(\zeta_{\mathrm{eff}}\)
+              for a SDOF with stiffness \(K_1\) and mass \(M/4\)). When the four bearings
+              are in parallel, \(c_{\mathrm{system}} = 4 c_1\) and
+              \(k_{\mathrm{system}} = 4 K_1\). In the ratio
+              \(\zeta = c\big/(2\sqrt{km}\big)\), the factor 4 in \(c\) and the factor 4
+              in \(k\) cancel, so \(\zeta_{\mathrm{system}} = \zeta_{\mathrm{eff}}\).
+              We therefore use \(c = 2\zeta_{\mathrm{eff}}\sqrt{km}\) with the
+              system stiffness \(k = 4 K_1\) and full mass \(m\). All iteration and
+              response calculations use this system-level \(k\) and \(c\).
+            </p>
+          </section>
+
+          <section class="box sdof-box">
             <h3>Solution methods overview</h3>
             <p>
               In relative coordinates \(u(t)\), the isolated mass is modeled as a single
@@ -593,9 +629,10 @@ def build_html() -> None:
               \[
                 m\,u''(t) + c\,u'(t) + k\,u(t) = -m\,\ddot{u}_g(t),
               \]
-              where \(m\) is the effective mass, \(k\) is the storage stiffness \(K_1\)
-              obtained from the isolator hysteresis curves, \(c\) is a viscous coefficient
-              chosen to reproduce the effective damping ratio \(\zeta_{\mathrm{eff}}\), and
+              where \(m\) is the effective mass, \(k = 4 K_1\) is the
+              <strong>system</strong> storage stiffness (four times the per-bearing
+              \(K_1\) from the hysteresis curves), \(c\) is a viscous coefficient
+              chosen to reproduce \(\zeta_{\mathrm{eff}}\), and
               \(\ddot{u}_g(t)\) is the ground acceleration record.
             </p>
             <p>
@@ -651,8 +688,8 @@ def build_html() -> None:
                 <p>γ ≈ {gamma_final:.1f}% corresponding to the converged U_max.</p>
               </div>
               <div class="key-metric-item">
-                <h4>Storage stiffness</h4>
-                <p>K₁ ≈ {K1_final:.3f} (consistent with isolator hysteresis curves).</p>
+                <h4>Per-bearing storage stiffness</h4>
+                <p>K₁ ≈ {K1_final:.3f} kip/in (from hysteresis). System stiffness k = 4×K₁ ≈ {K1_system:.3f} kip/in.</p>
               </div>
               <div class="key-metric-item">
                 <h4>Effective damping ratio</h4>
@@ -670,13 +707,13 @@ def build_html() -> None:
               <li>Start from the current peak displacement estimate \(U_{\max}\) and compute
                   the corresponding shear strain using the known rubber thickness
                   \(H = 3.25~\mathrm{in}\): \(\gamma = 100\,U_{\max}/H\).</li>
-              <li>Interpolate the storage stiffness \(K_1(\gamma)\) and effective damping
-                  ratio \(\zeta_{\mathrm{eff}}(\gamma)\) from the isolator hysteresis
-                  library.</li>
-              <li>Form an equivalent viscous coefficient
+              <li>Interpolate the per-bearing storage stiffness \(K_1(\gamma)\) and
+                  effective damping ratio \(\zeta_{\mathrm{eff}}(\gamma)\) from the
+                  isolator hysteresis library.</li>
+              <li>Set system stiffness \(k = 4 K_1\) (four bearings in parallel), form
                   \(c = 2\,\zeta_{\mathrm{eff}}\,\omega_n m\) with
-                  \(\omega_n = \sqrt{K_1/m}\), and solve
-                  \(m u'' + c u' + K_1 u = -m \ddot{u}_g(t)\) using Newmark's method
+                  \(\omega_n = \sqrt{k/m}\), and solve
+                  \(m u'' + c u' + k u = -m \ddot{u}_g(t)\) using Newmark's method
                   in relative coordinates.</li>
               <li>Extract a new peak displacement from the response,
                   \(U_{\max}^{\text{new}} = \max_t |u(t)|\), and repeat until the
@@ -698,7 +735,7 @@ def build_html() -> None:
                     <th>Iteration</th>
                     <th>γ [%]</th>
                     <th>U_max [in]</th>
-                    <th>K₁</th>
+                    <th>K₁ (per bearing)</th>
                     <th>ζ_eff</th>
                   </tr>
                 </thead>
@@ -752,6 +789,7 @@ __ITER_ROWS__
 </html>
 """
 
+    k_system_final = NUM_BEARINGS * final.K1
     html = (
         template.replace("__ITER_FIG__", fig_iter_div)
         .replace("__GM_FIG__", fig_gm_div)
@@ -760,6 +798,7 @@ __ITER_ROWS__
         .replace("{U_max_final:.3f}", f"{final.U_max_in:.3f}")
         .replace("{gamma_final:.1f}", f"{final.gamma_percent:.1f}")
         .replace("{K1_final:.3f}", f"{final.K1:.3f}")
+        .replace("{K1_system:.3f}", f"{k_system_final:.3f}")
         .replace("{zeta_final:.3f}", f"{final.zeta_eff:.3f}")
     )
 
