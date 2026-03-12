@@ -48,49 +48,50 @@
 						<div class="inner">
 							<h1>CE223 - Earthquake Protective Systems</h1>
 
-							<section style="margin-bottom: 2rem;">
-								<h2>What this is about</h2>
-								<ul style="max-width: 920px; padding-left: 1.5rem; line-height: 1.7; margin: 0;">
-									<li>Characterize <strong>base isolation</strong> and <strong>energy dissipation</strong> and predict seismic response.</li>
-									<li><strong>Two strands:</strong> (1) base isolator design — from test curves to equivalent SDOF and earthquake response; (2) SDOF damping models — compare viscous, hysteretic, and fractional damping.</li>
-									<li>Each step has an interactive dashboard linked below.</li>
-								</ul>
-							</section>
+							<div style="max-width: 980px;">
+								<p style="font-size: 1.05em; line-height: 1.75; color:#374151;">
+									This page presents portfolio work from <strong>CE223 – Earthquake Protective Systems</strong>:
+									linear <strong>multi‑degree‑of‑freedom (MDOF)</strong> time‑history analysis and an earlier
+									<strong>single‑degree‑of‑freedom (SDOF)</strong> base‑isolation project built from measured hysteresis,
+									equivalent SDOF models, and time‑ and frequency‑domain response.
+								</p>
+								<p style="font-size: 0.98em; line-height: 1.65; color:#6b7280; margin-top:0.6rem;">
+									Terms used below: <strong>MDOF</strong> = multi‑degree‑of‑freedom; <strong>SDOF</strong> = single‑degree‑of‑freedom;
+									<strong>HDR</strong> = high‑damping rubber; <strong>K₁</strong> = storage stiffness, <strong>K₂</strong> = loss stiffness (from hysteresis loops);
+									<strong>ζ<sub>eff</sub></strong> = equivalent viscous damping ratio; <strong>RSA</strong> = response spectrum analysis;
+									<strong>SRSS</strong> = square‑root‑of‑sum‑of‑squares (modal combination rule); <strong>FFT</strong> = fast Fourier transform;
+									<strong>2‑DOF</strong> = two‑degree‑of‑freedom.
+								</p>
+							</div>
 
-							<section style="margin-bottom: 2rem;">
-								<h2>Base isolator strand</h2>
-								<ul style="max-width: 920px; padding-left: 1.5rem; line-height: 1.7; margin: 0 0 1rem 0;">
-									<li>4 HDR bearings support a rigid mass. Test data: force–displacement loops at several strain levels.</li>
-									<li><strong>Step (a):</strong> Digitize loops → get \(K_1\), \(K_2\), \(\zeta_{\mathrm{eff}}\) vs shear strain.</li>
-									<li><strong>Step (b):</strong> Equivalent SDOF with \(k = 4K_1\). Iterate: assume peak displacement → read \(K_1\), \(\zeta_{\mathrm{eff}}\) → run Newmark → update peak → repeat until convergence.</li>
-									<li><strong>Step (c):</strong> Same SDOF solved with FFT; compare to Newmark.</li>
-								</ul>
-								<p style="max-width: 920px; color:#6b7280; font-size: 0.95em; margin: 0;">Two dashboards: hysteresis metrics (Step a), then iteration and Newmark vs FFT (Steps b–c).</p>
-							</section>
-
-							<section style="margin-bottom: 2rem;">
-								<h2>SDOF damping models strand</h2>
-								<ul style="max-width: 920px; padding-left: 1.5rem; line-height: 1.7; margin: 0 0 1rem 0;">
-									<li>Compare three models: Kelvin–Voigt (viscous), hysteretic, fractional Kelvin–Voigt.</li>
-									<li>Under harmonic displacement: loops, \(K_1(\omega)\), \(K_2(\omega)\), EDC vs \(\omega\).</li>
-									<li>Under earthquake: frequency-domain response using the correct \(\hat{R}(\omega)\) for each model.</li>
-								</ul>
-								<p style="max-width: 920px; color:#6b7280; font-size: 0.95em; margin: 0;">Full dashboard (theory + loops + EDC + earthquake) and a compact loops-only view.</p>
-							</section>
-
-							<h2>Dashboards</h2>
+							<h2>SDOF base‑isolation project</h2>
+							<p style="max-width: 980px; color:#4b5563; line-height:1.7; margin-top:0.5rem;">
+								The first set of dashboards documents a base‑isolation workflow using a single‑degree‑of‑freedom (SDOF) model built from
+								measured hysteresis of <strong>high‑damping rubber (HDR)</strong> bearings. The workflow yields equivalent SDOF parameters—storage stiffness \(K_1\),
+								loss stiffness \(K_2\), and equivalent viscous damping ratio \(\zeta_\mathrm{eff}\)—and uses fixed‑point iteration on strain and \(\zeta_\mathrm{eff}\),
+								plus time‑ and frequency‑domain response.
+							</p>
+							<div style="max-width:980px; margin:0.75rem 0 1.25rem 0;">
+								<div style="background:#f9fafb; border-left:4px solid #003262; border-radius:6px; padding:0.75rem 1rem;">
+									<p style="margin:0 0 0.35rem 0; color:#111827; font-size:0.95rem; font-weight:600;">What this project shows</p>
+									<ul style="margin:0; padding-left:1.1rem; color:#374151; font-size:0.92rem; line-height:1.55;">
+										<li><strong>From loops to parameters</strong>: extract storage stiffness \(K_1\), loss stiffness \(K_2\), and equivalent viscous damping ratio \(\zeta_\mathrm{eff}\) from measured HDR hysteresis.</li>
+										<li><strong>Design‑style iteration</strong>: fixed‑point update on strain and \(\zeta_\mathrm{eff}\) for a four‑bearing isolation system.</li>
+										<li><strong>Time vs frequency domain</strong>: compare Newmark time integration and fast Fourier transform (FFT) response for the same SDOF.</li>
+										<li><strong>Damping models</strong>: contrast viscous, hysteretic, and fractional Kelvin–Voigt in terms of loops and earthquake response.</li>
+									</ul>
+								</div>
+							</div>
 							<section class="tiles">
 								<article class="style6">
 									<span class="image">
 										<img src="images/CE223/CE223_Thumbnail.png" alt="Base isolator hysteresis" />
 									</span>
 									<a href="CE223_EarthquakeProtectiveSystems/highlighted_htmls/isolator_dashboard.html">
-										<h2>Base isolator hysteresis (Step a)</h2>
+										<h2>Base isolator hysteresis</h2>
 										<div class="content">
 											<p>
-												• Digitized loops at four strain levels<br>
-												• Per-bearing \(K_1\), \(K_2\), \(\zeta_{\mathrm{eff}}\), energy per cycle<br>
-												• Trend plots vs strain
+												Digitized force–displacement loops at four strain levels; per‑bearing storage stiffness \(K_1\), loss stiffness \(K_2\), equivalent viscous damping ratio \(\zeta_{\mathrm{eff}}\), and energy per cycle; trend plots vs strain.
 											</p>
 										</div>
 									</a>
@@ -100,12 +101,10 @@
 										<img src="images/CE223/CE_Convergence_Thumbnail.png" alt="Iteration and response" />
 									</span>
 									<a href="CE223_EarthquakeProtectiveSystems/highlighted_htmls/isolator_iteration_dashboard.html">
-										<h2>Iteration and response (Steps b–c)</h2>
+										<h2>Iteration and response</h2>
 										<div class="content">
 											<p>
-												• Fixed-point iteration (4 bearings, \(k = 4K_1\))<br>
-												• Convergence of strain and \(\zeta_{\mathrm{eff}}\)<br>
-												• Newmark vs FFT: displacement, velocity, acceleration (Kobe KBU090)
+												Fixed‑point iteration with four bearings (system stiffness \(k = 4K_1\)); convergence of strain and \(\zeta_{\mathrm{eff}}\); Newmark time integration vs fast Fourier transform (FFT) under the Kobe University record, component 090.
 											</p>
 										</div>
 									</a>
@@ -118,8 +117,7 @@
 										<h2>SDOF damping model comparisons</h2>
 										<div class="content">
 											<p>
-												• Models A, B, C: loops, \(K_1(\omega)\), \(K_2(\omega)\), EDC vs \(\omega\)<br>
-												• Frequency-domain earthquake response for all three
+												Models A, B, C: force–displacement loops; storage and loss stiffness \(K_1(\omega)\), \(K_2(\omega)\) vs frequency; equivalent damping coefficient (EDC); frequency‑domain earthquake response.
 											</p>
 										</div>
 									</a>
@@ -129,30 +127,78 @@
 										<img src="images/CE223/CENewmark_Thumbnail.png" alt="SDOF loops only" />
 									</span>
 									<a href="CE223_EarthquakeProtectiveSystems/highlighted_htmls/sdof_hysteresis_loops.html">
-										<h2>SDOF hysteresis loops (compact)</h2>
+										<h2>SDOF hysteresis loops</h2>
 										<div class="content">
 											<p>
-												• Force–displacement loops only (Models A, B, C)<br>
-												• No theory or EDC plots
+												Force–displacement loops only for damping models A, B, C.
 											</p>
 										</div>
 									</a>
 								</article>
 							</section>
 
-							<div style="background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; padding:1.5rem; margin:2rem 0; max-width: 980px;">
-								<h3 style="margin-top:0;">Concepts</h3>
-								<ul style="margin: 0; padding-left: 1.5rem; line-height: 1.65; color:#4b5563;">
-									<li><strong>Hysteresis:</strong> loop area \(\oint f\,du\) = energy per cycle; links to loss stiffness \(K_2\).</li>
-									<li><strong>Equivalent SDOF:</strong> peak displacement → strain → \(K_1\), \(\zeta_{\mathrm{eff}}\); system \(k = 4K_1\) (4 bearings).</li>
-									<li><strong>Newmark vs FFT:</strong> same SDOF; time-domain step-by-step vs frequency-domain \(U(\omega) = H(\omega)\,\ddot{U}_g(\omega)\).</li>
-								</ul>
+							<h2>Linear MDOF project</h2>
+							<p style="max-width: 980px; color:#4b5563; line-height:1.7; margin-top:0.5rem;">
+								A second project focuses on linear multi‑degree‑of‑freedom (MDOF) response: a Newmark time‑integration implementation in matrix form and its relationship to
+								modal superposition and response spectrum analysis (RSA). It is illustrated on a two‑degree‑of‑freedom (2‑DOF) shear frame and then on a 2‑DOF base‑isolated building
+								under the Kobe University record, component 090 (KBU090).
+							</p>
+							<div style="max-width:980px; margin:0.75rem 0 1.25rem 0;">
+								<div style="background:#f9fafb; border-left:4px solid #003262; border-radius:6px; padding:0.75rem 1rem;">
+									<p style="margin:0 0 0.35rem 0; color:#111827; font-size:0.95rem; font-weight:600;">What this project shows</p>
+									<ul style="margin:0; padding-left:1.1rem; color:#374151; font-size:0.92rem; line-height:1.55;">
+										<li><strong>Newmark MDOF implementation</strong>: constant‑average‑acceleration scheme in matrix form for the full system.</li>
+										<li><strong>Non‑classical damping</strong>: damping matrix not of the form \(\alpha\mathbf{M}+\beta\mathbf{K}\), so modal analysis is only approximate.</li>
+										<li><strong>Direct vs modal time history</strong>: when the modal approximation matches the full MDOF solution and when it drifts.</li>
+										<li><strong>Link to response spectrum analysis (RSA)</strong>: 2‑DOF isolation example compares direct MDOF, modal time history, and RSA with square‑root‑of‑sum‑of‑squares (SRSS) modal combination.</li>
+									</ul>
+								</div>
 							</div>
+							<section class="tiles">
+								<article class="style2">
+									<span class="image">
+										<img src="images/CE223/CENewmark_Thumbnail.png" alt="Newmark MDOF demo" />
+									</span>
+									<a href="CE223_EarthquakeProtectiveSystems/highlighted_htmls/CE223_MDOF_Newmark_Demo.html">
+										<h2>Newmark MDOF demo with non‑classical damping</h2>
+										<div class="content">
+											<p>
+												Two‑degree‑of‑freedom (2‑DOF) shear frame under a short sustained load; non‑classical damping; direct MDOF time history vs modal approximation.
+											</p>
+										</div>
+									</a>
+								</article>
+								<article class="style1">
+									<span class="image">
+										<img src="images/CE223/CE223_HW3_Cover.png" alt="Linear theory of base isolation" />
+									</span>
+									<a href="CE223_EarthquakeProtectiveSystems/highlighted_htmls/CE223_2DOF_Isolation_Kobe090.html">
+										<h2>2‑DOF base‑isolated building under Kobe KBU090</h2>
+										<div class="content">
+											<p>
+												Direct MDOF time history via Newmark; modal time history and response spectrum analysis (RSA) with square‑root‑of‑sum‑of‑squares (SRSS) modal combination; drift, isolator displacement, base shear coefficient.
+											</p>
+										</div>
+									</a>
+								</article>
+							</section>
 
 							<div style="text-align: center; margin: 2rem 0;">
 								<a href="https://github.com/Facundo-Pfeffer/UCBerkeley-SEMM-MS-Codebook" class="button primary" style="background-color: #003262; color: white; padding: 1rem 2rem; text-decoration: none; border-radius: 5px;">
 									View CE223 code on GitHub
 								</a>
+							</div>
+
+							<div style="background:#fff; border:1px solid #e5e7eb; border-radius:10px; padding:1.5rem; margin:2rem 0; max-width: 980px;">
+								<h2 style="margin-top:0;">Related pages in this portfolio</h2>
+								<p style="margin:0 0 1rem 0; color:#6b7280; line-height:1.7;">
+									Further background on dynamics, spectra, and numerical methods appears in the following course pages.
+								</p>
+								<div style="display:flex; flex-wrap:wrap; gap:0.75rem;">
+									<a href="cee225-dynamics.html" class="button" style="border-color:#003262; color:#003262;">CE225 – Structural Dynamics</a>
+									<a href="cee221-nonlinear.html" class="button" style="border-color:#003262; color:#003262;">CE221 – Nonlinear Structural Analysis</a>
+									<a href="index.html" class="button" style="border-color:#003262; color:#003262;">Back to portfolio home</a>
+								</div>
 							</div>
 
 						</div>
