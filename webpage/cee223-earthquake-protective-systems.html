@@ -9,7 +9,7 @@
 		<title>CE223 - Earthquake Protective Systems | Facundo L. Pfeffer</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<meta name="description" content="Earthquake protective systems: base isolator hysteresis and SDOF damping model comparisons." />
+		<meta name="description" content="CE223 Earthquake Protective Systems: nonlinear and linear seismic isolation analysis, Newmark response history, equivalent linearization, and floor spectra for nonstructural components." />
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
 		<!-- MathJax for LaTeX rendering - common configuration -->
@@ -46,32 +46,38 @@
 				<!-- Main -->
 					<div id="main">
 						<div class="inner">
-							<h1>CE223 - Earthquake Protective Systems</h1>
+							<div style="max-width: 980px; margin: 0 auto; padding: 0 1.25rem 2rem;">
+							<h1 style="margin-top: 0; margin-bottom: 1rem;">CE223 - Earthquake Protective Systems</h1>
 
-							<div style="max-width: 980px;">
-								<p style="font-size: 1.05em; line-height: 1.75; color:#374151;">
-									This page presents portfolio work from <strong>CE223 – Earthquake Protective Systems</strong>:
-									linear <strong>multi‑degree‑of‑freedom (MDOF)</strong> time‑history analysis and an earlier
-									<strong>single‑degree‑of‑freedom (SDOF)</strong> base‑isolation project built from measured hysteresis,
-									equivalent SDOF models, and time‑ and frequency‑domain response.
+							<div>
+								<h2 style="margin-top: 0.3rem; margin-bottom: 0.4rem;">Theoretical preface</h2>
+								<p style="font-size: 1.03em; line-height: 1.78; color:#374151;">
+									The objective of this page is to present a coherent set of computational studies for
+									<strong>seismic protective systems</strong>, with emphasis on base isolation, constitutive modeling,
+									and response-history analysis under recorded ground motions. The examples are organized so that
+									theory, numerical method, and engineering interpretation are presented together in each dashboard.
 								</p>
-								<p style="font-size: 0.98em; line-height: 1.65; color:#6b7280; margin-top:0.6rem;">
-									Terms used below: <strong>MDOF</strong> = multi‑degree‑of‑freedom; <strong>SDOF</strong> = single‑degree‑of‑freedom;
-									<strong>HDR</strong> = high‑damping rubber; <strong>K₁</strong> = storage stiffness, <strong>K₂</strong> = loss stiffness (from hysteresis loops);
-									<strong>ζ<sub>eff</sub></strong> = equivalent viscous damping ratio; <strong>RSA</strong> = response spectrum analysis;
-									<strong>SRSS</strong> = square‑root‑of‑sum‑of‑squares (modal combination rule); <strong>FFT</strong> = fast Fourier transform;
-									<strong>2‑DOF</strong> = two‑degree‑of‑freedom.
+								<p style="font-size: 1.0em; line-height: 1.72; color:#374151; margin-top:0.55rem;">
+									The material spans: (i) equivalent linearization from measured hysteresis loops,
+									(ii) matrix-based Newmark integration for linear MDOF systems, and
+									(iii) nonlinear bilinear regularization of friction-pendulum behavior with floor-spectrum
+									evaluation for nonstructural components.
+								</p>
+								<p style="font-size: 0.97em; line-height: 1.65; color:#6b7280; margin-top:0.65rem;">
+									Notation: <strong>SDOF</strong> = single-degree-of-freedom, <strong>MDOF</strong> = multi-degree-of-freedom,
+									<strong>RSA</strong> = response spectrum analysis, <strong>SRSS</strong> = square-root-of-sum-of-squares,
+									<strong>FFT</strong> = fast Fourier transform, <strong>HDR</strong> = high-damping rubber.
 								</p>
 							</div>
 
-							<h2>SDOF base‑isolation project</h2>
-							<p style="max-width: 980px; color:#4b5563; line-height:1.7; margin-top:0.5rem;">
+							<h2 style="margin-top: 2rem; margin-bottom: 0.5rem;">Section A: SDOF base-isolation from measured hysteresis</h2>
+							<p style="color:#4b5563; line-height:1.7; margin-top:0.5rem;">
 								The first set of dashboards documents a base‑isolation workflow using a single‑degree‑of‑freedom (SDOF) model built from
 								measured hysteresis of <strong>high‑damping rubber (HDR)</strong> bearings. The workflow yields equivalent SDOF parameters—storage stiffness \(K_1\),
 								loss stiffness \(K_2\), and equivalent viscous damping ratio \(\zeta_\mathrm{eff}\)—and uses fixed‑point iteration on strain and \(\zeta_\mathrm{eff}\),
 								plus time‑ and frequency‑domain response.
 							</p>
-							<div style="max-width:980px; margin:0.75rem 0 1.25rem 0;">
+							<div style="margin:0.75rem 0 1.25rem 0;">
 								<div style="background:#f9fafb; border-left:4px solid #003262; border-radius:6px; padding:0.75rem 1rem;">
 									<p style="margin:0 0 0.35rem 0; color:#111827; font-size:0.95rem; font-weight:600;">What this project shows</p>
 									<ul style="margin:0; padding-left:1.1rem; color:#374151; font-size:0.92rem; line-height:1.55;">
@@ -82,7 +88,7 @@
 									</ul>
 								</div>
 							</div>
-							<section class="tiles">
+							<section class="tiles" style="margin-bottom: 0.5rem;">
 								<article class="style6">
 									<span class="image">
 										<img src="images/CE223/CE223_Thumbnail.png" alt="Base isolator hysteresis" />
@@ -137,13 +143,13 @@
 								</article>
 							</section>
 
-							<h2>Linear MDOF project</h2>
-							<p style="max-width: 980px; color:#4b5563; line-height:1.7; margin-top:0.5rem;">
+							<h2 style="margin-top: 2rem; margin-bottom: 0.5rem;">Section B: Linear MDOF response-history analysis</h2>
+							<p style="color:#4b5563; line-height:1.7; margin-top:0.5rem;">
 								A second project focuses on linear multi‑degree‑of‑freedom (MDOF) response: a Newmark time‑integration implementation in matrix form and its relationship to
 								modal superposition and response spectrum analysis (RSA). It is illustrated on a two‑degree‑of‑freedom (2‑DOF) shear frame and then on a 2‑DOF base‑isolated building
 								under the Kobe University record, component 090 (KBU090).
 							</p>
-							<div style="max-width:980px; margin:0.75rem 0 1.25rem 0;">
+							<div style="margin:0.75rem 0 1.25rem 0;">
 								<div style="background:#f9fafb; border-left:4px solid #003262; border-radius:6px; padding:0.75rem 1rem;">
 									<p style="margin:0 0 0.35rem 0; color:#111827; font-size:0.95rem; font-weight:600;">What this project shows</p>
 									<ul style="margin:0; padding-left:1.1rem; color:#374151; font-size:0.92rem; line-height:1.55;">
@@ -154,7 +160,7 @@
 									</ul>
 								</div>
 							</div>
-							<section class="tiles">
+							<section class="tiles" style="margin-bottom: 0.5rem;">
 								<article class="style2">
 									<span class="image">
 										<img src="images/CE223/CENewmark_Thumbnail.png" alt="Newmark MDOF demo" />
@@ -183,13 +189,53 @@
 								</article>
 							</section>
 
+							<h2 style="margin-top: 2rem; margin-bottom: 0.5rem;">Section C: Nonlinear friction-pendulum response and floor spectra</h2>
+							<p style="color:#4b5563; line-height:1.72; margin-top:0.5rem;">
+								This study models a rigid-superstructure building supported on friction pendulum system (FPS) bearings.
+								The isolator force law is represented through a bilinear regularization with kinematic hardening and
+								solved with nonlinear Newmark time integration. An equivalent linear model is then built from secant
+								stiffness and energy-equivalent damping, and both models are compared in terms of peak response and
+								force-displacement behavior under Kobe and Sylmar records.
+							</p>
+							<p style="color:#4b5563; line-height:1.72; margin-top:0.55rem;">
+								Using absolute floor acceleration from both analyses, floor spectra for nonstructural components
+								(\(\zeta_p=2\%\)) are computed over a broad frequency range. This directly evaluates whether
+								equivalent linearization can capture acceleration-sensitive demands in the high-frequency regime.
+							</p>
+							<div style="margin:0.75rem 0 1.25rem 0;">
+								<div style="background:#f9fafb; border-left:4px solid #003262; border-radius:6px; padding:0.75rem 1rem;">
+									<p style="margin:0 0 0.35rem 0; color:#111827; font-size:0.95rem; font-weight:600;">What this project shows</p>
+									<ul style="margin:0; padding-left:1.1rem; color:#374151; font-size:0.92rem; line-height:1.55;">
+										<li><strong>Nonlinear constitutive integration</strong>: return-mapping state update with algorithmic tangent inside Newmark equilibrium iterations.</li>
+										<li><strong>Equivalent linear benchmark</strong>: iterative \((k_{\mathrm{eff}},c_{\mathrm{eff}})\) calibration from displacement amplitude and dissipation equivalence.</li>
+										<li><strong>Consistent response comparison</strong>: displacement, velocity, force, and acceleration histories for Kobe and Sylmar records.</li>
+										<li><strong>NSC demand assessment</strong>: absolute floor spectra comparison between nonlinear and equivalent-linear support inputs.</li>
+									</ul>
+								</div>
+							</div>
+							<section class="tiles" style="margin-bottom: 0.5rem;">
+								<article class="style5">
+									<span class="image">
+										<img src="images/CE223/CE223_Thumbnail.png" alt="Nonlinear FPS dashboard" />
+									</span>
+									<a href="CE223_EarthquakeProtectiveSystems/highlighted_htmls/CE223_FPS_Bilinear_Kobe_Sylmar.html">
+										<h2>Nonlinear FPS dashboard (Kobe + Sylmar)</h2>
+										<div class="content">
+											<p>
+												Bilinear regularized FPS model solved with nonlinear Newmark; equivalent linear comparison; normalized force histories and hysteresis; floor spectra for NSCs using absolute floor acceleration input.
+											</p>
+										</div>
+									</a>
+								</article>
+							</section>
+
 							<div style="text-align: center; margin: 2rem 0;">
 								<a href="https://github.com/Facundo-Pfeffer/UCBerkeley-SEMM-MS-Codebook" class="button primary" style="background-color: #003262; color: white; padding: 1rem 2rem; text-decoration: none; border-radius: 5px;">
 									View CE223 code on GitHub
 								</a>
 							</div>
 
-							<div style="background:#fff; border:1px solid #e5e7eb; border-radius:10px; padding:1.5rem; margin:2rem 0; max-width: 980px;">
+							<div style="background:#fff; border:1px solid #e5e7eb; border-radius:10px; padding:1.5rem; margin:2rem 0;">
 								<h2 style="margin-top:0;">Related pages in this portfolio</h2>
 								<p style="margin:0 0 1rem 0; color:#6b7280; line-height:1.7;">
 									Further background on dynamics, spectra, and numerical methods appears in the following course pages.
@@ -201,6 +247,7 @@
 								</div>
 							</div>
 
+							</div>
 						</div>
 					</div>
 

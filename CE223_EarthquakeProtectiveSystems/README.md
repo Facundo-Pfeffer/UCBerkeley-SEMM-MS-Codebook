@@ -1,10 +1,11 @@
 # CE223 – Earthquake Protective Systems
 
 This directory collects the numerical experiments and interactive dashboards for the CE223 course.
-It currently contains **two main projects**:
+It currently contains **three main projects**:
 
 - **Base isolator design** (`base_isolators_desgin/`)
 - **SDOF damping model comparisons** (`sdof_hysteresis/`)
+- **Nonlinear friction pendulum response-history analysis** (`nonlinear_friction_pendulum/`)
 
 A shared FFT-based SDOF response utility is provided in `fft_sdof_response.py`, and the
 Kobe University ground motion is stored under `input_ground_motion/`.
@@ -25,9 +26,21 @@ Kobe University ground motion is stored under `input_ground_motion/`.
     earthquake response for Models A/B/C.
   - `sdof_hysteresis_loops.html`: focused view of the loops only.
 
+- `nonlinear_friction_pendulum/`  
+  Time-history analysis of a rigid-superstructure FPS system using:
+  - nonlinear bilinear regularization with kinematic hardening (Newmark + return mapping),
+  - equivalent viscously damped linearization (iterative \(k_{\mathrm{eff}},c_{\mathrm{eff}}\)),
+  - absolute floor spectra for NSCs (\(\zeta_p=2\%\)).
+  Uses two records:
+  - Kobe: `../input_ground_motion/RSN1108_KOBE_KBU090.AT2`
+  - Sylmar: `SYLMAR360.txt`
+  Produces:
+  - `CE223_FPS_Bilinear_Kobe_Sylmar.html` in `highlighted_htmls/`.
+
 - `input_ground_motion/`  
   Ground motion records in PEER AT2 format. Currently includes:
   - `RSN1108_KOBE_KBU090.AT2` – 090 component of the 1995 Kobe, Japan earthquake.
+  Additional CE223 records may be stored in project-specific folders (e.g., `nonlinear_friction_pendulum/SYLMAR360.txt`).
 
 - `highlighted_htmls/`  
   Canonical, GitHub-Pages-ready copies of the CE223 dashboards. These are the files linked
@@ -48,6 +61,9 @@ python CE223_EarthquakeProtectiveSystems/base_isolators_desgin/build_isolator_it
 
 # SDOF hysteresis dashboard
 python CE223_EarthquakeProtectiveSystems/sdof_hysteresis/build_sdof_hysteresis_dashboard.py
+
+# Nonlinear FPS dashboard (Kobe + Sylmar; nonlinear, equivalent linear, floor spectra)
+python CE223_EarthquakeProtectiveSystems/nonlinear_friction_pendulum/build_fps_dashboard.py
 ```
 
 All scripts write their **canonical outputs** directly to

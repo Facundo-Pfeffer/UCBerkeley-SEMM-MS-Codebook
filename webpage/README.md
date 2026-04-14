@@ -9,6 +9,7 @@ This portfolio demonstrates computational analysis work in structural dynamics, 
 ## Features
 
 ### Academic Focus
+- **CE223 - Earthquake Protective Systems**: Base isolation, nonlinear FPS response-history analysis, and floor spectra
 - **CEE225 - Structural Dynamics**: SDOF systems, numerical integration, response spectrum analysis
 - **CEE220 - Structural Analysis**: Truss analysis, equilibrium matrix methods
 - **CEE231 - Solid Mechanics**: Material properties, directional Young's modulus analysis
@@ -54,6 +55,13 @@ html5up-phantom/
 - Landing page: `cee225-dynamics.html`
 - Homework viewer embeds the PDF published from `CEE225_Dynamics/highlighted_pdfs/` and is accessible at:
   - `/CEE225_Dynamics/highlighted_pdfs/CE%20225%20HW2%20-%20Facundo%20L.%20Pfeffer.pdf`
+
+### CE223 – Earthquake Protective Systems
+- Landing page: `cee223-earthquake-protective-systems.html`
+- Interactive dashboards are published from `CE223_EarthquakeProtectiveSystems/highlighted_htmls/`, including:
+  - `/CE223_EarthquakeProtectiveSystems/highlighted_htmls/CE223_2DOF_Isolation_Kobe090.html`
+  - `/CE223_EarthquakeProtectiveSystems/highlighted_htmls/CE223_MDOF_Newmark_Demo.html`
+  - `/CE223_EarthquakeProtectiveSystems/highlighted_htmls/CE223_FPS_Bilinear_Kobe_Sylmar.html`
 
 ## How deployment works (important)
 
