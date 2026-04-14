@@ -655,11 +655,6 @@ class HtmlReportBuilder:
                 * {{ box-sizing: border-box; }}
                 body {{ font-family: system-ui, -apple-system, sans-serif; margin: 0; color: var(--text); background: var(--bg); line-height: 1.6; font-size: 1.03rem; }}
                 .wrap {{ max-width: 1080px; margin: 0 auto; padding: 2rem 1.3rem 3rem; }}
-                .site-header {{ background:#ffffff; border-bottom:1px solid #e5e7eb; }}
-                .site-header-inner {{ max-width:1080px; margin:0 auto; padding:0.8rem 1.3rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; }}
-                .site-header-brand {{ color:var(--ucb-blue); font-weight:700; text-decoration:none; font-size:1.05rem; }}
-                .site-header-links {{ display:flex; flex-wrap:wrap; gap:0.55rem; }}
-                .site-header-links a {{ text-decoration:none; color:var(--ucb-blue); border:1px solid var(--border); border-radius:999px; padding:0.35rem 0.7rem; font-size:0.9rem; background:#fff; }}
                 header {{ border-bottom: 3px solid var(--ucb-blue); padding-bottom: 1rem; margin-bottom: 1rem; }}
                 header h1 {{ color: var(--ucb-blue); margin: 0 0 0.35rem; font-size: 2rem; }}
                 .card {{ background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.1rem; margin: 1rem 0; }}
@@ -681,20 +676,18 @@ class HtmlReportBuilder:
               <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
             </head>
             <body>
-              <div class="site-header">
-                <div class="site-header-inner">
-                  <a class="site-header-brand" href="../../webpage/index.html">Facundo L. Pfeffer</a>
-                  <div class="site-header-links">
-                    <a href="../../webpage/index.html">Portfolio home</a>
-                    <a href="../../webpage/cee223-earthquake-protective-systems.html">CE223 page</a>
-                    <a href="../../webpage/cee225-dynamics.html">CEE225 dynamics</a>
-                  </div>
-                </div>
-              </div>
               <div class="wrap">
                 <header>
                   <h1>Friction Pendulum System Dashboard — Kobe & Sylmar</h1>
                   <p>Part (a): nonlinear bilinear regularization solved with Newmark + return mapping. Part (b): equivalent viscously damped linear model. Part (c): floor spectra for NSCs (ζp = 2%).</p>
+                  <div style="display:flex; flex-wrap:wrap; gap:0.6rem; margin-top:0.9rem;">
+                    <a href="CE223_2DOF_Isolation_Kobe090.html" style="text-decoration:none; border:1px solid var(--border); padding:0.45rem 0.7rem; border-radius:999px; color:var(--ucb-blue); background:#ffffff;">
+                      Open 2‑DOF base‑isolation dashboard
+                    </a>
+                    <a href="../../cee223-earthquake-protective-systems.html" style="text-decoration:none; border:1px solid var(--border); padding:0.45rem 0.7rem; border-radius:999px; color:var(--ucb-blue); background:#ffffff;">
+                      Back to CE223 main page
+                    </a>
+                  </div>
                 </header>
 
                 <div class="card">
