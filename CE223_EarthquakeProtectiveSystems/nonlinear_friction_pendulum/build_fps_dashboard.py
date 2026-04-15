@@ -656,104 +656,293 @@ class HtmlReportBuilder:
         )
 
         sections = [
-            self.fig_to_div(fig_kobe_nl, include_js=True),
-            self.fig_to_div(fig_kobe_nl_h),
-            self.fig_to_div(fig_sylmar_nl),
-            self.fig_to_div(fig_sylmar_nl_h),
-            self.fig_to_div(fig_kobe_el),
-            self.fig_to_div(fig_kobe_el_h),
-            self.fig_to_div(fig_sylmar_el),
-            self.fig_to_div(fig_sylmar_el_h),
-            self.fig_to_div(fig_floor_kobe),
-            self.fig_to_div(fig_floor_sylmar),
+            self.fig_to_div(fig_kobe_nl, include_js=False),
+            self.fig_to_div(fig_kobe_nl_h, include_js=False),
+            self.fig_to_div(fig_sylmar_nl, include_js=False),
+            self.fig_to_div(fig_sylmar_nl_h, include_js=False),
+            self.fig_to_div(fig_kobe_el, include_js=False),
+            self.fig_to_div(fig_kobe_el_h, include_js=False),
+            self.fig_to_div(fig_sylmar_el, include_js=False),
+            self.fig_to_div(fig_sylmar_el_h, include_js=False),
+            self.fig_to_div(fig_floor_kobe, include_js=False),
+            self.fig_to_div(fig_floor_sylmar, include_js=False),
         ]
 
         summary_table = self._build_peak_table(nonlinear_results, equivalent_results)
 
         return dedent(
             f"""
-            <!doctype html>
+            <!DOCTYPE HTML>
             <html lang="en">
             <head>
               <meta charset="utf-8" />
-              <meta name="viewport" content="width=device-width, initial-scale=1" />
-              <title>CE223 FPS Dashboard — Kobe & Sylmar</title>
+              <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+              <title>CE223 – Friction Pendulum (FPS) — Kobe &amp; Sylmar</title>
+              <link rel="stylesheet" href="../../assets/css/main.css" />
+              <noscript><link rel="stylesheet" href="../../assets/css/noscript.css" /></noscript>
               <style>
-                :root {{
-                  --ucb-blue: #003262;
-                  --border: rgba(0,50,98,0.18);
-                  --bg: #f8fafc;
-                  --text: #2C3E50;
+                /* Match site header width (Phantom shell); same pattern as isolator_dashboard.html */
+                .ce223-dashboard .container {{
+                    max-width: 68em;
+                    margin-left: auto;
+                    margin-right: auto;
                 }}
-                * {{ box-sizing: border-box; }}
-                body {{ font-family: system-ui, -apple-system, sans-serif; margin: 0; color: var(--text); background: var(--bg); line-height: 1.6; font-size: 1.03rem; }}
-                .wrap {{ max-width: 1080px; margin: 0 auto; padding: 2rem 1.3rem 3rem; }}
-                header {{ border-bottom: 3px solid var(--ucb-blue); padding-bottom: 1rem; margin-bottom: 1rem; }}
-                header h1 {{ color: var(--ucb-blue); margin: 0 0 0.35rem; font-size: 2rem; }}
-                .card {{ background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.1rem; margin: 1rem 0; }}
-                .card h2 {{ font-size: 1.45rem; margin: 0 0 0.55rem; }}
-                .eq {{ background:#f9fafb; border-left: 4px solid var(--ucb-blue); padding:0.7rem 0.9rem; margin:0.7rem 0; overflow-x:auto; -webkit-overflow-scrolling: touch; }}
-                .eq mjx-container {{ min-width: max-content; }}
-                table {{ width:100%; border-collapse: collapse; margin-top:0.7rem; }}
-                th, td {{ border:1px solid #e5e7eb; padding:0.45rem 0.55rem; text-align:left; }}
-                th {{ background: var(--ucb-blue); color:#fff; }}
-                .plot {{ border: 1px solid var(--border); border-radius: 10px; padding: 0.45rem; margin-top: 0.8rem; background:#fff; }}
+                #main.ce223-dashboard {{
+                    padding-top: 0.75rem;
+                }}
+                .inner-report {{
+                    font-family: Arial, Helvetica, sans-serif;
+                    font-size: 1rem;
+                    line-height: 1.55;
+                    color: #2c3e50;
+                    max-width: 100%;
+                    margin: 0;
+                    padding: 0 1rem;
+                }}
+                .inner-report header.major {{
+                    text-align: left;
+                    margin-bottom: 1.25rem;
+                }}
+                .inner-report header.major h2 {{
+                    font-size: 1.85rem;
+                    font-weight: 700;
+                    color: #003262;
+                    margin: 0 0 0.5rem 0;
+                    letter-spacing: 0.01em;
+                    text-transform: none;
+                }}
+                .summary-lead {{
+                    font-size: 1.05rem;
+                    color: #6b7280;
+                    max-width: 68em;
+                    margin: 0;
+                    line-height: 1.6;
+                }}
+                .inner-report .box {{
+                    background: #fff;
+                    border: 1px solid #e5e7eb;
+                    border-radius: 8px;
+                    padding: 1.5rem;
+                    margin-bottom: 1.5rem;
+                }}
+                .inner-report .box h3 {{
+                    font-size: 1.2rem;
+                    font-weight: 700;
+                    color: #003262;
+                    margin: 0 0 0.75rem 0;
+                    border-left: 4px solid #FDB515;
+                    padding-left: 0.75rem;
+                }}
+                .inner-report .box p {{
+                    margin: 0 0 0.75rem 0;
+                }}
+                .inner-report .box p:last-child {{
+                    margin-bottom: 0;
+                }}
+                .report-section {{
+                    background: #fff;
+                    border: 1px solid #e5e7eb;
+                    border-left: 4px solid #003262;
+                    border-radius: 8px;
+                    padding: 1.5rem;
+                    margin-bottom: 1.5rem;
+                }}
+                .report-section h2 {{
+                    font-size: 1.35rem;
+                    font-weight: 700;
+                    color: #003262;
+                    margin: 0 0 0.5rem 0;
+                }}
+                .report-section > p {{
+                    margin: 0 0 0.75rem 0;
+                    color: #374151;
+                }}
+                .eq {{
+                    background: #f9fafb;
+                    border-left: 4px solid #003262;
+                    padding: 0.9rem 1rem;
+                    margin: 0.75rem 0;
+                    overflow-x: auto;
+                    -webkit-overflow-scrolling: touch;
+                }}
+                .eq mjx-container {{
+                    min-width: max-content;
+                }}
+                .summary-table-wrap {{
+                    overflow-x: auto;
+                    -webkit-overflow-scrolling: touch;
+                    margin: 1rem 0;
+                }}
+                .summary-table {{
+                    width: 100%;
+                    min-width: 32rem;
+                    border-collapse: collapse;
+                    font-size: 0.95rem;
+                    border: 1px solid #e5e7eb;
+                    border-radius: 6px;
+                    overflow: hidden;
+                }}
+                .summary-table thead th {{
+                    background: #003262;
+                    color: #fff;
+                    font-weight: 600;
+                    text-align: center;
+                    padding: 0.55rem 0.5rem;
+                }}
+                .summary-table thead th:first-child,
+                .summary-table thead th:nth-child(2) {{
+                    text-align: left;
+                }}
+                .summary-table tbody td {{
+                    padding: 0.5rem 0.5rem;
+                    border-top: 1px solid #e5e7eb;
+                    color: #2c3e50;
+                }}
+                .summary-table tbody td:first-child {{
+                    font-weight: 600;
+                    color: #003262;
+                }}
+                .summary-table tbody td:nth-child(2) {{
+                    text-align: left;
+                }}
+                .summary-table tbody td:nth-child(n+3) {{
+                    text-align: right;
+                }}
+                .summary-table tbody tr:nth-child(even) {{
+                    background: #f9fafb;
+                }}
+                .plot-embed {{
+                    border: 1px solid #e5e7eb;
+                    border-radius: 6px;
+                    padding: 0.5rem;
+                    background: #fff;
+                    margin: 1rem 0;
+                    overflow-x: auto;
+                }}
+                .plot-embed .plotly {{
+                    max-width: 100%;
+                }}
+                .inner-report .js-plotly-plot .modebar {{
+                    top: 56px !important;
+                }}
+                @media (max-width: 736px) {{
+                    #main.ce223-dashboard {{
+                        padding-top: 0.5rem;
+                    }}
+                    .inner-report {{
+                        padding: 0 0.75rem;
+                    }}
+                    .inner-report header.major h2 {{
+                        font-size: 1.45rem;
+                    }}
+                    .summary-lead {{
+                        font-size: 1rem;
+                    }}
+                    .inner-report .box, .report-section {{
+                        padding: 1rem;
+                    }}
+                    .inner-report .box h3 {{
+                        font-size: 1.1rem;
+                    }}
+                    .report-section h2 {{
+                        font-size: 1.2rem;
+                    }}
+                    .summary-table {{
+                        font-size: 0.85rem;
+                    }}
+                    .summary-table thead th, .summary-table tbody td {{
+                        padding: 0.4rem 0.35rem;
+                    }}
+                    .inner-report .js-plotly-plot .modebar {{
+                        top: 74px !important;
+                    }}
+                }}
               </style>
+              <script src="https://cdn.plot.ly/plotly-3.3.1.min.js"></script>
               <script>
                 window.MathJax = {{
                   tex: {{
                     inlineMath: [['$', '$'], ['\\\\(', '\\\\)']],
-                    displayMath: [['$$', '$$'], ['\\\\[', '\\\\]']]
+                    displayMath: [['$$', '$$'], ['\\\\[', '\\\\]']],
+                    processEscapes: true,
+                    processEnvironments: true
+                  }},
+                  options: {{
+                    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
                   }}
                 }};
               </script>
-              <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+              <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+              <script async src="../../assets/js/navigation.js"></script>
             </head>
-            <body>
-              <div class="wrap">
-                <header>
-                  <h1>Friction Pendulum System Dashboard — Kobe & Sylmar</h1>
-                  <p>Part (a): nonlinear bilinear regularization solved with Newmark + return mapping. Part (b): equivalent viscously damped linear model. Part (c): floor spectra for NSCs (ζp = 2%).</p>
-                  <div style="display:flex; flex-wrap:wrap; gap:0.6rem; margin-top:0.9rem;">
-                    <a href="CE223_2DOF_Isolation_Kobe090.html" style="text-decoration:none; border:1px solid var(--border); padding:0.45rem 0.7rem; border-radius:999px; color:var(--ucb-blue); background:#ffffff;">
-                      Open 2‑DOF base‑isolation dashboard
-                    </a>
-                    <a href="../../cee223-earthquake-protective-systems.html" style="text-decoration:none; border:1px solid var(--border); padding:0.45rem 0.7rem; border-radius:999px; color:var(--ucb-blue); background:#ffffff;">
-                      Back to CE223 main page
-                    </a>
+            <body class="is-preload">
+              <div id="page-wrapper">
+                <header id="header"></header>
+
+                <section id="main" class="wrapper style1 ce223-dashboard">
+                  <div class="container inner-report">
+                    <header class="major">
+                      <h2>CE223 – Friction Pendulum (FPS) — Kobe &amp; Sylmar</h2>
+                      <p class="summary-lead">
+                        This report compares a <strong>rigid‑superstructure friction pendulum (FPS)</strong> idealization under two horizontal records:
+                        <strong>Kobe KBU090</strong> and <strong>Sylmar 360°</strong>. Part (a) solves a <strong>nonlinear bilinear</strong> regularization with Newmark and return mapping;
+                        part (b) uses an <strong>equivalent viscously damped linear</strong> model; part (c) reports <strong>floor spectra</strong> for linear nonstructural oscillators ($\\zeta_p=2\\%$)
+                        driven by absolute deck acceleration $u_t(t)=\\ddot u(t)+\\ddot u_g(t)$.
+                      </p>
+                    </header>
+
+                    <section class="box">
+                      <h3>Model definition</h3>
+                      <p>The rigid-superstructure FPS system is modeled as one SDOF in relative coordinates, and the governing equation is:</p>
+                      <div class="eq">$$M\\ddot u(t) + F_r(u,\\dot u) = -M\\ddot u_g(t), \\quad F_r \\approx K_p u + Q\\,\\mathrm{{sgn}}(\\dot u).$$</div>
+                      <p>To avoid force discontinuity at velocity reversals, a bilinear regularization with kinematic hardening and very small yield displacement is used. The matching relations are:</p>
+                      <div class="eq">
+                        $$F_y = \\mu Mg, \\quad k = \\frac{{F_y}}{{u_y}}, \\quad K_p=\\frac{{Mg}}{{R}}, \\quad H=\\frac{{kK_p}}{{k-K_p}}.$$
+                      </div>
+                      <p>Inputs: $M={self.data.total_mass:.3e}$ kg, $R={self.data.radius:.2f}$ m, $\\mu={self.data.friction_coefficient:.3f}$, $u_y={self.data.yield_displacement_mm:.4f}$ mm, $n_b={self.data.n_bearings}$.</p>
+                      <p>Computed: $K_p={self.params.pendulum_stiffness/1e6:.3f}$ MN/m, $Q={self.params.characteristic_strength/1e6:.3f}$ MN, $k={self.params.elastic_stiffness/1e9:.3f}$ GN/m, $H={self.params.hardening_modulus/1e6:.3f}$ MN/m.</p>
+                    </section>
+
+                    <section class="box">
+                      <h3>Numerical procedure</h3>
+                      <p><strong>Part (a) Nonlinear Bilinear:</strong> At each time step $t_{{n+1}}$, the algorithm performs Newton iterations on displacement $u_{{n+1}}$. For each iterate it computes trial force $F^{{tr}}=k(u-u_n^p)$, trial yield check $f^{{tr}}=|F^{{tr}}-q_n|-F_y$, then applies either elastic update ($f^{{tr}}\\le 0$) or plastic correction ($f^{{tr}}>0$) with return mapping. The algorithmic tangent is $k$ (elastic) or $kH/(k+H)$ (plastic). Convergence is checked on both residual and displacement correction.</p>
+                      <div class="eq">$$\\Delta\\gamma = \\frac{{f^{{tr}}}}{{k+H}}, \\quad F_{{n+1}} = F^{{tr}} - k\\Delta\\gamma\\,\\mathrm{{sgn}}\\!\\left(F^{{tr}}-q_n\\right), \\quad q_{{n+1}} = q_n + H\\Delta\\gamma\\,\\mathrm{{sgn}}\\!\\left(F^{{tr}}-q_n\\right).$$</div>
+                      <p><strong>Part (b) Equivalent Linear:</strong> The effective stiffness and damping are iteratively updated from response amplitude. At each outer iteration, linear Newmark is solved with updated $(k_{{eff}}, c_{{eff}})$; then $u_{{max}}$ is re-estimated and properties are updated until stable.</p>
+                      <div class="eq">$$k_{{eff}} = K_p + \\frac{{Q}}{{u_{{max}}}}, \\qquad \\zeta_{{eff}} = \\frac{{2Q}}{{\\pi k_{{eff}}u_{{max}}}}, \\qquad c_{{eff}} = 2\\zeta_{{eff}}\\sqrt{{M k_{{eff}}}}.$$</div>
+                      <p><strong>Part (c) Floor Spectra:</strong> The input to NSC oscillators is the <em>absolute</em> floor acceleration from parts (a) and (b). For each $T_p$ with fixed $\\zeta_p=2\\%$, an SDOF is solved and the peak absolute component acceleration is extracted.</p>
+                      <div class="eq">$$\\ddot z + 2\\zeta_p\\omega_p\\dot z + \\omega_p^2 z = -u_t(t), \\qquad a_{{p,abs}}(t)=\\ddot z(t)+u_t(t), \\qquad S_{{a,floor}}(T_p)=\\max|a_{{p,abs}}(t)|.$$</div>
+                    </section>
+
+                    <section class="box">
+                      <h3>Peak response comparison</h3>
+                      {summary_table}
+                    </section>
+
+                    <section class="report-section">
+                      <h2>Part (a) — Nonlinear bilinear response</h2>
+                      <p>For each ground motion, the time histories of isolation displacement, isolation velocity, restoring force, absolute structural acceleration, and ground acceleration are presented together with the corresponding force–displacement relation.</p>
+                      <div class="plot-embed">{sections[0]}</div>
+                      <div class="plot-embed">{sections[1]}</div>
+                      <div class="plot-embed">{sections[2]}</div>
+                      <div class="plot-embed">{sections[3]}</div>
+                    </section>
+                    <section class="report-section">
+                      <h2>Part (b) — Equivalent linear response</h2>
+                      <p>These plots use the same layout as part (a) for direct comparison. Differences reflect the limitations of a single linearized pair $(k_{{eff}},c_{{eff}})$ under transient loading and unloading.</p>
+                      <div class="plot-embed">{sections[4]}</div>
+                      <div class="plot-embed">{sections[5]}</div>
+                      <div class="plot-embed">{sections[6]}</div>
+                      <div class="plot-embed">{sections[7]}</div>
+                    </section>
+                    <section class="report-section">
+                      <h2>Part (c) — Floor spectra ($\\zeta_p = 2\\%$)</h2>
+                      <p>Each NSC is a linear 2% oscillator; the only difference between curves is the floor motion $u_t(t)=\\ddot u(t)+\\ddot u_g(t)$ from part (a) versus part (b). Oscillator periods $T_p$ are spaced uniformly in log-space from 0.01 s to 10.0 s (a logarithmic period axis cannot include $T_p=0$). The dotted reference marks $f_p=2$ Hz ($T_p=0.5$ s), a band often used for stiff acceleration-sensitive components.</p>
+                      <p><strong>Note for $f_p$ above 2 Hz:</strong> The equivalent-linear isolation model does <em>not</em> guarantee a larger floor spectrum than the nonlinear one. Bilinear hysteresis and reversals can inject high-frequency content into the <em>true</em> $u_t(t)$, while the fitted viscously damped oscillator tends to produce a smoother deck motion with less energy above a few Hz. The NSC spectrum then often lies <em>above</em> the equivalent-linear curve in that band even though every oscillator is linear.</p>
+                      <div class="plot-embed">{sections[8]}</div>
+                      <div class="plot-embed">{sections[9]}</div>
+                    </section>
                   </div>
-                </header>
-
-                <div class="card">
-                  <h2>Model Definition</h2>
-                  <p>The rigid-superstructure FPS system is modeled as one SDOF in relative coordinates, and the governing equation is:</p>
-                  <div class="eq">$$M\\ddot u(t) + F_r(u,\\dot u) = -M\\ddot u_g(t), \\quad F_r \\approx K_p u + Q\\,\\mathrm{{sgn}}(\\dot u).$$</div>
-                  <p>To avoid force discontinuity at velocity reversals, a bilinear regularization with kinematic hardening and very small yield displacement is used. The matching relations are:</p>
-                  <div class="eq">
-                    $$F_y = \\mu Mg, \\quad k = \\frac{{F_y}}{{u_y}}, \\quad K_p=\\frac{{Mg}}{{R}}, \\quad H=\\frac{{kK_p}}{{k-K_p}}.$$
-                  </div>
-                  <p>Inputs: $M={self.data.total_mass:.3e}$ kg, $R={self.data.radius:.2f}$ m, $\\mu={self.data.friction_coefficient:.3f}$, $u_y={self.data.yield_displacement_mm:.4f}$ mm, $n_b={self.data.n_bearings}$.</p>
-                  <p>Computed: $K_p={self.params.pendulum_stiffness/1e6:.3f}$ MN/m, $Q={self.params.characteristic_strength/1e6:.3f}$ MN, $k={self.params.elastic_stiffness/1e9:.3f}$ GN/m, $H={self.params.hardening_modulus/1e6:.3f}$ MN/m.</p>
-                </div>
-
-                <div class="card">
-                  <h2>Numerical Procedure Used</h2>
-                  <p><strong>Part (a) Nonlinear Bilinear:</strong> At each time step $t_{{n+1}}$, the algorithm performs Newton iterations on displacement $u_{{n+1}}$. For each iterate it computes trial force $F^{{tr}}=k(u-u_n^p)$, trial yield check $f^{{tr}}=|F^{{tr}}-q_n|-F_y$, then applies either elastic update ($f^{{tr}}\\le 0$) or plastic correction ($f^{{tr}}>0$) with return mapping. The algorithmic tangent is $k$ (elastic) or $kH/(k+H)$ (plastic). Convergence is checked on both residual and displacement correction.</p>
-                  <div class="eq">$$\\Delta\\gamma = \\frac{{f^{{tr}}}}{{k+H}}, \\quad F_{{n+1}} = F^{{tr}} - k\\Delta\\gamma\\,\\mathrm{{sgn}}(F^{{tr}}-q_n), \\quad q_{{n+1}} = q_n + H\\Delta\\gamma\\,\\mathrm{{sgn}}(F^{{tr}}-q_n).$$</div>
-                  <p><strong>Part (b) Equivalent Linear:</strong> The effective stiffness and damping are iteratively updated from response amplitude. At each outer iteration, linear Newmark is solved with updated $(k_{{eff}}, c_{{eff}})$; then $u_{{max}}$ is re-estimated and properties are updated until stable.</p>
-                  <div class="eq">$$k_{{eff}} = K_p + \\frac{{Q}}{{u_{{max}}}}, \\qquad \\zeta_{{eff}} = \\frac{{2Q}}{{\\pi k_{{eff}}u_{{max}}}}, \\qquad c_{{eff}} = 2\\zeta_{{eff}}\\sqrt{{M k_{{eff}}}}.$$</div>
-                  <p><strong>Part (c) Floor Spectra:</strong> The input to NSC oscillators is the <em>absolute</em> floor acceleration from parts (a) and (b). For each $T_p$ with fixed $\\zeta_p=2\\%$, an SDOF is solved and the peak absolute component acceleration is extracted.</p>
-                  <div class="eq">$$\\ddot z + 2\\zeta_p\\omega_p\\dot z + \\omega_p^2 z = -u_t(t), \\qquad a_{{p,abs}}(t)=\\ddot z(t)+u_t(t), \\qquad S_{{a,floor}}(T_p)=\\max|a_{{p,abs}}(t)|.$$</div>
-                </div>
-
-                <div class="card">
-                  <h2>Peak Response Comparison</h2>
-                  {summary_table}
-                </div>
-
-                <div class="card"><h2>Part (a) — Nonlinear Bilinear Response</h2><p>For each ground motion, the time histories of isolation displacement, isolation velocity, restoring force, absolute structural acceleration, and ground acceleration are presented together with the corresponding force-displacement relation.</p><div class="plot">{sections[0]}</div><div class="plot">{sections[1]}</div><div class="plot">{sections[2]}</div><div class="plot">{sections[3]}</div></div>
-                <div class="card"><h2>Part (b) — Equivalent Linear Response</h2><p>These plots are generated in the same format as part (a), so direct visual comparison is immediate. Differences mainly reflect the inability of a single linearized pair $(k_{{eff}},c_{{eff}})$ to reproduce all nonlinear hysteretic effects during transient loading and unloading.</p><div class="plot">{sections[4]}</div><div class="plot">{sections[5]}</div><div class="plot">{sections[6]}</div><div class="plot">{sections[7]}</div></div>
-                <div class="card"><h2>Part (c) — Floor Spectra (ζp = 2%)</h2><p>Each NSC is a linear 2% oscillator; the only difference between curves is the floor motion $u_t(t)=\\ddot u(t)+\\ddot u_g(t)$ from part (a) versus part (b). Oscillator periods $T_p$ are spaced uniformly in log-space from 0.01 s to 10.0 s (a logarithmic period axis cannot include $T_p=0$). The dotted reference marks $f_p=2$ Hz ($T_p=0.5$ s), a band often used for stiff acceleration-sensitive components.</p><p><strong>Note for $f_p$ above 2 Hz:</strong> The equivalent-linear isolation model does <em>not</em> guarantee a larger floor spectrum than the nonlinear one. Bilinear hysteresis and reversals can inject high-frequency content into the <em>true</em> $u_t(t)$, while the fitted viscously damped oscillator tends to produce a smoother deck motion with less energy above a few Hz. The NSC spectrum then often lies <em>above</em> the equivalent-linear curve in that band even though every oscillator is linear. If a particular course note claims the opposite ordering, it may be using a different linearization or idealization.</p><div class="plot">{sections[8]}</div><div class="plot">{sections[9]}</div></div>
+                </section>
               </div>
             </body>
             </html>
@@ -776,10 +965,11 @@ class HtmlReportBuilder:
                 f"<tr><td>{motion}</td><td>Equivalent Linear</td><td>{el.peak_displacement*1e3:.3f}</td><td>{el.peak_velocity:.3f}</td><td>{el.peak_force/1e6:.3f}</td><td>{el.peak_abs_acc/G_SI:.3f}</td></tr>"
             )
         return (
-            "<table><thead><tr><th>Motion</th><th>Model</th><th>Peak |u| [mm]</th>"
-            "<th>Peak |u̇| [m/s]</th><th>Peak |F| [MN]</th><th>Peak |üt| [g]</th></tr></thead><tbody>"
+            '<div class="summary-table-wrap"><table class="summary-table"><thead><tr>'
+            "<th scope='col'>Motion</th><th scope='col'>Model</th><th scope='col'>Peak |u| [mm]</th>"
+            "<th scope='col'>Peak |u̇| [m/s]</th><th scope='col'>Peak |F| [MN]</th><th scope='col'>Peak |üt| [g]</th></tr></thead><tbody>"
             + "".join(rows)
-            + "</tbody></table>"
+            + "</tbody></table></div>"
         )
 
 
