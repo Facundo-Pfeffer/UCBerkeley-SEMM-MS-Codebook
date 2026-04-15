@@ -12,6 +12,11 @@ from plotly.subplots import make_subplots
 
 
 G_SI = 9.80665  # m/s²
+# Floor NSC spectrum grid / plot: log Tp cannot include 0; use a small T_min [s].
+FLOOR_SPECTRUM_T_MIN = 0.01
+FLOOR_SPECTRUM_T_MAX = 10.0
+FLOOR_SPECTRUM_REF_F_HZ = 2.0
+FLOOR_SPECTRUM_REF_T = 1.0 / FLOOR_SPECTRUM_REF_F_HZ
 BASE_DIR = Path(__file__).resolve().parent
 CE223_DIR = BASE_DIR.parent
 HIGHLIGHTED_HTML_DIR = CE223_DIR / "highlighted_htmls"
@@ -339,15 +344,17 @@ class FloorSpectrumCalculator:
         support_abs_acceleration: np.ndarray,
         dt: float,
         damping_ratio: float = 0.02,
-        min_period: float = 0.05,
-        max_period: float = 2.0,
-        n_points: int = 180,
+        min_period: float = FLOOR_SPECTRUM_T_MIN,
+        max_period: float = FLOOR_SPECTRUM_T_MAX,
+        n_points: int = 220,
         min_points_per_cycle: int = 24,
     ) -> FloorSpectrumResult:
-        periods = np.linspace(min_period, max_period, n_points)
+        if max_period <= min_period:
+            raise ValueError("max_period must be greater than min_period.")
+        periods = np.geomspace(min_period, max_period, n_points)
         frequencies = 1.0 / periods
-        peaks = np.zeros_like(periods)
-        support_abs_acceleration = np.asarray(support_abs_acceleration, dtype=float).ravel()
+        peaks = np.zeros(n_points, dtype=float)
+        support_abs_acceleration = np.asarray(support_abs_acceleration, dtype=float).ravel().copy()
         n = support_abs_acceleration.size
         time_original = np.arange(n, dtype=float) * dt
 
@@ -370,9 +377,19 @@ class FloorSpectrumCalculator:
                 stiffness=k,
             )
             component_abs_acc = result.absolute_acceleration
-            peaks[i] = np.max(np.abs(component_abs_acc))
+            peaks[i] = float(np.max(np.abs(component_abs_acc)))
 
-        return FloorSpectrumResult(periods=periods, frequencies=frequencies, peak_abs_component_acceleration=peaks)
+        # Ascending Tp (short period left → long period right) for period-axis spectrum plots.
+        sort_idx = np.argsort(periods, kind="mergesort")
+        periods = periods[sort_idx]
+        frequencies = frequencies[sort_idx]
+        peaks = peaks[sort_idx]
+
+        return FloorSpectrumResult(
+            periods=periods,
+            frequencies=frequencies,
+            peak_abs_component_acceleration=peaks,
+        )
 
 
 class FigureFactory:
@@ -482,6 +499,8 @@ class FigureFactory:
             font=dict(size=14),
             hovermode="x unified",
         )
+        time_end = float(time[-1]) if time.size > 0 else 0.0
+        fig.update_xaxes(range=[0.0, time_end], title_font=dict(size=16), tickfont=dict(size=13))
         fig.update_xaxes(title_text="Time [s]", row=5, col=1, title_font=dict(size=16), tickfont=dict(size=13))
         fig.update_annotations(font=dict(size=16))
         return fig
@@ -534,46 +553,60 @@ class FigureFactory:
         equivalent_spectrum: FloorSpectrumResult,
     ) -> go.Figure:
         fig = go.Figure()
-        exact_periods = 1.0 / np.maximum(exact_spectrum.frequencies, 1e-12)
-        equivalent_periods = 1.0 / np.maximum(equivalent_spectrum.frequencies, 1e-12)
         fig.add_trace(
             go.Scatter(
-                x=exact_spectrum.frequencies,
+                x=exact_spectrum.periods,
                 y=exact_spectrum.peak_abs_component_acceleration / G_SI,
                 mode="lines",
                 line=dict(color=MATLAB_COLORS["dark_blue"], width=2.6),
-                name="Exact (nonlinear input)",
-                customdata=np.column_stack((exact_periods,)),
+                name="Nonlinear isolation üₜ",
+                customdata=np.column_stack((exact_spectrum.frequencies,)),
                 hovertemplate=(
-                    "Frequency fp: %{x:.3f} Hz<br>"
-                    "Period Tp: %{customdata[0]:.4f} s<br>"
+                    "Period Tp: %{x:.4f} s<br>"
+                    "Frequency fp: %{customdata[0]:.3f} Hz<br>"
                     "Peak NSC abs. accel.: %{y:.4f} g<br>"
-                    "Model: Nonlinear floor input<extra></extra>"
+                    "Floor motion: nonlinear isolation<extra></extra>"
                 ),
             )
         )
         fig.add_trace(
             go.Scatter(
-                x=equivalent_spectrum.frequencies,
+                x=equivalent_spectrum.periods,
                 y=equivalent_spectrum.peak_abs_component_acceleration / G_SI,
                 mode="lines",
                 line=dict(color=MATLAB_COLORS["crimson"], width=2.4, dash="dash"),
-                name="Equivalent linear input",
-                customdata=np.column_stack((equivalent_periods,)),
+                name="Equiv.-linear isolation üₜ",
+                customdata=np.column_stack((equivalent_spectrum.frequencies,)),
                 hovertemplate=(
-                    "Frequency fp: %{x:.3f} Hz<br>"
-                    "Period Tp: %{customdata[0]:.4f} s<br>"
+                    "Period Tp: %{x:.4f} s<br>"
+                    "Frequency fp: %{customdata[0]:.3f} Hz<br>"
                     "Peak NSC abs. accel.: %{y:.4f} g<br>"
-                    "Model: Equivalent-linear floor input<extra></extra>"
+                    "Floor motion: equivalent-linear isolation<extra></extra>"
                 ),
             )
         )
-        fig.add_vline(x=2.0, line_dash="dot", line_color=MATLAB_COLORS["black"])
+        fig.add_vline(
+            x=FLOOR_SPECTRUM_REF_T,
+            line_dash="dot",
+            line_color=MATLAB_COLORS["black"],
+            annotation_text=f"{FLOOR_SPECTRUM_REF_F_HZ:g} Hz (Tp = {FLOOR_SPECTRUM_REF_T:g} s)",
+            annotation_position="top",
+            annotation_font_size=12,
+        )
+        t_lo = FLOOR_SPECTRUM_T_MIN
+        t_hi = FLOOR_SPECTRUM_T_MAX
         fig.update_layout(
             template="plotly_white",
             height=430,
             title=dict(text=title, x=0.5, xanchor="center", font=dict(size=22)),
-            xaxis=dict(title="NSC Frequency fp [Hz]", range=[0.5, 20.0], title_font=dict(size=16), tickfont=dict(size=13)),
+            xaxis=dict(
+                type="log",
+                title="NSC period Tp [s] (log scale)",
+                range=[math.log10(t_lo), math.log10(t_hi)],
+                title_font=dict(size=16),
+                tickfont=dict(size=13),
+                exponentformat="power",
+            ),
             yaxis=dict(title="Peak NSC Absolute Acceleration [g]", title_font=dict(size=16), tickfont=dict(size=13)),
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5),
             font=dict(size=14),
@@ -659,7 +692,8 @@ class HtmlReportBuilder:
                 header h1 {{ color: var(--ucb-blue); margin: 0 0 0.35rem; font-size: 2rem; }}
                 .card {{ background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.1rem; margin: 1rem 0; }}
                 .card h2 {{ font-size: 1.45rem; margin: 0 0 0.55rem; }}
-                .eq {{ background:#f9fafb; border-left: 4px solid var(--ucb-blue); padding:0.7rem 0.9rem; margin:0.7rem 0; }}
+                .eq {{ background:#f9fafb; border-left: 4px solid var(--ucb-blue); padding:0.7rem 0.9rem; margin:0.7rem 0; overflow-x:auto; -webkit-overflow-scrolling: touch; }}
+                .eq mjx-container {{ min-width: max-content; }}
                 table {{ width:100%; border-collapse: collapse; margin-top:0.7rem; }}
                 th, td {{ border:1px solid #e5e7eb; padding:0.45rem 0.55rem; text-align:left; }}
                 th {{ background: var(--ucb-blue); color:#fff; }}
@@ -719,7 +753,7 @@ class HtmlReportBuilder:
 
                 <div class="card"><h2>Part (a) — Nonlinear Bilinear Response</h2><p>For each ground motion, the time histories of isolation displacement, isolation velocity, restoring force, absolute structural acceleration, and ground acceleration are presented together with the corresponding force-displacement relation.</p><div class="plot">{sections[0]}</div><div class="plot">{sections[1]}</div><div class="plot">{sections[2]}</div><div class="plot">{sections[3]}</div></div>
                 <div class="card"><h2>Part (b) — Equivalent Linear Response</h2><p>These plots are generated in the same format as part (a), so direct visual comparison is immediate. Differences mainly reflect the inability of a single linearized pair $(k_{{eff}},c_{{eff}})$ to reproduce all nonlinear hysteretic effects during transient loading and unloading.</p><div class="plot">{sections[4]}</div><div class="plot">{sections[5]}</div><div class="plot">{sections[6]}</div><div class="plot">{sections[7]}</div></div>
-                <div class="card"><h2>Part (c) — Floor Spectra (ζp = 2%)</h2><p>Absolute floor acceleration $u_t(t)=\\ddot u(t)+\\ddot u_g(t)$ is used as support input to nonstructural-component oscillators. The vertical line at 2 Hz marks the high-frequency range typically associated with stiff components.</p><p>When the equivalent-linear spectrum diverges from the nonlinear spectrum in this frequency range, the equivalent-linear approximation may misestimate acceleration-sensitive nonstructural demands.</p><div class="plot">{sections[8]}</div><div class="plot">{sections[9]}</div></div>
+                <div class="card"><h2>Part (c) — Floor Spectra (ζp = 2%)</h2><p>Each NSC is a linear 2% oscillator; the only difference between curves is the floor motion $u_t(t)=\\ddot u(t)+\\ddot u_g(t)$ from part (a) versus part (b). Oscillator periods $T_p$ are spaced uniformly in log-space from 0.01 s to 10.0 s (a logarithmic period axis cannot include $T_p=0$). The dotted reference marks $f_p=2$ Hz ($T_p=0.5$ s), a band often used for stiff acceleration-sensitive components.</p><p><strong>Note for $f_p$ above 2 Hz:</strong> The equivalent-linear isolation model does <em>not</em> guarantee a larger floor spectrum than the nonlinear one. Bilinear hysteresis and reversals can inject high-frequency content into the <em>true</em> $u_t(t)$, while the fitted viscously damped oscillator tends to produce a smoother deck motion with less energy above a few Hz. The NSC spectrum then often lies <em>above</em> the equivalent-linear curve in that band even though every oscillator is linear. If a particular course note claims the opposite ordering, it may be using a different linearization or idealization.</p><div class="plot">{sections[8]}</div><div class="plot">{sections[9]}</div></div>
               </div>
             </body>
             </html>
