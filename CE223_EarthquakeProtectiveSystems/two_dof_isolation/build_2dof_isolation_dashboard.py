@@ -701,7 +701,7 @@ def main() -> None:
                 <a href="CE223_MDOF_Newmark_Demo.html" style="text-decoration:none; border:1px solid rgba(0,50,98,0.18); padding:0.45rem 0.7rem; border-radius:999px; color:#003262; background:#ffffff;">
                   Open Newmark MDOF demo (non‑classical damping)
                 </a>
-                <a href="../../webpage/cee223-earthquake-protective-systems.html" style="text-decoration:none; border:1px solid rgba(0,50,98,0.18); padding:0.45rem 0.7rem; border-radius:999px; color:#003262; background:#ffffff;">
+                <a href="../../cee223-earthquake-protective-systems.html" style="text-decoration:none; border:1px solid rgba(0,50,98,0.18); padding:0.45rem 0.7rem; border-radius:999px; color:#003262; background:#ffffff;">
                   Back to CE223 main page
                 </a>
               </div>
@@ -914,7 +914,7 @@ def main() -> None:
                 <li>
                   <strong>CEE225 lectures (2025)</strong>: Newmark integration and modal superposition notation, aligned with the CEE225 final project case study
                   (interactive 3‑story MDOF response analysis under recorded ground motion).
-                  See the <a href="../../webpage/cee225-dynamics.html">CEE225 Structural Dynamics page</a> and the
+                  See the <a href="../../cee225-dynamics.html">CEE225 Structural Dynamics page</a> and the
                   <a href="../../CEE225_Dynamics/highlighted_htmls/final_project_menu.html">CEE225 final project menu</a>.
                 </li>
               </ul>
