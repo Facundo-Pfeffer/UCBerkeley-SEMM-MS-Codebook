@@ -1958,11 +1958,66 @@ class HtmlReportBuilder:
             <html lang="en">
             <head>
               <meta charset="utf-8" />
-              <meta name="viewport" content="width=device-width, initial-scale=1" />
-              <title>CE223 Problem 1 – FPS with Bouc-Wen Model</title>
+              <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+              <title>CE223 – FPS Bouc-Wen Dashboard</title>
+              <link rel="stylesheet" href="../../assets/css/main.css" />
+              <noscript><link rel="stylesheet" href="../../assets/css/noscript.css" /></noscript>
               <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
-              <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+              <script>
+                window.MathJax = {{
+                  tex: {{
+                    inlineMath: [['$', '$'], ['\\(', '\\)']],
+                    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                    processEscapes: true,
+                    processEnvironments: true
+                  }},
+                  options: {{
+                    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+                  }}
+                }};
+              </script>
+              <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+              <script async src="../../assets/js/navigation.js"></script>
               <style>
+                .ce223-dashboard .container {{
+                    max-width: 72em;
+                    margin-left: auto;
+                    margin-right: auto;
+                }}
+                #main.ce223-dashboard {{
+                    padding-top: 0.75rem;
+                }}
+                .inner-report {{
+                    font-family: Arial, Helvetica, sans-serif;
+                    font-size: 1rem;
+                    line-height: 1.55;
+                    color: #2c3e50;
+                    max-width: 100%;
+                    margin: 0;
+                    padding: 0 1rem;
+                }}
+                .inner-report header.major {{
+                    text-align: left;
+                    margin-bottom: 1.25rem;
+                }}
+                .inner-report header.major h2 {{
+                    font-size: 1.85rem;
+                    font-weight: 700;
+                    color: #003262;
+                    margin: 0 0 0.5rem 0;
+                    letter-spacing: 0.01em;
+                    text-transform: none;
+                }}
+                .summary-lead {{
+                    font-size: 1.05rem;
+                    color: #6b7280;
+                    max-width: 68em;
+                    margin: 0;
+                    line-height: 1.6;
+                }}
+                .inner-report .js-plotly-plot .modebar {{
+                    top: 56px !important;
+                }}
                 :root {{
                     --berkeley-blue: #003262;
                     --california-gold: #FDB515;
@@ -1981,9 +2036,9 @@ class HtmlReportBuilder:
                     line-height: 1.6;
                 }}
                 .page {{
-                    max-width: 1320px;
-                    margin: 0 auto;
-                    padding: 28px 20px 48px;
+                    max-width: 100%;
+                    margin: 0;
+                    padding: 0 0 2.5rem 0;
                 }}
                 .hero {{
                     background: linear-gradient(135deg, #ffffff 0%, #f4f7fb 100%);
@@ -2051,8 +2106,20 @@ class HtmlReportBuilder:
                 }}
               </style>
             </head>
-            <body>
-              <div class="page">
+            <body class="is-preload">
+              <div id="page-wrapper">
+                <header id="header"></header>
+
+                <section id="main" class="wrapper style1 ce223-dashboard">
+                  <div class="container inner-report">
+                    <header class="major">
+                      <h2>CE223 – Friction Pendulum System with Bouc-Wen Model</h2>
+                      <p class="summary-lead">
+                        This dashboard calibrates a Bouc-Wen model for a friction pendulum system and then scales the calibrated model to a rigid mass supported by 15 identical bearings. The dynamic response is computed under the Kobe and Sylmar records and compared with an internal bilinear plasticity model.
+                      </p>
+                    </header>
+
+                    <div class="page">
                 <section class="hero">
                   <h1>CE223 Problem 1 — Friction Pendulum System with Bouc-Wen Model</h1>
                   <p>This report is self-contained and explicitly follows parts (a) through (d) of the assignment.</p>
@@ -2109,6 +2176,9 @@ class HtmlReportBuilder:
                   {difference_table}
                   <div class="plot-embed">{sections[9]}</div>
                   <div class="plot-embed">{sections[10]}</div>
+                </section>
+                    </div>
+                  </div>
                 </section>
               </div>
             </body>
