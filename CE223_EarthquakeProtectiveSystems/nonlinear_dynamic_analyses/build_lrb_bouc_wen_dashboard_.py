@@ -173,7 +173,7 @@ class BoucWenLrbParameters:
 
 @dataclass(frozen=True)
 class EquivalentLinearProperties:
-    """Equivalent linear oscillator properties computed from one cyclic loop."""
+    """Equivalent linear oscillator properties computed from a response envelope."""
     mass: float
     stiffness: float
     damping_ratio: float
@@ -183,6 +183,33 @@ class EquivalentLinearProperties:
     amplitude: float
     dissipated_energy: float
     stored_energy: float
+
+
+@dataclass(frozen=True)
+class ResponseEnvelope:
+    """Artificial non-overlapping earthquake-response envelope.
+
+    The envelope is built from the maximum and minimum restoring force reached
+    at each displacement level of the earthquake-response cloud. Because the
+    transient response does not revisit exactly identical displacement values,
+    the implementation groups the response by displacement bins and then
+    interpolates the upper and lower force bounds onto a monotone displacement
+    grid. A closed artificial loop is then assembled as requested:
+
+    - from u = 0 to u_max along the upper branch,
+    - from u_max to u_min along the lower branch,
+    - from u_min back to u = 0 along the upper branch.
+    """
+    displacement: np.ndarray
+    upper_force: np.ndarray
+    lower_force: np.ndarray
+    closed_displacement: np.ndarray
+    closed_force: np.ndarray
+    area: float
+    amplitude: float
+    force_max: float
+    n_points_used: int
+
 
 
 @dataclass
@@ -742,10 +769,213 @@ class BoucWenDynamicSolver:
 
 
 class EquivalentLinearBuilder:
-    """Compute secant stiffness and equivalent damping from cyclic energy."""
+    """Compute response-compatible equivalent linear properties from earthquake envelopes."""
+
+    @staticmethod
+    def from_response_envelope(
+        result: TimeHistoryResult,
+        parameters: BoucWenLrbParameters,
+        n_bins: int = 151,
+    ) -> tuple[EquivalentLinearProperties, ResponseEnvelope]:
+        """Match secant stiffness and energy from an artificial earthquake envelope.
+
+        The transient earthquake hysteresis curve does not define one stabilized
+        cycle. A representative non-overlapping loop is therefore constructed
+        from the upper and lower force bounds of the earthquake-response cloud,
+        following the requested path 0 -> u_max on the upper branch,
+        u_max -> u_min on the lower branch, and u_min -> 0 on the upper branch.
+        """
+        envelope = EquivalentLinearBuilder.build_response_envelope(
+            displacement=result.displacement,
+            force=result.restoring_force,
+            n_bins=n_bins,
+        )
+        stiffness = envelope.force_max / max(envelope.amplitude, 1.0e-12)
+        stored_energy = 0.5 * stiffness * envelope.amplitude * envelope.amplitude
+        damping_ratio = float(envelope.area / max(4.0 * math.pi * stored_energy, 1.0e-12))
+        if not math.isfinite(damping_ratio) or damping_ratio < 0.0:
+            raise FloatingPointError("Equivalent damping ratio is not finite or is negative.")
+
+        circular_frequency = math.sqrt(stiffness / parameters.total_mass)
+        damping = 2.0 * damping_ratio * parameters.total_mass * circular_frequency
+        period = 2.0 * math.pi / circular_frequency
+
+        properties = EquivalentLinearProperties(
+            mass=parameters.total_mass,
+            stiffness=stiffness,
+            damping_ratio=damping_ratio,
+            damping=damping,
+            circular_frequency=circular_frequency,
+            period=period,
+            amplitude=envelope.amplitude,
+            dissipated_energy=envelope.area,
+            stored_energy=stored_energy,
+        )
+        return properties, envelope
+
+    @staticmethod
+    def build_response_envelope(
+        displacement: np.ndarray,
+        force: np.ndarray,
+        n_bins: int = 151,
+    ) -> ResponseEnvelope:
+        """Build the requested artificial earthquake-response envelope.
+
+        For a transient earthquake record, the same displacement is almost never
+        reached twice with exactly identical floating-point values. Therefore,
+        "for each u" is implemented on a displacement grid. At each grid value,
+        the maximum and minimum restoring forces are extracted from a local
+        displacement window. The two branches are then regularized to be
+        monotone increasing with displacement, which prevents artificial
+        branch-to-branch jumps in the plotted envelope.
+
+        The artificial loop is assembled in the requested order:
+        u = 0 -> u_max using the upper branch,
+        u_max -> u_min using the lower branch,
+        u_min -> 0 using the upper branch.
+        """
+        displacement = np.asarray(displacement, dtype=float).ravel()
+        force = np.asarray(force, dtype=float).ravel()
+        if displacement.size != force.size:
+            raise ValueError("displacement and force must have the same length.")
+
+        valid = np.isfinite(displacement) & np.isfinite(force)
+        displacement = displacement[valid]
+        force = force[valid]
+        if displacement.size < 12:
+            raise ValueError("Not enough finite force-displacement points to build an envelope.")
+
+        u_min = float(np.min(displacement))
+        u_max = float(np.max(displacement))
+        if not (u_min < 0.0 < u_max):
+            raise ValueError("The artificial envelope requires response on both sides of u = 0.")
+
+        amplitude = float(max(abs(u_min), abs(u_max)))
+        if not math.isfinite(amplitude) or amplitude <= 0.0:
+            raise ValueError("Response envelope has zero displacement amplitude.")
+
+        n_grid = max(int(n_bins), 81)
+        grid_u = np.linspace(u_min, u_max, n_grid)
+
+        if not np.any(np.isclose(grid_u, 0.0, atol=1.0e-14)):
+            grid_u = np.sort(np.append(grid_u, 0.0))
+
+        du = float(grid_u[-1] - grid_u[0]) / max(grid_u.size - 1, 1)
+        half_window = max(2.5 * du, 0.01 * (u_max - u_min))
+
+        upper_raw = np.empty(grid_u.size, dtype=float)
+        lower_raw = np.empty(grid_u.size, dtype=float)
+
+        for i, u_value in enumerate(grid_u):
+            window = np.abs(displacement - u_value) <= half_window
+
+            # If a very sparse region appears near an extreme, fall back to the
+            # closest samples rather than leaving a gap or interpolating across
+            # unrelated branches.
+            if not np.any(window):
+                k = min(12, displacement.size)
+                nearest = np.argpartition(np.abs(displacement - u_value), k - 1)[:k]
+                values = force[nearest]
+            else:
+                values = force[window]
+
+            upper_raw[i] = float(np.max(values))
+            lower_raw[i] = float(np.min(values))
+
+        def isotonic_increasing(values: np.ndarray) -> np.ndarray:
+            """Least-squares nondecreasing projection using the PAVA algorithm."""
+            y = np.asarray(values, dtype=float)
+            levels: list[float] = []
+            weights: list[float] = []
+            counts: list[int] = []
+
+            for value in y:
+                levels.append(float(value))
+                weights.append(1.0)
+                counts.append(1)
+
+                while len(levels) >= 2 and levels[-2] > levels[-1]:
+                    total_weight = weights[-2] + weights[-1]
+                    averaged = (levels[-2] * weights[-2] + levels[-1] * weights[-1]) / total_weight
+                    levels[-2] = averaged
+                    weights[-2] = total_weight
+                    counts[-2] += counts[-1]
+                    levels.pop()
+                    weights.pop()
+                    counts.pop()
+
+            return np.concatenate([
+                np.full(count, level, dtype=float)
+                for level, count in zip(levels, counts)
+            ])
+
+        upper_branch = isotonic_increasing(upper_raw)
+        lower_branch = isotonic_increasing(lower_raw)
+
+        # Enforce a nonnegative gap between the upper and lower branches.
+        crossed = lower_branch > upper_branch
+        if np.any(crossed):
+            mid = 0.5 * (upper_branch[crossed] + lower_branch[crossed])
+            upper_branch[crossed] = mid
+            lower_branch[crossed] = mid
+
+        zero_index = int(np.argmin(np.abs(grid_u)))
+        grid_u[zero_index] = 0.0
+
+        pos_mask = grid_u >= 0.0
+        neg_mask = grid_u <= 0.0
+
+        segment_1_u = grid_u[pos_mask]
+        segment_1_f = upper_branch[pos_mask]
+
+        segment_2_u = grid_u[::-1]
+        segment_2_f = lower_branch[::-1]
+
+        segment_3_u = grid_u[neg_mask]
+        segment_3_f = upper_branch[neg_mask]
+
+        closed_u = np.concatenate((
+            segment_1_u,
+            segment_2_u[1:],
+            segment_3_u[1:],
+        ))
+        closed_f = np.concatenate((
+            segment_1_f,
+            segment_2_f[1:],
+            segment_3_f[1:],
+        ))
+
+        if abs(closed_u[0] - closed_u[-1]) > 1.0e-14 or abs(closed_f[0] - closed_f[-1]) > 1.0e-8:
+            closed_u = np.concatenate((closed_u, closed_u[:1]))
+            closed_f = np.concatenate((closed_f, closed_f[:1]))
+
+        area = 0.5 * np.abs(np.sum(
+            closed_u[:-1] * closed_f[1:] - closed_u[1:] * closed_f[:-1]
+        ))
+        area = float(area)
+        if not math.isfinite(area) or area <= 0.0:
+            raise FloatingPointError("Response-envelope area must be positive and finite.")
+
+        force_max = float(max(np.max(np.abs(upper_branch)), np.max(np.abs(lower_branch))))
+        if force_max <= 0.0:
+            raise ValueError("Response envelope has zero force amplitude.")
+
+        return ResponseEnvelope(
+            displacement=grid_u,
+            upper_force=upper_branch,
+            lower_force=lower_branch,
+            closed_displacement=closed_u,
+            closed_force=closed_f,
+            area=area,
+            amplitude=amplitude,
+            force_max=force_max,
+            n_points_used=int(grid_u.size),
+        )
+
+
     @staticmethod
     def from_cyclic_result(result: CyclicTestResult, parameters: BoucWenLrbParameters) -> EquivalentLinearProperties:
-        """Match secant stiffness and energy dissipation at the test amplitude."""
+        """Legacy cyclic-loop equivalent linearization kept for reference."""
         mask = result.last_cycle_mask
         displacement = result.displacement[mask]
         bearing_force = result.bouc_wen_force[mask]
@@ -757,7 +987,6 @@ class EquivalentLinearBuilder:
         bearing_energy = abs(integrate_trapezoid(bearing_force, displacement))
         dissipated_energy = float(parameters.n_bearings) * bearing_energy
         stored_energy = 0.5 * stiffness * amplitude * amplitude
-        # No cap is imposed here; the table should show the damping implied by the loop.
         damping_ratio = float(dissipated_energy / max(4.0 * math.pi * stored_energy, 1.0e-12))
         if not math.isfinite(damping_ratio) or damping_ratio < 0.0:
             raise FloatingPointError("Equivalent damping ratio is not finite or is negative.")
@@ -1792,8 +2021,9 @@ class FigureFactory:
         equivalent_result: TimeHistoryResult,
         total_weight: float,
         parameters: BoucWenLrbParameters,
+        envelope: ResponseEnvelope | None = None,
     ) -> go.Figure:
-        """Compare nonlinear and equivalent-linear force-displacement loops."""
+        """Compare nonlinear, envelope, and equivalent-linear force-displacement loops."""
         fig = go.Figure()
 
         z_values = np.asarray(nonlinear_result.hysteretic_parameter, dtype=float)
@@ -1820,8 +2050,9 @@ class FigureFactory:
                 x=nonlinear_result.displacement * 1.0e3,
                 y=nonlinear_result.restoring_force / total_weight,
                 mode="lines",
-                line=dict(color=MATLAB_COLORS["crimson"], width=2.4),
-                name="Nonlinear Bouc-Wen",
+                line=dict(color=MATLAB_COLORS["crimson"], width=2.0),
+                opacity=0.72,
+                name="Nonlinear Bouc-Wen earthquake loop",
                 customdata=nonlinear_custom,
                 hovertemplate=(
                     "Model: Nonlinear Bouc-Wen<br>"
@@ -1840,6 +2071,38 @@ class FigureFactory:
             )
         )
 
+        if envelope is not None:
+            x_env_mm = envelope.closed_displacement * 1.0e3
+            y_env_norm = envelope.closed_force / total_weight
+            envelope_area_mj = envelope.area / 1.0e6
+            envelope_amplitude_mm = envelope.amplitude * 1.0e3
+
+            env_custom = np.column_stack((
+                envelope.closed_force / 1.0e6,
+                np.full(envelope.closed_force.size, envelope_area_mj, dtype=float),
+                np.full(envelope.closed_force.size, envelope_amplitude_mm, dtype=float),
+            ))
+
+            fig.add_trace(
+                go.Scatter(
+                    x=x_env_mm,
+                    y=y_env_norm,
+                    mode="lines",
+                    line=dict(color="rgba(120, 120, 120, 1.0)", width=2.8, dash="dashdot"),
+                    fill="toself",
+                    fillcolor="rgba(170, 170, 170, 0.42)",
+                    name="Artificial envelope used for linearization",
+                    customdata=env_custom,
+                    hovertemplate=(
+                        "Artificial earthquake envelope<br>"
+                        "u: %{x:.3f} mm<br>"
+                        "F/W: %{y:.5f}<br>"
+                        "F: %{customdata[0]:.4f} MN<br>"
+                        "Envelope area: %{customdata[1]:.4f} MJ<br>"
+                        "Envelope amplitude: %{customdata[2]:.3f} mm<extra></extra>"
+                    ),
+                )
+            )
         equivalent_custom = np.column_stack((
             equivalent_result.time,
             equivalent_result.velocity,
@@ -1853,8 +2116,8 @@ class FigureFactory:
                 x=equivalent_result.displacement * 1.0e3,
                 y=equivalent_result.restoring_force / total_weight,
                 mode="lines",
-                line=dict(color=MATLAB_COLORS["black"], width=2.4, dash="dash"),
-                name="Equivalent linear",
+                line=dict(color=MATLAB_COLORS["black"], width=2.6, dash="dash"),
+                name="Equivalent linear earthquake loop",
                 customdata=equivalent_custom,
                 hovertemplate=(
                     "Model: Equivalent linear<br>"
@@ -1871,11 +2134,12 @@ class FigureFactory:
         )
         fig.update_layout(
             template="plotly_white",
-            height=500,
+            height=560,
             title=dict(text=title, x=0.5, xanchor="center", font=dict(size=22)),
             xaxis=dict(title="Displacement u [mm]", title_font=dict(size=16), tickfont=dict(size=13), zeroline=True),
             yaxis=dict(title="Normalized Force F/W [-]", title_font=dict(size=16), tickfont=dict(size=13), zeroline=True),
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5),
+            margin=dict(t=120, r=35, b=70, l=70),
             font=dict(size=14),
         )
         return fig
@@ -1885,7 +2149,7 @@ class FigureFactory:
 
 class HtmlReportBuilder:
     """Assemble the complete self-contained HTML dashboard."""
-    def __init__(self, bw_params: BoucWenLrbParameters, eq_props: EquivalentLinearProperties, data: LrbProblemData) -> None:
+    def __init__(self, bw_params: BoucWenLrbParameters, eq_props: dict[str, EquivalentLinearProperties], data: LrbProblemData) -> None:
         self.bw_params = bw_params
         self.eq_props = eq_props
         self.data = data
@@ -1900,6 +2164,7 @@ class HtmlReportBuilder:
         calibration_cases: list[CalibrationCaseResult],
         bw_results: dict[str, TimeHistoryResult],
         equivalent_results: dict[str, TimeHistoryResult],
+        response_envelopes: dict[str, ResponseEnvelope],
     ) -> str:
         """Build all figures, tables, and explanatory sections for the report."""
         fig_cyclic = FigureFactory.cyclic_hysteresis(cyclic_result, self.bw_params)
@@ -1922,6 +2187,7 @@ class HtmlReportBuilder:
             equivalent_results["Kobe"],
             self.data.total_weight,
             self.bw_params,
+            response_envelopes["Kobe"],
         )
         fig_sylmar_compare = FigureFactory.hysteresis_comparison(
             "Sylmar — Nonlinear versus Equivalent Linear Hysteresis",
@@ -1929,6 +2195,7 @@ class HtmlReportBuilder:
             equivalent_results["Sylmar"],
             self.data.total_weight,
             self.bw_params,
+            response_envelopes["Sylmar"],
         )
 
         sections = [
@@ -2229,28 +2496,29 @@ class HtmlReportBuilder:
                       {calibration_table}
                       {interactive_calibration}
                       <div class="plot-embed">{sections[0]}</div>
+                      <div class="plot-embed">{sections[1]}</div>
                     </section>
 
                     <section class="report-section">
                       <h2>Part (b) — Nonlinear Bouc-Wen time-history results</h2>
-                      <p>For each ground motion, the five requested histories are shown first, followed by the nonlinear $F/W$ versus displacement loop.</p>
-                      <div class="plot-embed">{sections[1]}</div>
+                      <p>For each ground motion, the five requested histories are shown first, followed by the nonlinear $F/W$ versus displacement loop and the hysteretic variable $z(t)$.</p>
                       <div class="plot-embed">{sections[2]}</div>
                       <div class="plot-embed">{sections[3]}</div>
                       <div class="plot-embed">{sections[4]}</div>
+                      <div class="plot-embed">{sections[5]}</div>
+                      <div class="plot-embed">{sections[6]}</div>
+                      <div class="plot-embed">{sections[7]}</div>
                     </section>
 
                     <section class="report-section">
                       <h2>Part (c) — Equivalent viscously damped linear oscillator</h2>
-                      <p>The equivalent linear system is calibrated from the final cyclic Bouc-Wen loop at $U=0.235$ m. The effective stiffness is taken as $k_{{eff}}=F_{{max}}/U$, and the equivalent viscous damping ratio is obtained by matching the loop energy: $\\xi_{{eq}}=E_D/(4\\pi E_{{S,0}})$.</p>
+                      <p>The equivalent linear system is computed separately for each earthquake from the nonlinear earthquake-response envelope. The nonlinear $F$--$u$ points are reduced to a non-overlapping representative loop by taking the upper and lower force envelopes over sorted displacement bins. The envelope area is then computed as $E_D=\\int(F_{{upper}}-F_{{lower}})\\,du$, after sorting by displacement, and this energy is used to define the equivalent viscous damping ratio $\\xi_{{eq}}=E_D/(4\\pi E_{{S,0}})$.</p>
                       {equivalent_table}
                       {peak_table}
-                      <div class="plot-embed">{sections[5]}</div>
-                      <div class="plot-embed">{sections[6]}</div>
-                      <div class="plot-embed">{sections[7]}</div>
                       <div class="plot-embed">{sections[8]}</div>
-                      <div class="plot-embed">{sections[9]}</div>
+                      <div class="plot-embed">{sections[12]}</div>
                       <div class="plot-embed">{sections[10]}</div>
+                      <div class="plot-embed">{sections[13]}</div>
                     </section>
                   </div>
                 </section>
@@ -2319,22 +2587,30 @@ class HtmlReportBuilder:
         )
 
     def _build_equivalent_linear_table(self) -> str:
-        e = self.eq_props
-        rows = [
-            ("Effective amplitude", f"{e.amplitude * 1.0e3:.3f}", "mm"),
-            ("Effective stiffness", f"{e.stiffness / 1.0e6:.4f}", "MN/m"),
-            ("Equivalent period", f"{e.period:.4f}", "s"),
-            ("Equivalent circular frequency", f"{e.circular_frequency:.4f}", "rad/s"),
-            ("Equivalent damping ratio", f"{100.0 * e.damping_ratio:.2f}", "%"),
-            ("Equivalent viscous coefficient", f"{e.damping / 1.0e6:.4f}", "MN s/m"),
-            ("Dissipated energy per cycle", f"{e.dissipated_energy / 1.0e6:.4f}", "MJ"),
-            ("Stored strain energy", f"{e.stored_energy / 1.0e6:.4f}", "MJ"),
-        ]
-        body = "".join(f"<tr><td>{name}</td><td>{value}</td><td>{unit}</td></tr>" for name, value, unit in rows)
+        rows = []
+        for motion in ("Kobe", "Sylmar"):
+            e = self.eq_props[motion]
+            rows.append(
+                "<tr>"
+                f"<td>{motion}</td>"
+                f"<td>{e.amplitude * 1.0e3:.3f}</td>"
+                f"<td>{e.stiffness / 1.0e6:.4f}</td>"
+                f"<td>{e.period:.4f}</td>"
+                f"<td>{100.0 * e.damping_ratio:.2f}</td>"
+                f"<td>{e.damping / 1.0e6:.4f}</td>"
+                f"<td>{e.dissipated_energy / 1.0e6:.4f}</td>"
+                f"<td>{e.stored_energy / 1.0e6:.4f}</td>"
+                "</tr>"
+            )
         return (
             '<div class="summary-table-wrap"><table class="summary-table"><thead><tr>'
-            "<th scope='col'>Quantity</th><th scope='col'>Value</th><th scope='col'>Unit</th>"
-            f"</tr></thead><tbody>{body}</tbody></table></div>"
+            "<th scope='col'>Motion</th><th scope='col'>Envelope amplitude [mm]</th>"
+            "<th scope='col'>k_eff [MN/m]</th><th scope='col'>T_eq [s]</th>"
+            "<th scope='col'>ξ_eq [%]</th><th scope='col'>c_eq [MN s/m]</th>"
+            "<th scope='col'>Envelope area E_D [MJ]</th><th scope='col'>E_S0 [MJ]</th>"
+            "</tr></thead><tbody>"
+            + "".join(rows)
+            + "</tbody></table></div>"
         )
 
     @staticmethod
@@ -2448,8 +2724,6 @@ def main() -> None:
     bw_params = calibration_cases[-1].parameters
     bw_model = BoucWenForceModel(bw_params)
     cyclic_result = calibration_cases[-1].cyclic_result
-    equivalent_properties = EquivalentLinearBuilder.from_cyclic_result(cyclic_result, bw_params)
-
     records = {
         "Kobe": GroundMotionLoader.load_acceleration_file(KOBE_PATH, name="Kobe"),
         "Sylmar": GroundMotionLoader.load_acceleration_file(SYLMAR_PATH, name="Sylmar"),
@@ -2458,14 +2732,20 @@ def main() -> None:
     bw_solver = BoucWenDynamicSolver(bw_model, max_internal_dt=2.0e-3)
     bw_results: dict[str, TimeHistoryResult] = {}
     equivalent_results: dict[str, TimeHistoryResult] = {}
+    equivalent_properties: dict[str, EquivalentLinearProperties] = {}
+    response_envelopes: dict[str, ResponseEnvelope] = {}
 
     for motion_name, record in records.items():
-        bw_results[motion_name] = bw_solver.solve(record)
+        nonlinear_result = bw_solver.solve(record)
+        bw_results[motion_name] = nonlinear_result
+        eq_props, envelope = EquivalentLinearBuilder.from_response_envelope(nonlinear_result, bw_params)
+        equivalent_properties[motion_name] = eq_props
+        response_envelopes[motion_name] = envelope
         equivalent_results[motion_name] = LinearNewmarkSolver.solve_sdof_base_excitation(
             record=record,
-            mass=equivalent_properties.mass,
-            damping=equivalent_properties.damping,
-            stiffness=equivalent_properties.stiffness,
+            mass=eq_props.mass,
+            damping=eq_props.damping,
+            stiffness=eq_props.stiffness,
         )
 
     report = HtmlReportBuilder(bw_params, equivalent_properties, problem_data).build(
@@ -2473,6 +2753,7 @@ def main() -> None:
         calibration_cases=calibration_cases,
         bw_results=bw_results,
         equivalent_results=equivalent_results,
+        response_envelopes=response_envelopes,
     )
     OUTPUT_HTML.write_text(report, encoding="utf-8")
     print(f"Wrote {OUTPUT_HTML}")

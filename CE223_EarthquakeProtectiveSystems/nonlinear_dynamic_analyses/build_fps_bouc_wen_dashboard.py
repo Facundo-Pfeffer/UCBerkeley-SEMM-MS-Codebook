@@ -363,7 +363,7 @@ class FpsParameterBuilder:
     ) -> BoucWenFpsParameters:
         """Match FPS stiffness/strength and assign Bouc--Wen shape parameters."""
         if alpha is None:
-            # This alpha enforces both alpha*K1 = K2 and (1-alpha)*K1*uy = mu*W.
+            # This alpha enforces both alpha*K1 = K2 and (1−α)*K1*uy = mu*W.
             ratio = data.yield_displacement / (data.friction_coefficient * data.radius)
             alpha = ratio / (1.0 + ratio)
 
@@ -1127,6 +1127,8 @@ class FigureFactory:
             "ideal_linear_kN": ideal_linear_force / 1.0e3,
             "ideal_friction_kN": ideal_friction_force / 1.0e3,
             "ideal_kN": np.asarray(result.ideal_force, dtype=float) / 1.0e3,
+            "ideal_linear_over_weight": ideal_linear_force / result.bearing_weight,
+            "ideal_friction_over_weight": ideal_friction_force / result.bearing_weight,
             "ideal_over_weight": np.asarray(result.ideal_force, dtype=float) / result.bearing_weight,
         }
 
@@ -1150,44 +1152,39 @@ class FigureFactory:
             components["ideal_kN"],
             components["ideal_over_weight"],
             components["displacement_mm"],
+            components["ideal_linear_over_weight"],
+            components["ideal_friction_over_weight"],
         ))
 
     @staticmethod
     def _bouc_wen_cyclic_hover(parameters: BoucWenFpsParameters) -> str:
-        alpha_k1 = parameters.alpha * parameters.bearing_k1 / 1.0e6
-        hysteretic_strength = (1.0 - parameters.alpha) * parameters.bearing_k1 * parameters.yield_displacement / 1.0e3
+        """Hover text for normalized Bouc--Wen cyclic plots.
+
+        The plotted ordinate is normalized force, so the force-decomposition
+        terms are also reported normalized by the one-bearing weight W_b.
+        """
         return (
             "Cycle: %{customdata[1]:.0f}<br>"
             "t: %{customdata[0]:.4f} s<br>"
             "u: %{customdata[2]:.6f} m = %{x:.3f} mm<br>"
-            "u_dot: %{customdata[3]:.6f} m/s<br>"
+            "u̇: %{customdata[3]:.6f} m/s<br>"
             "z: %{customdata[4]:.6f}<br>"
-            "alpha: " + f"{parameters.alpha:.6f}" + "<br>"
-            "alpha K1 = K2: " + f"{alpha_k1:.6f}" + " kN/mm<br>"
-            "(1-alpha) K1 uy = Q: " + f"{hysteretic_strength:.6f}" + " kN<br>"
-            "alpha K1 u = K2 u: %{customdata[5]:.6f} kN<br>"
-            "(1-alpha) K1 uy z: %{customdata[6]:.6f} kN<br>"
-            "F_BW: %{customdata[7]:.6f} kN<br>"
-            "(alpha K1 u)/Wb: %{customdata[8]:.6f}<br>"
-            "((1-alpha)K1 uy z)/Wb: %{customdata[9]:.6f}<br>"
-            "F_BW/Wb: %{customdata[10]:.6f}<extra></extra>"
+            "αK1u/Wb: %{customdata[8]:.6f}<br>"
+            "(1−α)K1uyz/Wb: %{customdata[9]:.6f}<br>"
+            "F(t)/Wb: %{customdata[10]:.6f}<extra></extra>"
         )
 
     @staticmethod
     def _ideal_cyclic_hover(parameters: BoucWenFpsParameters) -> str:
-        alpha_k1 = parameters.alpha * parameters.bearing_k1 / 1.0e6
-        q_kN = parameters.bearing_characteristic_strength / 1.0e3
+        """Hover text for normalized ideal-FPS cyclic plots."""
         return (
             "Cycle: %{customdata[1]:.0f}<br>"
             "t: %{customdata[0]:.4f} s<br>"
             "u: %{customdata[2]:.6f} m = %{x:.3f} mm<br>"
-            "u_dot: %{customdata[3]:.6f} m/s<br>"
-            "alpha K1 = K2: " + f"{alpha_k1:.6f}" + " kN/mm<br>"
-            "Q = mu Wb = (1-alpha)K1 uy: " + f"{q_kN:.6f}" + " kN<br>"
-            "K2 u: %{customdata[11]:.6f} kN<br>"
-            "Q sign(u_dot): %{customdata[12]:.6f} kN<br>"
-            "F_ideal: %{customdata[13]:.6f} kN<br>"
-            "F_ideal/Wb: %{customdata[14]:.6f}<extra></extra>"
+            "u̇: %{customdata[3]:.6f} m/s<br>"
+            "K2u/Wb: %{customdata[16]:.6f}<br>"
+            "Q sign(u̇)/Wb: %{customdata[17]:.6f}<br>"
+            "Fideal(t)/Wb: %{customdata[14]:.6f}<extra></extra>"
         )
 
     @staticmethod
@@ -1464,21 +1461,15 @@ class FigureFactory:
             zoom_end_index = int(np.searchsorted(result.time, 0.01 * period))
         zoom_mask = np.arange(result.time.size) <= zoom_end_index
 
-        alpha_k1 = parameters.alpha * parameters.bearing_k1 / 1.0e6
-        hysteretic_strength = (1.0 - parameters.alpha) * parameters.bearing_k1 * parameters.yield_displacement / 1.0e3
         hover = (
             "Cycle: %{customdata[1]:.0f}<br>"
             "t: %{x:.6f} s<br>"
             "u: %{customdata[2]:.8f} m = %{customdata[15]:.5f} mm<br>"
-            "u_dot: %{customdata[3]:.6f} m/s<br>"
+            "u̇: %{customdata[3]:.6f} m/s<br>"
             "z: %{y:.8f}<br>"
-            "alpha: " + f"{parameters.alpha:.8f}" + "<br>"
-            "alpha K1 = K2: " + f"{alpha_k1:.8f}" + " kN/mm<br>"
-            "(1-alpha)K1 uy = Q: " + f"{hysteretic_strength:.8f}" + " kN<br>"
-            "alpha K1 u = K2 u: %{customdata[5]:.8f} kN<br>"
-            "(1-alpha)K1 uy z: %{customdata[6]:.8f} kN<br>"
-            "F_BW: %{customdata[7]:.8f} kN<br>"
-            "F_BW/Wb: %{customdata[10]:.8f}<extra></extra>"
+            "αK1u/Wb: %{customdata[8]:.8f}<br>"
+            "(1−α)K1uyz/Wb: %{customdata[9]:.8f}<br>"
+            "F(t)/Wb: %{customdata[10]:.8f}<extra></extra>"
         )
 
         fig = make_subplots(
@@ -1591,16 +1582,11 @@ class FigureFactory:
             linear_over_weight = linear_mn * 1.0e6 / total_weight
             hysteretic_over_weight = hysteretic_mn * 1.0e6 / total_weight
             customdata = np.column_stack((disp_mm, vel_mps, force_over_weight, force_mn, rel_acc_g, abs_acc_g, ground_g, z_values, linear_mn, hysteretic_mn, linear_over_weight, hysteretic_over_weight))
-            alpha_k1_mn_per_m = parameters.alpha * parameters.total_k1 / 1.0e6
-            q_total_mn = (1.0 - parameters.alpha) * parameters.total_k1 * parameters.yield_displacement / 1.0e6
             component_hover = (
                 "z: %{customdata[7]:.6f}<br>"
-                "alpha K1 = K2: " + f"{alpha_k1_mn_per_m:.6f}" + " MN/m<br>"
-                "(1-alpha)K1 uy = Q: " + f"{q_total_mn:.6f}" + " MN<br>"
-                "alpha K1 u = K2 u: %{customdata[8]:.6f} MN<br>"
-                "(1-alpha)K1 uy z: %{customdata[9]:.6f} MN<br>"
-                "(alpha K1 u)/W: %{customdata[10]:.6f}<br>"
-                "((1-alpha)K1 uy z)/W: %{customdata[11]:.6f}<br>"
+                "αK1u/W: %{customdata[10]:.6f}<br>"
+                "(1−α)K1uyz/W: %{customdata[11]:.6f}<br>"
+                "F(t)/W: %{customdata[2]:.6f}<br>"
             )
         else:
             customdata = np.column_stack((disp_mm, vel_mps, force_over_weight, force_mn, rel_acc_g, abs_acc_g, ground_g))
@@ -1622,7 +1608,7 @@ class FigureFactory:
 
         series = [
             (disp_mm, MATLAB_COLORS["dark_blue"], "u_max", "mm", "Displacement u", ".3f"),
-            (vel_mps, MATLAB_COLORS["black"], "u_dot_max", "m/s", "Velocity u_dot", ".4f"),
+            (vel_mps, MATLAB_COLORS["black"], "u_dot_max", "m/s", "Velocity u̇", ".4f"),
             (force_over_weight, MATLAB_COLORS["crimson"], "F/W_max", "-", "Normalized restoring force F/W", ".5f"),
             (abs_acc_g, MATLAB_COLORS["dark_green"], "a_abs_max", "g", "Absolute acceleration a_abs", ".4f"),
             (ground_g, MATLAB_COLORS["gray"], "a_g_max", "g", "Ground acceleration a_g", ".4f"),
@@ -1648,9 +1634,8 @@ class FigureFactory:
                         + (f" {unit_label}" if unit_label != "-" else "")
                         + "<br>"
                         "u: %{customdata[0]:.3f} mm<br>"
-                        "u_dot: %{customdata[1]:.4f} m/s<br>"
-                        "F/W: %{customdata[2]:.6f}<br>"
-                        "F: %{customdata[3]:.6f} MN<br>"
+                        "u̇: %{customdata[1]:.4f} m/s<br>"
+                        "F(t)/W: %{customdata[2]:.6f}<br>"
                         "a_rel: %{customdata[4]:.4f} g<br>"
                         "a_abs: %{customdata[5]:.4f} g<br>"
                         "a_g: %{customdata[6]:.4f} g<br>"
@@ -1734,34 +1719,26 @@ class FigureFactory:
             ) / 1.0e6
             linear_over_weight = linear_mn * 1.0e6 / total_weight
             hysteretic_over_weight = hysteretic_mn * 1.0e6 / total_weight
-            alpha_k1_mn_per_m = parameters.alpha * parameters.total_k1 / 1.0e6
-            q_total_mn = (1.0 - parameters.alpha) * parameters.total_k1 * parameters.yield_displacement / 1.0e6
             customdata = np.column_stack((time, velocity, rel_acc_g, abs_acc_g, ground_g, force_mn, z_values, linear_mn, hysteretic_mn, linear_over_weight, hysteretic_over_weight))
             hovertemplate = (
                 "Displacement u: %{x:.3f} mm<br>"
-                "Normalized restoring force F/W: %{y:.6f}<br>"
-                "Restoring force F: %{customdata[5]:.6f} MN<br>"
                 "Time: %{customdata[0]:.3f} s<br>"
-                "Velocity u_dot: %{customdata[1]:.4f} m/s<br>"
+                "u̇: %{customdata[1]:.4f} m/s<br>"
                 "Relative acceleration a_rel: %{customdata[2]:.4f} g<br>"
                 "Absolute acceleration a_abs: %{customdata[3]:.4f} g<br>"
                 "Ground acceleration a_g: %{customdata[4]:.4f} g<br>"
                 "z: %{customdata[6]:.6f}<br>"
-                "alpha K1 = K2: " + f"{alpha_k1_mn_per_m:.6f}" + " MN/m<br>"
-                "(1-alpha)K1 uy = Q: " + f"{q_total_mn:.6f}" + " MN<br>"
-                "alpha K1 u = K2 u: %{customdata[7]:.6f} MN<br>"
-                "(1-alpha)K1 uy z: %{customdata[8]:.6f} MN<br>"
-                "(alpha K1 u)/W: %{customdata[9]:.6f}<br>"
-                "((1-alpha)K1 uy z)/W: %{customdata[10]:.6f}<extra></extra>"
+                "αK1u/W: %{customdata[9]:.6f}<br>"
+                "(1−α)K1uyz/W: %{customdata[10]:.6f}<br>"
+                "F(t)/W: %{y:.6f}<extra></extra>"
             )
         else:
             customdata = np.column_stack((time, velocity, rel_acc_g, abs_acc_g, ground_g, force_mn))
             hovertemplate = (
                 "Displacement u: %{x:.3f} mm<br>"
                 "Normalized restoring force F/W: %{y:.6f}<br>"
-                "Restoring force F: %{customdata[5]:.6f} MN<br>"
                 "Time: %{customdata[0]:.3f} s<br>"
-                "Velocity u_dot: %{customdata[1]:.4f} m/s<br>"
+                "u̇: %{customdata[1]:.4f} m/s<br>"
                 "Relative acceleration a_rel: %{customdata[2]:.4f} g<br>"
                 "Absolute acceleration a_abs: %{customdata[3]:.4f} g<br>"
                 "Ground acceleration a_g: %{customdata[4]:.4f} g<extra></extra>"
@@ -1807,6 +1784,8 @@ class FigureFactory:
             * parameters.yield_displacement
             * z_values
         ) / 1.0e6
+        bw_linear_over_weight = bw_linear_mn * 1.0e6 / total_weight
+        bw_hysteretic_over_weight = bw_hysteretic_mn * 1.0e6 / total_weight
         bw_customdata = np.column_stack((
             bouc_wen_result.time,
             bouc_wen_result.velocity,
@@ -1817,9 +1796,9 @@ class FigureFactory:
             z_values,
             bw_linear_mn,
             bw_hysteretic_mn,
+            bw_linear_over_weight,
+            bw_hysteretic_over_weight,
         ))
-        alpha_k1_mn_per_m = parameters.alpha * parameters.total_k1 / 1.0e6
-        q_total_mn = (1.0 - parameters.alpha) * parameters.total_k1 * parameters.yield_displacement / 1.0e6
         fig.add_trace(
             go.Scatter(
                 x=bouc_wen_result.displacement * 1.0e3,
@@ -1831,18 +1810,15 @@ class FigureFactory:
                 hovertemplate=(
                     "Model: Bouc-Wen<br>"
                     "u: %{x:.3f} mm<br>"
-                    "F/W: %{y:.6f}<br>"
-                    "F: %{customdata[5]:.6f} MN<br>"
                     "t: %{customdata[0]:.3f} s<br>"
-                    "u_dot: %{customdata[1]:.4f} m/s<br>"
+                    "u̇: %{customdata[1]:.4f} m/s<br>"
                     "a_rel: %{customdata[2]:.4f} g<br>"
                     "a_abs: %{customdata[3]:.4f} g<br>"
                     "a_g: %{customdata[4]:.4f} g<br>"
                     "z: %{customdata[6]:.6f}<br>"
-                    "alpha K1 = K2: " + f"{alpha_k1_mn_per_m:.6f}" + " MN/m<br>"
-                    "(1-alpha)K1 uy = Q: " + f"{q_total_mn:.6f}" + " MN<br>"
-                    "alpha K1 u = K2 u: %{customdata[7]:.6f} MN<br>"
-                    "(1-alpha)K1 uy z: %{customdata[8]:.6f} MN<extra></extra>"
+                    "αK1u/W: %{customdata[9]:.6f}<br>"
+                    "(1−α)K1uyz/W: %{customdata[10]:.6f}<br>"
+                    "F(t)/W: %{y:.6f}<extra></extra>"
                 ),
             )
         )
@@ -1865,10 +1841,9 @@ class FigureFactory:
                 hovertemplate=(
                     "Model: plasticity<br>"
                     "u: %{x:.3f} mm<br>"
-                    "F/W: %{y:.6f}<br>"
-                    "F: %{customdata[5]:.6f} MN<br>"
+                    "F(t)/W: %{y:.6f}<br>"
                     "t: %{customdata[0]:.3f} s<br>"
-                    "u_dot: %{customdata[1]:.4f} m/s<br>"
+                    "u̇: %{customdata[1]:.4f} m/s<br>"
                     "a_rel: %{customdata[2]:.4f} g<br>"
                     "a_abs: %{customdata[3]:.4f} g<br>"
                     "a_g: %{customdata[4]:.4f} g<extra></extra>"
@@ -2203,12 +2178,12 @@ class HtmlReportBuilder:
             ("Bouc-Wen n", f"{p.exponent_n:.2f}", "-"),
             ("Bearing K1", f"{p.bearing_k1 / 1e6:.6f}", "MN/m"),
             ("Bearing K2", f"{p.bearing_k2 / 1e6:.6f}", "MN/m"),
-            ("Bearing alpha K1 = K2", f"{p.alpha * p.bearing_k1 / 1e6:.6f}", "MN/m"),
-            ("Bearing (1-alpha)K1 uy = Q", f"{p.bearing_hysteretic_strength / 1e3:.6f}", "kN"),
+            ("Bearing αK1 = K2", f"{p.alpha * p.bearing_k1 / 1e6:.6f}", "MN/m"),
+            ("Bearing (1−α)K1 uy = Q", f"{p.bearing_hysteretic_strength / 1e3:.6f}", "kN"),
             ("Total K1", f"{p.total_k1 / 1e9:.4f}", "GN/m"),
             ("Total K2", f"{p.total_k2 / 1e6:.4f}", "MN/m"),
-            ("Total alpha K1 = K2", f"{p.alpha * p.total_k1 / 1e6:.4f}", "MN/m"),
-            ("Total (1-alpha)K1 uy = Q", f"{p.total_hysteretic_strength / 1e6:.4f}", "MN"),
+            ("Total αK1 = K2", f"{p.alpha * p.total_k1 / 1e6:.4f}", "MN/m"),
+            ("Total (1−α)K1 uy = Q", f"{p.total_hysteretic_strength / 1e6:.4f}", "MN"),
             ("Total Q", f"{p.total_characteristic_strength / 1e6:.4f}", "MN"),
             ("Plasticity elastic stiffness", f"{b.elastic_stiffness / 1e9:.4f}", "GN/m"),
             ("Plasticity hardening modulus", f"{b.hardening_modulus / 1e6:.4f}", "MN/m"),
