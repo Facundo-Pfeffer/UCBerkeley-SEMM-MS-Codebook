@@ -9,7 +9,7 @@
 		<title>CE223 - Earthquake Protective Systems | Facundo L. Pfeffer</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<meta name="description" content="CE223 Earthquake Protective Systems: nonlinear and linear seismic isolation analysis, Newmark response history, equivalent linearization, and floor spectra for nonstructural components." />
+		<meta name="description" content="CE223 Earthquake Protective Systems: base isolation, MDOF response history, nonlinear FPS modeling, and FVD retrofit of the Bill Emerson Memorial Bridge." />
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
 		<!-- MathJax for LaTeX rendering - common configuration -->
@@ -49,38 +49,83 @@
 							<div style="max-width: 980px; margin: 0 auto; padding: 0 1.25rem 2rem;">
 							<h1 style="margin-top: 0; margin-bottom: 1rem;">CE223 - Earthquake Protective Systems</h1>
 
+							<section id="ce223-term-project-report" style="margin-top: 0.2rem; margin-bottom: 2rem;">
+								<h2 style="margin-bottom: 0.5rem;">CE223 Term Project: FVD Retrofit of the Bill Emerson Memorial Bridge (Report Viewer)</h2>
+								<p style="color:#4b5563; line-height:1.75; margin-top:0.5rem;">
+									Fluid viscous dampers (FVDs) are passive devices that add supplemental damping with little change in
+									effective stiffness, which makes them attractive for retrofit. Their force–velocity relation is commonly
+									written as $P = C|v|^\alpha\,\mathrm{sgn}(v)$, where $P$ is damper force, $v$ is relative velocity,
+									$C$ is the damping coefficient, and $\alpha$ is the velocity exponent ($\alpha=1$ gives a linear FVD).
+								</p>
+								<p style="color:#4b5563; line-height:1.75; margin-top:0.55rem;">
+									This term project evaluates longitudinal FVD retrofit of the <strong>Bill Emerson Memorial Bridge</strong>,
+									a cable-stayed crossing near the <strong>New Madrid Seismic Zone</strong>. A Midas Civil model (beams and
+									plates with shear deformation) is subjected to <strong>nonlinear response history analysis (NLRHA)</strong>
+									under six representative ground motions, comparing the as-built bridge with retrofitted cases. The base
+									nonlinear retrofit uses ten longitudinal dampers with $C = 4426\,\mathrm{kN}(s/m)^{0.40}$ and
+									$\alpha = 0.40$; lower- and upper-bound capacities ($C = 2725$ and $11000\,\mathrm{kN}(s/m)^{0.40}$)
+									test sensitivity, and a linear equivalent ($\alpha = 1$, $C = 7650\,\mathrm{kN\,s/m}$) matches the
+									nonlinear device energy per cycle. Demands tracked include east-abutment longitudinal displacement and
+									acceleration, tower-base overturning moment and shear, and tower-beam transverse shear.
+								</p>
+								<p style="color:#4b5563; line-height:1.75; margin-top:0.55rem;">
+									FVDs substantially reduced longitudinal displacement, abutment acceleration, and tower overturning moment.
+									Base shear and tower shear did not decrease uniformly—demand redistribution through cable–tower coupling suggests
+									that a longitudinal-only retrofit may need complementary transverse damping. The bounding study shows the same
+									trend: higher damper capacity further reduces displacement and acceleration while shear reductions remain limited.
+									The equivalent linear damper generally increased the quantities it was meant to control. Even when a lower-intensity
+									record produced slightly higher peaks after retrofit, those peaks remained far below MCER-level demands.
+								</p>
+								<div style="border:1px solid #d1d5db; border-radius:10px; overflow:hidden; background:#f9fafb;">
+									<iframe
+										src="CE223_EarthquakeProtectiveSystems/highlighted_pdfs/CE223%20Term%20Project%20-%20Lew%20and%20Pfeffer.pdf"
+										title="CE223 Term Project - Lew and Pfeffer PDF visualizer"
+										style="width:100%; height:920px; border:0;"
+										loading="lazy">
+									</iframe>
+								</div>
+								<p style="font-size:0.93em; color:#6b7280; margin-top:0.6rem; margin-bottom:0;">
+									If the embed does not render in your browser, open the file directly:
+									<a href="CE223_EarthquakeProtectiveSystems/highlighted_pdfs/CE223%20Term%20Project%20-%20Lew%20and%20Pfeffer.pdf" target="_blank" rel="noopener noreferrer">CE223 Term Project PDF</a>.
+								</p>
+							</section>
+
 							<div>
-								<h2 style="margin-top: 0.3rem; margin-bottom: 0.4rem;">Introduction</h2>
+								<h2 style="margin-top: 0.3rem; margin-bottom: 0.4rem;">Course overview</h2>
 								<p style="font-size: 1.03em; line-height: 1.78; color:#374151;">
-									The objective of this page is to present a coherent set of computational studies for
-									<strong>seismic protective systems</strong>, with emphasis on base isolation, constitutive modeling,
-									and response-history analysis under recorded ground motions. The examples are organized so that
-									theory, numerical method, and engineering interpretation are presented together in each dashboard.
+									The work collected here follows a deliberate path from device characterization to system-level
+									response history. We first infer equivalent properties from measured isolation hysteresis, then implement
+									and verify MDOF time-integration schemes, and finally move to nonlinear isolation and supplemental damping
+									on realistic structural models. Each interactive dashboard keeps the governing equations, numerical
+									procedure, and demand interpretation in one place so the reader can move from model setup to engineering
+									conclusion without switching contexts.
 								</p>
 								<p style="font-size: 1.0em; line-height: 1.72; color:#374151; margin-top:0.55rem;">
-									The material spans: (i) equivalent linearization from measured hysteresis loops,
-									(ii) matrix-based Newmark integration for linear MDOF systems, and
-									(iii) nonlinear bilinear regularization of friction-pendulum behavior with floor-spectrum
-									evaluation for nonstructural components.
+									The homework blocks below build the tools used in the term project: equivalent linearization and FFT checks
+									(Section&nbsp;A), direct and modal Newmark integration with RSA comparison (Section&nbsp;B), and nonlinear
+									FPS modeling with floor spectra for nonstructural components (Section&nbsp;C). The term-project report above
+									applies similar response-history thinking to bridge-scale FVD retrofit.
 								</p>
 								<p style="font-size: 0.97em; line-height: 1.65; color:#6b7280; margin-top:0.65rem;">
-									Notation: <strong>SDOF</strong> = single-degree-of-freedom, <strong>MDOF</strong> = multi-degree-of-freedom,
-									<strong>RSA</strong> = response spectrum analysis, <strong>SRSS</strong> = square-root-of-sum-of-squares,
-									<strong>FFT</strong> = fast Fourier transform, <strong>HDR</strong> = high-damping rubber.
+									Notation: <strong>SDOF</strong> single-degree-of-freedom; <strong>MDOF</strong> multi-degree-of-freedom;
+									<strong>RSA</strong> response spectrum analysis; <strong>SRSS</strong> square-root-of-sum-of-squares;
+									<strong>NLRHA</strong> nonlinear response history analysis; <strong>FVD</strong> fluid viscous damper;
+									<strong>FPS</strong> friction pendulum system; <strong>HDR</strong> high-damping rubber.
 								</p>
 							</div>
 
 							<section id="ce223-hw5-report" style="margin-top: 1.6rem; margin-bottom: 2rem;">
 								<h2 style="margin-bottom: 0.5rem;">CE223 HW5: Linear and Modal Base-Isolation Analysis (Report Viewer)</h2>
-								<p style="color:#4b5563; line-height:1.7; margin-top:0.5rem;">
-									Example of technical work: <strong>HW5</strong>. This homework covers linear and modal analysis of base-isolated
-									structural systems, including response-history calculations, spectrum-based interpretation, and engineering checks
-									on displacement and force demand. The embedded report below documents the full workflow, assumptions, and results.
+								<p style="color:#4b5563; line-height:1.75; margin-top:0.5rem;">
+									<strong>HW5</strong> develops the linear theory side of base isolation: modal properties of the isolated
+									system, response-history displacement and force demands, and comparison against spectrum-based estimates.
+									The report documents model idealization, damping assumptions, and how modal superposition and RSA are used
+									as checks on direct integration—not as substitutes for verifying the time-history solution.
 								</p>
-								<p style="color:#4b5563; line-height:1.7; margin-top:0.55rem;">
-									Read this report for the complete HW5 methodology and conclusions, then open
-									<a href="#section-a-sdof-base-isolation">Section A dashboards</a>
-									to explore related interactive plots and model comparisons.
+								<p style="color:#4b5563; line-height:1.75; margin-top:0.55rem;">
+									Read the embedded report for the full derivation and numerical results, then use the
+									<a href="#section-a-sdof-base-isolation">Section&nbsp;A dashboards</a>
+									to inspect the underlying hysteresis-to-SDOF workflow that motivates the isolated-system parameters.
 								</p>
 								<div style="border:1px solid #d1d5db; border-radius:10px; overflow:hidden; background:#f9fafb;">
 									<iframe
@@ -96,24 +141,20 @@
 								</p>
 							</section>
 
-							<h2 id="section-a-sdof-base-isolation" style="margin-top: 2rem; margin-bottom: 0.5rem;">Section A: SDOF base-isolation from measured hysteresis</h2>
-							<p style="color:#4b5563; line-height:1.7; margin-top:0.5rem;">
-								The first set of dashboards documents a base‑isolation workflow using a single‑degree‑of‑freedom (SDOF) model built from
-								measured hysteresis of <strong>high‑damping rubber (HDR)</strong> bearings. The workflow yields equivalent SDOF parameters—storage stiffness \(K_1\),
-								loss stiffness \(K_2\), and equivalent viscous damping ratio \(\zeta_\mathrm{eff}\)—and uses fixed‑point iteration on strain and \(\zeta_\mathrm{eff}\),
-								plus time‑ and frequency‑domain response.
+							<h2 id="section-a-sdof-base-isolation" style="margin-top: 2rem; margin-bottom: 0.5rem;">Section A: SDOF base isolation from measured HDR hysteresis</h2>
+							<p style="color:#4b5563; line-height:1.75; margin-top:0.5rem;">
+								Before analyzing an isolated building, we need equivalent properties for the isolation hardware itself.
+								Section&nbsp;A starts from digitized force–displacement loops of <strong>high-damping rubber (HDR)</strong> bearings tested at
+								several shear strains. From each loop we recover storage stiffness \(K_1\), loss stiffness \(K_2\), and an
+								equivalent viscous damping ratio \(\zeta_\mathrm{eff}\). Those quantities enter a four-bearing SDOF idealization;
+								a fixed-point iteration updates strain and \(\zeta_\mathrm{eff}\) until the assumed and computed values agree.
 							</p>
-							<div style="margin:0.75rem 0 1.25rem 0;">
-								<div style="background:#f9fafb; border-left:4px solid #003262; border-radius:6px; padding:0.75rem 1rem;">
-									<p style="margin:0 0 0.35rem 0; color:#111827; font-size:0.95rem; font-weight:600;">What this project shows</p>
-									<ul style="margin:0; padding-left:1.1rem; color:#374151; font-size:0.92rem; line-height:1.55;">
-										<li><strong>From loops to parameters</strong>: extract storage stiffness \(K_1\), loss stiffness \(K_2\), and equivalent viscous damping ratio \(\zeta_\mathrm{eff}\) from measured HDR hysteresis.</li>
-										<li><strong>Design‑style iteration</strong>: fixed‑point update on strain and \(\zeta_\mathrm{eff}\) for a four‑bearing isolation system.</li>
-										<li><strong>Time vs frequency domain</strong>: compare Newmark time integration and fast Fourier transform (FFT) response for the same SDOF.</li>
-										<li><strong>Damping models</strong>: contrast viscous, hysteretic, and fractional Kelvin–Voigt in terms of loops and earthquake response.</li>
-									</ul>
-								</div>
-							</div>
+							<p style="color:#4b5563; line-height:1.75; margin-top:0.55rem;">
+								The same SDOF is then driven by the Kobe University 090 component in the time domain (Newmark) and frequency domain (FFT),
+								and alternative damping laws—viscous, hysteretic, and fractional Kelvin–Voigt—are compared on identical inputs.
+								That sequence answers two practical questions: whether the equivalent parameters are consistent with the measured loops,
+								and whether a simple SDOF with those parameters reproduces the salient features of the recorded motion.
+							</p>
 							<section class="tiles" style="margin-bottom: 0.5rem;">
 								<article class="style6">
 									<span class="image">
@@ -123,7 +164,7 @@
 										<h2>Base isolator hysteresis</h2>
 										<div class="content">
 											<p>
-												Digitized force–displacement loops at four strain levels; per‑bearing storage stiffness \(K_1\), loss stiffness \(K_2\), equivalent viscous damping ratio \(\zeta_{\mathrm{eff}}\), and energy per cycle; trend plots vs strain.
+												Digitized HDR loops at four strain levels; extraction of \(K_1\), \(K_2\), \(\zeta_{\mathrm{eff}}\), and dissipated energy per cycle; parameter trends versus strain.
 											</p>
 										</div>
 									</a>
@@ -136,7 +177,7 @@
 										<h2>Iteration and response</h2>
 										<div class="content">
 											<p>
-												Fixed‑point iteration with four bearings (system stiffness \(k = 4K_1\)); convergence of strain and \(\zeta_{\mathrm{eff}}\); Newmark time integration vs fast Fourier transform (FFT) under the Kobe University record, component 090.
+												Four-bearing SDOF with \(k = 4K_1\); fixed-point convergence on strain and \(\zeta_{\mathrm{eff}}\); Newmark vs FFT response under Kobe KBU090.
 											</p>
 										</div>
 									</a>
@@ -149,7 +190,7 @@
 										<h2>SDOF damping model comparisons</h2>
 										<div class="content">
 											<p>
-												Models A, B, C: force–displacement loops; storage and loss stiffness \(K_1(\omega)\), \(K_2(\omega)\) vs frequency; equivalent damping coefficient (EDC); frequency‑domain earthquake response.
+												Three damping formulations (viscous, hysteretic, fractional Kelvin–Voigt): hysteresis loops, \(K_1(\omega)\) and \(K_2(\omega)\), and frequency-domain earthquake response.
 											</p>
 										</div>
 									</a>
@@ -157,22 +198,19 @@
 							</section>
 
 							<h2 style="margin-top: 2rem; margin-bottom: 0.5rem;">Section B: Linear MDOF response-history analysis</h2>
-							<p style="color:#4b5563; line-height:1.7; margin-top:0.5rem;">
-								A second project focuses on linear multi‑degree‑of‑freedom (MDOF) response: a Newmark time‑integration implementation in matrix form and its relationship to
-								modal superposition and response spectrum analysis (RSA). It is illustrated on a two‑degree‑of‑freedom (2‑DOF) shear frame and then on a 2‑DOF base‑isolated building
-								under the Kobe University record, component 090 (KBU090).
+							<p style="color:#4b5563; line-height:1.75; margin-top:0.5rem;">
+								Section&nbsp;B shifts from SDOF hardware characterization to matrix-based building models. The first dashboard implements
+								constant-average-acceleration Newmark integration for a 2-DOF shear frame with <em>non-classical</em> damping—damping that
+								cannot be written as \(\alpha\mathbf{M}+\beta\mathbf{K}\). That matters because proportional damping would let us decouple
+								the equations exactly; here we compare the direct MDOF solution against a modal approximation and see where the approximation
+								holds and where phase and amplitude error grow.
 							</p>
-							<div style="margin:0.75rem 0 1.25rem 0;">
-								<div style="background:#f9fafb; border-left:4px solid #003262; border-radius:6px; padding:0.75rem 1rem;">
-									<p style="margin:0 0 0.35rem 0; color:#111827; font-size:0.95rem; font-weight:600;">What this project shows</p>
-									<ul style="margin:0; padding-left:1.1rem; color:#374151; font-size:0.92rem; line-height:1.55;">
-										<li><strong>Newmark MDOF implementation</strong>: constant‑average‑acceleration scheme in matrix form for the full system.</li>
-										<li><strong>Non‑classical damping</strong>: damping matrix not of the form \(\alpha\mathbf{M}+\beta\mathbf{K}\), so modal analysis is only approximate.</li>
-										<li><strong>Direct vs modal time history</strong>: when the modal approximation matches the full MDOF solution and when it drifts.</li>
-										<li><strong>Link to response spectrum analysis (RSA)</strong>: 2‑DOF isolation example compares direct MDOF, modal time history, and RSA with square‑root‑of‑sum‑of‑squares (SRSS) modal combination.</li>
-									</ul>
-								</div>
-							</div>
+							<p style="color:#4b5563; line-height:1.75; margin-top:0.55rem;">
+								The second dashboard applies the same integration framework to a 2-DOF base-isolated building under Kobe KBU090. Direct
+								Newmark histories are compared with modal time histories and with RSA peak estimates combined by SRSS. The point is not
+								only to compute drift and isolator displacement, but to show when spectrum analysis is adequate for design checks and when
+								full time history is required.
+							</p>
 							<section class="tiles" style="margin-bottom: 0.5rem;">
 								<article class="style2">
 									<span class="image">
@@ -182,7 +220,7 @@
 										<h2>Newmark MDOF demo with non‑classical damping</h2>
 										<div class="content">
 											<p>
-												Two‑degree‑of‑freedom (2‑DOF) shear frame under a short sustained load; non‑classical damping; direct MDOF time history vs modal approximation.
+												2-DOF shear frame with non-classical damping; direct Newmark MDOF integration compared with modal superposition.
 											</p>
 										</div>
 									</a>
@@ -195,37 +233,26 @@
 										<h2>2‑DOF base‑isolated building under Kobe KBU090</h2>
 										<div class="content">
 											<p>
-												Direct MDOF time history via Newmark; modal time history and response spectrum analysis (RSA) with square‑root‑of‑sum‑of‑squares (SRSS) modal combination; drift, isolator displacement, base shear coefficient.
+												Base-isolated 2-DOF building under Kobe KBU090; Newmark, modal time history, and RSA+SRSS compared for drift, isolator displacement, and base shear.
 											</p>
 										</div>
 									</a>
 								</article>
 							</section>
 
-							<h2 style="margin-top: 2rem; margin-bottom: 0.5rem;">Section C: Nonlinear friction-pendulum response and floor spectra</h2>
-							<p style="color:#4b5563; line-height:1.72; margin-top:0.5rem;">
-								This study models a rigid-superstructure building supported on friction pendulum system (FPS) bearings.
-								The isolator force law is represented through a bilinear regularization with kinematic hardening and
-								solved with nonlinear Newmark time integration. An equivalent linear model is then built from secant
-								stiffness and energy-equivalent damping, and both models are compared in terms of peak response and
-								force-displacement behavior under Kobe and Sylmar records.
+							<h2 style="margin-top: 2rem; margin-bottom: 0.5rem;">Section C: Nonlinear FPS response and floor spectra</h2>
+							<p style="color:#4b5563; line-height:1.75; margin-top:0.5rem;">
+								Section&nbsp;C addresses a limitation of linearized isolation design: friction-pendulum (FPS) bearings are inherently
+								nonlinear. A rigid superstructure on bilinear-regularized FPS isolators is integrated with nonlinear Newmark, using
+								return mapping for the isolator state and an algorithmic tangent in the equilibrium iterations. An equivalent linear
+								support model—iteratively calibrated on secant stiffness and energy dissipation per cycle—is run on the same ground
+								motions (Kobe and Sylmar) so peak displacements, forces, and hysteresis can be compared directly.
 							</p>
-							<p style="color:#4b5563; line-height:1.72; margin-top:0.55rem;">
-								Using absolute floor acceleration from both analyses, floor spectra for nonstructural components
-								(\(\zeta_p=2\%\)) are computed over a broad frequency range. This directly evaluates whether
-								equivalent linearization can capture acceleration-sensitive demands in the high-frequency regime.
+							<p style="color:#4b5563; line-height:1.75; margin-top:0.55rem;">
+								Absolute floor accelerations from both analyses feed floor spectra for nonstructural components at
+								\(\zeta_p = 2\%\) over a wide period range. That step tests whether equivalent linearization preserves
+								acceleration-sensitive demands in the short-period band, where NSC damage is often controlled.
 							</p>
-							<div style="margin:0.75rem 0 1.25rem 0;">
-								<div style="background:#f9fafb; border-left:4px solid #003262; border-radius:6px; padding:0.75rem 1rem;">
-									<p style="margin:0 0 0.35rem 0; color:#111827; font-size:0.95rem; font-weight:600;">What this project shows</p>
-									<ul style="margin:0; padding-left:1.1rem; color:#374151; font-size:0.92rem; line-height:1.55;">
-										<li><strong>Nonlinear constitutive integration</strong>: return-mapping state update with algorithmic tangent inside Newmark equilibrium iterations.</li>
-										<li><strong>Equivalent linear benchmark</strong>: iterative \((k_{\mathrm{eff}},c_{\mathrm{eff}})\) calibration from displacement amplitude and dissipation equivalence.</li>
-										<li><strong>Consistent response comparison</strong>: displacement, velocity, force, and acceleration histories for Kobe and Sylmar records.</li>
-										<li><strong>NSC demand assessment</strong>: absolute floor spectra comparison between nonlinear and equivalent-linear support inputs.</li>
-									</ul>
-								</div>
-							</div>
 							<section class="tiles" style="margin-bottom: 0.5rem;">
 								<article class="style5">
 									<span class="image">
@@ -235,7 +262,7 @@
 										<h2>Nonlinear FPS dashboard (Kobe + Sylmar)</h2>
 										<div class="content">
 											<p>
-												Bilinear regularized FPS model solved with nonlinear Newmark; equivalent linear comparison; normalized force histories and hysteresis; floor spectra for NSCs using absolute floor acceleration input.
+												Nonlinear FPS with return-mapping Newmark; energy-equivalent linear benchmark; Kobe and Sylmar hysteresis and peaks; NSC floor spectra from absolute floor acceleration.
 											</p>
 										</div>
 									</a>
@@ -250,8 +277,9 @@
 
 							<div style="background:#fff; border:1px solid #e5e7eb; border-radius:10px; padding:1.5rem; margin:2rem 0;">
 								<h2 style="margin-top:0;">Related pages in this portfolio</h2>
-								<p style="margin:0 0 1rem 0; color:#6b7280; line-height:1.7;">
-									Further background on dynamics, spectra, and numerical methods appears in the following course pages.
+								<p style="margin:0 0 1rem 0; color:#6b7280; line-height:1.75;">
+									Companion course pages cover structural dynamics fundamentals, nonlinear analysis, and the numerical methods referenced
+									in the dashboards above.
 								</p>
 								<div style="display:flex; flex-wrap:wrap; gap:0.75rem;">
 									<a href="cee225-dynamics.html" class="button" style="border-color:#003262; color:#003262;">CE225 – Structural Dynamics</a>
